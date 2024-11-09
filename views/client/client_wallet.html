@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>区块链网络</title>
+    <link rel="stylesheet" href="/static/assets/libs/layui/css/layui.css"/>
+    <style>
+        html{
+            overflow: auto; /* 或者使用 overflow-y: scroll; 来允许垂直滚动 */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE 和 Edge */
+        }
+
+        /* 隐藏Webkit核心浏览器（如Chrome, Safari等）中的滚动条 */
+        html::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="client-network-box">
+    <div class="layui-tab layui-tab-brief"> 
+        <ul class="layui-tab-title">
+          <li class="client-network-tab-title layui-this">本地连接</li>
+          <li class="client-network-tab-title">远程连接</li>
+        </ul>
+        <div class="layui-tab-content">
+          <div class="client-network-tab-item layui-tab-item layui-show">
+            
+           </div>
+          <div class="client-network-tab-item layui-tab-item">
+            
+         </div>
+        </div>
+    </div>
+</div>
+<!-- js部分 -->
+<script type="text/javascript" src="/static/assets/libs/layui/layui.js"></script>
+<script>
+function getWindowLayerIndex(){
+    var layerIndex = parent.layer.getFrameIndex(window.name); 
+    return layerIndex;
+}
+function closeParentLayer(){
+    var index = parent.layer.getFrameIndex(window.name); // 先得到当前 iframe 层的索引
+    parent.layer.close(index); // 再执行关闭
+}
+var currentLayerIndex = null
+layui.use(['layer'], function(){
+    var layer = layui.layer
+    $ = layui.$;
+    function openCtiDetailWindow(url) {
+        var parentLayer = window.parent.layer;
+        if(currentLayerIndex!=null){
+            //默认只打开一个窗口
+            parentLayer.close(currentLayerIndex);
+        }
+        //使用父层级打开窗口
+        currentLayerIndex = parentLayer.open({
+                type: 2,
+                title: '详情',
+                area: ['700px', '550px'], // 设置窗口宽度和高度
+                shade: 0, // 设置遮罩透明度
+                content: url,
+                success: function(layero, index){
+                    //关闭当前窗口
+                    // closeParentLayer()
+                }
+        });
+        
+        
+    }
+})
+
+</script>
+</body>
+</html>

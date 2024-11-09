@@ -1,0 +1,106 @@
+{{define "header"}}
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>B&R威胁情报共享平台</title>
+    <link href="/static/assets/images/favicon.ico" rel="icon">
+    <link href="/static/front/css/front_navigation.css" rel="stylesheet">
+    <link href="/static/front/css/front_sidebar.css" rel="stylesheet">
+    <link href="/static/front/css/front_index.css" rel="stylesheet">
+    <link href="/static/front/css/front_footer.css" rel="stylesheet">
+    <link href="/static/front/css/custom.css" rel="stylesheet">
+    <!--layui引入--->
+    <link  href="/static/assets/libs/layui/css/layui.css" rel="stylesheet" media="all">
+    <!---js库引入--->
+    <script type="text/javascript" src="/static/assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/layui/layui.js"></script>
+    <script type="text/javascript" src="/static/assets/js/common.js?v=318"></script>
+    <!---semantic引入--->
+    <link rel="stylesheet" type="text/css" href="/static/assets/libs/semantic/semantic.min.css">
+    <script type="text/javascript" src="/static/assets/libs/semantic/semantic.min.js"></script>
+    
+    <!--引入echarts-->
+    <script src="/static/assets/libs/echarts/echarts.min.js"></script>
+    <!--引入css--->
+    <link rel="stylesheet" href="/static/front/css/cti_market.css">
+    <link rel="stylesheet" href="/static/front/css/front_login.css">
+    <link rel="stylesheet" href="/static/front/css/front_register.css">
+    <link rel="stylesheet" href="/static/front/css/knowledge_plane.css">
+    <link rel="stylesheet" href="/static/front/css/bc_browser.css">
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 定义需要引入的 CSS 文件及其对应的 URL 路径
+            const cssPaths = {
+                //'cti-market': '/static/front/css/cti_market.css',
+                // 'bc-browser': '/static/front/css/bc_browser.css',
+                //'login': '/static/front/css/front_login.css',
+                //'register': '/static/front/css/front_register.css'
+            };
+
+            // 获取当前页面的 URL 路径
+            const urlPath = new URL(window.location.href).pathname;
+
+            // 提取出主要路径（去除子路径）
+            const pathParts = urlPath.split('/');
+            const mainPath = pathParts[1]; // 提取第一个非空路径部分
+            // 检查 URL 路径是否存在于 cssPaths 对象中
+            console.log(urlPath)
+            if (cssPaths.hasOwnProperty(mainPath)) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = cssPaths[mainPath];
+                
+                // 将新创建的 link 元素添加到 head 中
+                document.head.appendChild(link);
+            }
+        });
+    </script>
+    
+    <style>
+        .main{
+            padding-top: 50px;
+            min-height: 500px;
+            position: relative;
+            color: #3e4d5c;
+            font: 400 13px 'Open Sans', Arial, sans-serif;
+        }
+        /* html,body{
+            overflow: auto!important; 
+            scrollbar-width: none!important; 
+            -ms-overflow-style: none!important; 
+        } */
+
+        /* 隐藏Webkit核心浏览器（如Chrome, Safari等）中的滚动条 */
+        /* html::-webkit-scrollbar {
+            display: none!important;
+        } */
+        /* 设置滚动条的宽度和颜色 */
+        ::-webkit-scrollbar {
+            width: 5px; /* 对于水平滚动条的高度，垂直滚动条的宽度 */
+        }
+        
+        /* 滚动条轨道 */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; /* 滚动条轨道的颜色 */
+        }
+        
+        /* 滚动条的滑块 */
+        ::-webkit-scrollbar-thumb {
+            background:#7c80844d;; /* 滚动条滑块的颜色 */
+        }
+        
+        /* 滚动条的滑块：鼠标悬停时 */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #54565b4d;; /* 滚动条滑块的颜色：鼠标悬停时 */
+        }
+
+    </style>
+</head>
+{{end}}

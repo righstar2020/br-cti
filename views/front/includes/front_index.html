@@ -1,0 +1,192 @@
+{{define "content"}}
+<!---头部banner-->
+<div class="cti_index_header" >
+    <div class="header_title">
+        <div class="header_title_1">B&R威胁情报共享平台</div>
+        <div class="header_title_2">打造去中心化、可信、安全的威胁情报共享生态</div>
+    </div>
+    <div class="header_body">
+        <div class="header_body_content"></div>
+        <a href="cti-market" class="header_body_a">
+            访问平台
+        </a>
+    </div>
+    <div class="header_tab">
+        <div class="header_tab_item" onclick="scrollToView('cti_headLine_1')">
+           平台介绍
+        </div>
+        <div class="header_tab_item" onclick="scrollToView('cti_headLine_2')">
+            激励机制
+         </div>
+         <div class="header_tab_item" onclick="scrollToView('cti_headLine_3')">
+            规则说明
+         </div>
+         <div class="header_tab_item" onclick="scrollToView('cti_headLine_4')">
+            数据类型
+         </div>
+    </div>
+</div>
+<!-- 平台介绍 -->
+<div class="cti_intent" id = "1" style="height:680px;" >
+    <h2 id="cti_headLine_1" class="cti_headLine cti_mbox" >
+        平台介绍
+    </h2>
+    <div class="cti_mbox cti_intentDet">
+        <p class="cti_intentList" style="font-size:16px;line-height:50px;">
+       B&R网络安全威胁信息(CTI)共享平台以方便企业及个人用户共享威胁信息为出发点，以建立网络安全纵深防御体系为目标，汇总网络上各渠道收集到的恶意程序、恶意地址、恶意手机号、恶意邮箱等网络安全威胁信息数据，建立公开透明、公平公正的信息评价体系，利于各企业获得想要的数据，激励企业贡献有价值的数据，促进信息共享的发展。
+       为了激励各方积极参与情报共享，本平台使用区块链智能合约以及博弈数学模型进行情报积分定价。博弈数学模型用于计算最优情报积分价格，其考虑了情报发布数量、市场需求和服务评价等因素，能够寻找一个既能保证情报质量又能最大化各方收益的价格点。这有助于形成良性循环，推动更多有价值的情报进入共享体系。
+        </p>
+    </div>
+</div>
+<!--激励机制-->
+<div class="cti-incentive">
+    <h2 id="cti_headLine_2" class="cti_headLine cti_mbox" >
+        激励机制
+    </h2>
+    <div class="cti_mbox cti_incentive_box">
+            <div class="cti_incentive_box_item">
+                <div class="cti_incentive_intro">
+                    <div class="cti_incentive_icon">
+                        <i class="bitcoin icon"></i>
+                    </div>
+                    <div class="cti_incentive_title">区块链积分激励</div>
+                    <div class="cti_incentive_content">
+                        针对三方:平台方、需求方、CTI提供方,建立三方博弈模型，采用动态定价机制，最优化CTI价格，在保证CTI质量的同时，使得三方都获得良好收益。
+                    </div>
+                </div>
+            </div>
+            <div class="cti_incentive_box_item">
+                <div class="cti_incentive_intro">
+                    <div class="cti_incentive_icon">
+                        <i class="delicious icon"></i>
+                    </div>
+                    <div class="cti_incentive_title">三方博弈激励</div>
+                    <div class="cti_incentive_content">
+                        针对三方:平台方、需求方、CTI提供方,建立三方博弈模型，采用动态定价机制，最优化CTI价格，在保证CTI质量的同时，使得三方都获得良好收益。
+                    </div>
+                </div>
+            </div>
+             <div class="cti_incentive_box_item">
+                <div class="cti_incentive_intro">
+                    <div class="cti_incentive_icon">
+                        <i class="joomla icon"></i>
+                    </div>
+                    <div class="cti_incentive_title">演化博弈激励</div>
+                    <div class="cti_incentive_content">
+                        针对三方:平台方、需求方、CTI提供方,建立三方博弈模型，采用动态定价机制，最优化CTI价格，在保证CTI质量的同时，使得三方都获得良好收益。
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+<!-- 规则说明 -->
+<div class="cti_explain" id = "5">
+    <h2 id="cti_headLine_3" class="cti_headLine cti_mbox" >
+        规则说明
+    </h2>
+   <ul class="cti_explainCon cti_mbox">
+        <li class="cti_explainList cti_expfirst">
+            <img src="/static/front/imgs/intro/explain1.png">
+            <p class="cti_explainDet">本平台为用户提供网络安全威胁信息(CTI)共享服务,用户可凭自愿原则，通过本平台进行数据交换。
+            </p>
+        </li>
+        <li class="cti_explainList cti_expsecond">
+            <img src="/static/front/imgs/intro/explain4.png">
+            <p class="cti_explainDet">CTI共享平台本着公平的原则，保证按照“积分政策”规则给共享数据的成员单位计算积分。
+            </p>
+        </li>
+        <li class="cti_explainList cti_expthird">
+            <img src="/static/front/imgs/intro/explain2.png">
+            <p class="cti_explainDet">平台方作为公信的第三方，为成员单位提供数据共享的便捷渠道。
+            </p>
+        </li>
+        <li class="cti_explainList cti_expforth">
+            <img src="/static/front/imgs/intro/explain5.png">
+            <p class="cti_explainDet">从本平台获取的数据不可恶意扩散、不可用作二次交易。用户通过积分获取的数据允许10次下载机会，全量摘要公开的数据允许3次下载机会。
+            </p>
+        </li>
+        <li class="cti_explainList cti_expfifth">
+            <img src="/static/front/imgs/intro/explain3.png">
+            <p class="cti_explainDet">成员单位同意“CTI共享协议”后，才正式启动数据共享工作。
+            </p>
+        </li>
+    </ul>
+</div>
+
+<!-- 数据类型 -->
+<div class="cti_mold">
+    <h2 id="cti_headLine_4" class="cti_headLine cti_mbox" >
+        数据类型
+    </h2>
+    <div class="cti_mbox cti_moldSheet">
+        <p class="cti_moldTitle">共享数据分为9类，具体类别如下：</p>
+        <table class="cti_moldTable" border="1" cellspacing="0" cellpadding="0" bordercolor="#d7d7d7">
+            <thead>
+                <tr>
+                    <th width="199px;">序号</th>
+                    <th width="398px;">数据名称</th>
+                    <th width="199px;">数据类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="cti_even">
+                    <td>1</td>
+                    <td>钓鱼网站地址</td>
+                    <td>URL</td>
+                </tr>
+               <tr class="cti_odd">
+                    <td>2</td>
+                    <td>计算机恶意程序</td>
+                    <td>File</td>
+                </tr>
+                <tr class="cti_even">
+                    <td>3</td>
+                    <td>计算机放马地址</td>
+                    <td>URL</td>
+                </tr>
+                <tr class="cti_even">
+                    <td>4</td>
+                    <td>恶意邮箱账户</td>
+                    <td>Email</td>
+                </tr>
+                <tr class="cti_odd">
+                    <td>5</td>
+                    <td>恶意手机号</td>
+                    <td>PhoneNum</td>
+                </tr>
+                <tr  class="cti_odd">
+                    <td>6</td>
+                    <td>社交账号数据</td>
+                    <td>SocialAcc</td>
+                </tr>
+                <tr class="cti_even">
+                    <td>7</td>
+                    <td>僵尸网络数据</td>
+                    <td>Botnet</td>
+                </tr>
+                <tr class="cti_even">
+                    <td>8</td>
+                    <td>DDoS攻击主机服务器地址</td>
+                    <td>DDoSIP</td>
+                </tr>
+                 <tr  class="cti_even">
+                    <td>9</td>
+                    <td>开源情报</td>
+                    <td>Intelligence</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+//自动滑动
+function scrollToView(elementId){
+    const element = document.getElementById(elementId);
+    console.log(elementId);
+    element.scrollIntoView({ behavior:'smooth'});
+}
+</script>
+
+{{end}}
+	
+ 

@@ -1,0 +1,17 @@
+# 2112333028 潘海彬
+# 快速幂运算
+def quick_power(a, m):
+    result = 1  # 结果
+    count = 0  # 运算次数
+    while m > 0:
+        if m & 1:
+            result *= a
+        a *= a
+        m >>= 1
+        count += 1
+    return result, count
+
+
+print("2^7=%d,count:%d" % quick_power(2, 7))
+print("2^8=%d,count:%d" % quick_power(2, 8))
+print("2^19=%d,count:%d" % quick_power(2, 19))

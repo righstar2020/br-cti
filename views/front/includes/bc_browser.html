@@ -1,0 +1,399 @@
+{{define "content"}}
+
+
+<div class="bc-browser-box">
+    <div class="bc-browser-box-1">
+        <div class="bc-data-summary">
+            <div class="summary-item">
+                <!-- <i class="layui-icon layui-icon-component"></i>  -->
+                <div class="summary-item-title">
+                    区块高度
+                </div>
+                <div class="summary-item-content">
+                    <span class="value-num">{{.bcSummary.BlockHeight}}</span>
+                    <span class="value-unit"></span>
+                </div>
+            </div>
+            <div class="summary-item">
+                <!-- <i class="layui-icon layui-icon-component"></i>  -->
+                <div class="summary-item-title">
+                    交易总数
+                </div>
+                <div class="summary-item-content">
+                    <span class="value-num">{{.bcSummary.TransactionTotal}}</span>
+                    <span class="value-unit"></span>
+                </div>
+            </div>
+            <div class="summary-item">
+                <!-- <i class="layui-icon layui-icon-website"></i> -->
+                <div class="summary-item-title">
+                    节点
+                </div>
+                <div class="summary-item-content">
+                    <span class="value-num">{{.bcSummary.NodeNum}}</span>
+                    <span class="value-unit"></span>
+                </div>
+            </div>
+            <div class="summary-item">
+                <!-- <i class="layui-icon layui-icon-fonts-code"></i> -->
+                <div class="summary-item-title">
+                    链码
+                </div>
+                <div class="summary-item-content">
+                    <span class="value-num">{{.bcSummary.ChaincodeNum}}</span>
+                    <span class="value-unit"></span>
+                </div>
+            </div>
+            <div class="summary-item">
+                <!-- <i class="layui-icon layui-icon-template-1"></i> -->
+                <div class="summary-item-title">
+                    CTI数量
+                </div>
+                <div class="summary-item-content">
+                    <span class="value-num">{{.bcSummary.CTITotal}}</span>
+                    <span class="value-unit" ></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bc-browser-box-2">
+        <div class="box-2-left">
+             <!-- 轮播图start -->
+            <div class="front-bc-market-carousel layui-carousel" id="front-index-carousel" >
+                <div carousel-item>
+                <div class="carousel-item-box">
+                    <img src="/static/front/imgs/index/carousel_1.png" />
+                </div>
+                <div class="carousel-item-box">
+                    <img src="/static/front/imgs/index/carousel_2.png" />
+                </div>
+                <div class="carousel-item-box">
+                    <img src="/static/front/imgs/index/carousel_3.png" />
+                </div>
+                </div>
+            </div>
+        </div>
+        <div class="box-2-right">
+            <table class="carousel-table" id="carouselTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>CTI类型</th>
+                        <th>发布商</th>
+                        <th>HASH</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="bc-browser-box-title">
+        交易信息
+    </div>
+    <div class="bc-browser-box-3">
+        <div class="box-3-left">
+            <table class="cti-sale-info-table">
+                <tr class="cti-sale-info-table-head">
+                    <th style="width: 120px;">发布方</th>
+                    <th>链上Hash</th>
+                    <th style="width: 150px;">交易时间</th>
+                </tr>
+                <tr class="cti-sale-info-table-item">
+                    <td class="cti-sale-info-table-item-publisher">
+                        Cisco
+                    </td>
+                    <td class="cti-sale-info-table-item-hash">
+                        0x66867
+                    </td>
+                    <td class="cti-sale-info-table-item-time">
+                        2024-05-25 18:59:61
+                    </td>
+                </tr>
+                <tr class="cti-sale-info-table-item">
+                    <td class="cti-sale-info-table-item-publisher">
+                        Cisco
+                    </td>
+                    <td class="cti-sale-info-table-item-hash">
+                        0x66867
+                    </td>
+                    <td class="cti-sale-info-table-item-time">
+                        2024-05-25 18:59:61
+                    </td>
+                </tr>
+                <tr class="cti-sale-info-table-item">
+                    <td class="cti-sale-info-table-item-publisher">
+                        Cisco
+                    </td>
+                    <td class="cti-sale-info-table-item-hash">
+                        0x66867
+                    </td>
+                    <td class="cti-sale-info-table-item-time">
+                        2024-05-25 18:59:61
+                    </td>
+                </tr>
+                <tr class="cti-sale-info-table-item">
+                    <td class="cti-sale-info-table-item-publisher">
+                        Cisco
+                    </td>
+                    <td class="cti-sale-info-table-item-hash">
+                        0x66867
+                    </td>
+                    <td class="cti-sale-info-table-item-time">
+                        2024-05-25 18:59:61
+                    </td>
+                </tr>
+                <tr class="cti-sale-info-table-item">
+                    <td class="cti-sale-info-table-item-publisher">
+                        Cisco
+                    </td>
+                    <td class="cti-sale-info-table-item-hash">
+                        0x66867
+                    </td>
+                    <td class="cti-sale-info-table-item-time">
+                        2024-05-25 18:59:61
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+        <div class="box-3-right">
+            <div id="cti-trac-data-canva"></div>
+        </div>
+    </div>
+    <div class="bc-browser-box-title">
+        CTI上链
+        <div class="table-toolbar">
+            <div class="layui-form table-toolbar-search">
+                <input type="text" placeholder="请输出情报Hash" class="layui-input">
+                <div class="table-toolbar-search-btn" style="cursor: pointer;">
+                    <i class="layui-icon layui-icon-search"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bc-browser-box-4">
+        
+        <div class="cti-upchain-table-box"> 
+            <table class="cti-upchain-table">
+                <colgroup>
+                    <col style="width: 30px;">
+                    <col style="width: 140px;">
+                    <col style="width: 230px;">
+                    <col style="width: 120px;">
+                    <col style="width: 100px;">
+                    <col style="width: 100px;">
+                    <col style="width: 60px;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th >CTI编号</th>
+                        <th >标签</th>
+                        <th>发布者</th>
+                        <th>上链时间</th>
+                        <th>链上hash</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    var $ = layui.jquery;
+    var layer = layui.layer;
+    //---------------------------区块状态----------------------------
+    //定时查询区块数据
+    function queryBcSummaryData(){
+        $.ajax({
+            type: "POST",
+            url: '/bc-browser/query_bc_summary',
+            contentType: "application/json",
+            dataType: "json",
+            success: function (res) {
+                var bcSummary = JSON.parse(res.data);
+                console.log(bcSummary);
+            },
+            error: function () {
+                layer.msg("AJAX请求异常");
+            }
+        });
+    }
+    //--------------------------------------轮播表-------------------
+    layui.use('carousel',function(){
+      var carousel = layui.carousel;
+      // 渲染 - 设置时间间隔、动画类型、宽高度等属性
+      carousel.render({
+        elem: '#front-index-carousel',
+        interval: 3000,
+        anim: 'fade',
+        width: '100%',
+        height:'100%',
+        indicator:'none'
+      });
+    });
+    
+    //---------------------------CTI交易数据-----------------------
+    function queryCTISaleData(){
+        $.ajax({
+            type: "POST",
+            url: '/bc-browser/query_cti_sale_data',
+            contentType: "application/json",
+            dataType: "json",
+            success: function (res) {
+                var ctiSaleData = JSON.parse(res.data);
+                console.log(bcSummary);
+            },
+            error: function () {
+                layer.msg("AJAX请求异常");
+            }
+        });
+    }
+    //---------------------------交易趋势echarts-----------------------
+    function setCTISaleEcharts(){
+        // 初始化 ECharts 实例
+        var myChart = echarts.init(document.getElementById('cti-trac-data-canva'));
+
+        // 指定图表的配置项
+        var option = {
+            title: {
+                text: '交易趋势'
+            },
+            // legend: {
+            //     data: ['小时'], // 图例数据
+            //     show: true, // 显示图例
+            //     orient: 'horizontal', // 图例布局方式
+            //     x: 'right' // 图例水平位置
+            // },
+            tooltip: {},
+            xAxis: {
+                data: ["18:00:00","19:00:00","20:00:00","21:00:00","22:00:00","23:00:00","00:00:00"]
+            },
+            yAxis: {},
+            series: [{
+                name: '小时',
+                type: 'line',
+                data: [120, 200, 150, 80, 70, 110, 130],
+                lineStyle: { // 设置线条样式
+                    color: '#117396' // 设置线条颜色
+                },
+                itemStyle: { // 设置数据点样式
+                    color: '#117396' // 设置数据点颜色
+                }
+            }]
+        };
+
+        // 使用刚指定的配置项和数据显示图表
+        myChart.setOption(option);
+    }
+    //-------------------------工具栏----------------------------
+
+
+    //-------------------------轮播table数据------------------------
+    var new_publish_cti_data = [
+            ['类型1', '发布商A', 'hash123'],
+            ['类型2', '发布商B', 'hash456'],
+            ['类型3', '发布商C', 'hash789'],
+            ['类型4', '发布商D', 'hash000'],
+            ['类型5', '发布商E', 'hash111'],
+            ['类型6', '发布商F', 'hash222']
+        ];
+    var new_upchain_cti_data = [
+        [ '11010000001256', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '12', '2024-05-25', '0xcce26bb', '<a href="/cti-market/info?id=1">详情</a>'],
+        [ '11010000001257', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '123', '2024-05-26', '0xcce26bc', '<a href="/cti-market/info?id=2">详情</a>'],
+        [ '11010000001258', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '123', '2024-05-27', '0xcce26bd', '<a href="/cti-market/info?id=3">详情</a>'],
+        [ '11010000001259', '勒索软件; IOC; HASH; FILE; EMAIL', '213', '2024-05-28', '0xcce26be', '<a href="/cti-market/info?id=4">详情</a>'],
+        [ '11010000001250', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '123', '2024-05-29', '0xcce26bf', '<a href="/cti-market/info?id=5">详情</a>'],
+        [ '11010000001251', '勒索软件; IOC; HASH; FILE; EMAIL', '123', '2024-05-30', '0xcce26c0', '<a href="/cti-market/info?id=6">详情</a>']
+    ];
+    var tableIndexMap = {
+        'cti-publish-table': 0,
+        'cti-upchain-table': 0,
+    }
+    var fixedRowsMap={
+        'cti-publish-table': 5,
+        'cti-upchain-table': 6,
+    }
+    tableBodyDomNameMap = {
+        'cti-publish-table': '#carouselTable tbody',
+        'cti-upchain-table': '.cti-upchain-table tbody',
+    }
+    //初始化轮播表
+    function initializeCarouselTable(tableName,tableData) {
+        var table = $(tableBodyDomNameMap[tableName])
+        // 清空表格内容
+        table.empty();
+
+        // 计算当前显示的数据范围
+        var startIndex = tableIndexMap[tableName];
+        var endIndex = Math.min(startIndex + fixedRowsMap[tableName], tableData.length);
+
+        // 添加初始数据
+        for (var i = startIndex; i < endIndex; i++) {
+            var row = $('<tr>');
+            // 循环添加每一列数据
+            for (var j = 0; j < tableData[i].length+1; j++) {
+                if (j === 0) {
+                    row.append('<td>' + i+ '</td>');
+                } else {
+                    // 其他列直接使用数组中的值
+                    row.append('<td>' + tableData[i][j-1] + '</td>');
+                }
+            }
+            table.append(row);
+        }
+    }
+    function carouselTableLoop(tableName,tableData) {
+        var table = $(tableBodyDomNameMap[tableName])
+        // 获取最后一行
+        var lastRow = table.find('tr:last');
+
+        // 创建新行
+        var newRow = $('<tr>');
+        // 添加序号
+        newRow.append('<td>' + (tableIndexMap[tableName]) + '</td>'); // 序号
+        // 添加其他列数据
+        for (var j = 0; j < tableData[tableIndexMap[tableName]].length; j++) {
+            newRow.append('<td>' + tableData[tableIndexMap[tableName]][j] + '</td>');
+        }
+
+        // 添加新行并淡入
+        table.append(newRow);
+        //newRow.hide().fadeIn(500); // 淡入新行
+
+        // 获取第一行并淡出
+        var firstRow = table.find('tr:first');
+            firstRow.remove(); // 移除第一行
+
+        // 更新索引，确保循环
+        tableIndexMap[tableName] = (tableIndexMap[tableName] + 1) % tableData.length;
+    }
+    
+    //-------------------------启动函数----------------------------
+    $(document).ready(function() {
+            //定时查询数据
+            setTimeout(() => {
+                queryBcSummaryData()
+            }, 3000);
+            //图表
+            setCTISaleEcharts()
+            //table面板轮播
+            initializeCarouselTable('cti-publish-table',new_publish_cti_data)
+            initializeCarouselTable('cti-upchain-table',new_upchain_cti_data)
+    
+            setInterval(function(){
+                carouselTableLoop('cti-publish-table',new_publish_cti_data)
+                carouselTableLoop('cti-upchain-table',new_upchain_cti_data)
+            },3000);
+            
+    });
+</script>
+
+
+{{end}}
+	
+ 

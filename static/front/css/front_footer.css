@@ -1,0 +1,83 @@
+.cti_copyright{
+    background: #2c313c;
+}
+.cti_copyrightBox {
+    padding-top: 32px;
+    padding-bottom: 40px;
+}
+.cti_mbox {
+    width: 1225px;
+    margin: 0px auto;
+}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+    font-size: 0;
+    line-height: 0;
+}
+
+.cti_copyrightF {
+    float: left;
+    width: 250px;
+    margin-right: 150px;
+}
+.cti_copyrightTitle {
+    height: 56px;
+    line-height: 56px;
+    font-size: 16px;
+    color: #fff;
+    margin-bottom: 0px;
+}
+.cti_copyrightCon {
+    font-size: 14px;
+    line-height: 30px;
+    color: #92969d;
+    margin-bottom: 0px;
+}
+.cti_copyrightS {
+    float: left;
+    width: 100px;
+    margin-right: 110px;
+}
+.cti_copyrightT {
+    float: left;
+    width: 135px;
+    margin-right: 130px;
+}
+
+.cti_foot {
+    width: 100%;
+    height: 50px;
+    background: #242934;
+    color: #757980;
+    font-size: 14px;
+}
+.cti_foot .cti_footZ, .cti_foot .cti_footI {
+    float: left;
+    width: 260px;
+    height: 50px;
+    line-height: 50px;
+    margin-right: 20px;
+    margin-bottom: 0px;
+}
+.cti_foot .cti_footE {
+    float: right;
+    width: 230px;
+    height: 50px;
+    line-height: 50px;
+    color: #757980;
+}
+.cti_copyrightS ul li a, .cti_copyrightT ul li a {
+    display: block;
+    height: 30px;
+    line-height: 30px;
+    color: #92969d;
+    font-size: 14px;
+}
+.cti_copyrightS ul li a:hover,.cti_copyrightT ul li a:hover{
+    color:#425ed7
+}

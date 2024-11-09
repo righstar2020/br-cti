@@ -1,0 +1,82 @@
+{{define "sidebar"}}
+<!-- 导航 -->
+<div class="sidebar-box" style="position: fixed;">
+   <div class="sidebar-body">
+        <div class="sidebar-item">
+            <a href="/client/network" data-action="wallet" data-title="区块链网络">
+                <i class="globe icon"></i>
+                <div class="sidebar-item-title">网络连接</div>
+            </a>
+        </div>
+        <div class="sidebar-item">
+            <a href="/client/wallet" data-action="wallet" data-title="账户钱包">
+                <i class="credit card outline icon"></i>
+                <div class="sidebar-item-title">账户钱包</div>
+            </a>
+        </div>
+        <div class="sidebar-item">
+            <a href="/client/local-data" data-action="local-data" data-title="本地数据">
+                <i class="database icon"></i>
+                <div class="sidebar-item-title">本地数据</div>
+            </a>
+        </div>
+        <div class="sidebar-item">
+            <a href="/client/ml-model" data-action="ml-model" data-title="模型管理">
+                <i class="cubes icon"></i>
+                <div class="sidebar-item-title">模型管理</div>
+            </a>
+        </div>
+        <div class="sidebar-item">
+            <a href="/knowledge-plane">
+                <i class="leanpub icon"></i>
+                <div class="sidebar-item-title">知识平面</div>
+            </a>
+        </div>
+   </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    //a标签跳转framework函数
+    $('a[data-action]').on('click', function(event) {
+            event.preventDefault(); // 阻止默认的链接跳转行为
+            
+            var action = $(this).data('action'); // 获取data-action属性的值
+            var title = $(this).data('title'); // 获取data-action属性的值
+            if(title==undefined)
+                title = $(this).text(); // 获取链接文本作为标题
+            var url = $(this).attr('href'); // 获取链接的href属性值
+            //调用函数并传入参数
+            if(action=="own"){
+                openWindowWithUrl(title, url,'830px');
+            }else{
+                openWindowWithUrl(title, url);
+            }
+            
+            // 可以在这里添加更多逻辑，例如记录日志等
+            console.log('Clicked on:', action);
+    });
+    
+});
+var currentLayerIndex = null
+function openWindowWithUrl(title,url,width=null) {
+    if (currentLayerIndex !== null) {
+        layer.close(currentLayerIndex);
+    }
+    if(width==null){
+        width='850px'
+    }
+    currentLayerIndex = layer.open({
+            type: 2,
+            title: title,
+            area: [width, '650px'], // 设置窗口宽度和高度
+            shade: 0, // 设置遮罩透明度
+            content: url,
+            success: function(layero, index){
+                console.log("open new window:"+index)
+            }
+    });
+    
+}   
+</script>
+
+{{end}}

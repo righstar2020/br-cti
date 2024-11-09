@@ -1,0 +1,122 @@
+{{define "form"}}
+<style type="text/css">
+	.layui-upload-drag {
+		position: relative;
+		padding: 10px;
+		border: 1px dashed #e2e2e2;
+		background-color: #fff;
+		text-align: center;
+		cursor: pointer;
+		color: #999;
+	}
+</style>
+<form class="layui-form model-form" action="">
+	<div class="layui-form-item">
+		<label class="layui-form-label">CTI名称：</label>
+		<div class="layui-input-block">
+			<input name="cti_name" lay-verify="required" placeholder="请输入CTI名称" autocomplete="off" class="layui-input" type="text">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">标签：</label>
+		<div class="layui-input-block">
+			<input name="tags" placeholder="请输入标签" autocomplete="off" class="layui-input" type="text">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">开源形式：</label>
+		<div class="layui-input-block">
+			<select name="open_source" lay-verify="required" lay-filter="open_source">
+				<option value="0">不开源</option>
+				<option value="1">开源</option>
+				<option value="2">部分开源</option>
+			</select>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">类型：</label>
+		<div class="layui-input-block">
+			<select name="type" lay-verify="required" lay-filter="type">
+				<option value="1">钓鱼地址</option>
+				<option value="2">恶意程序</option>
+				<option value="3">放马地址</option>
+				<option value="4">恶意邮箱</option>
+				<option value="5">恶意手机号</option>
+				<option value="6">僵尸网络</option>
+				<option value="7">社交账号</option>
+				<option value="8">DDoS数据</option>
+				<option value="9">开源情报</option>
+			</select>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">数据：</label>
+		<div class="layui-input-block">
+			<textarea name="data" placeholder="请输入数据" class="layui-textarea"></textarea>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">数据大小：</label>
+		<div class="layui-input-block">
+			<input name="data_size" lay-verify="required" placeholder="请输入数据大小(B)" autocomplete="off" class="layui-input" type="number">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">加密密钥：</label>
+		<div class="layui-input-block">
+			<input name="cryto_pwd" placeholder="输入加密密钥" autocomplete="off" class="layui-input" type="text">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">下载地址：</label>
+		<div class="layui-input-block">
+			<input name="download_url" lay-verify="required" placeholder="请输入下载地址" autocomplete="off" class="layui-input" type="text">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">数据描述：</label>
+		<div class="layui-input-block">
+			<textarea name="description" placeholder="请输入数据描述" class="layui-textarea"></textarea>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">威胁等级：</label>
+		<div class="layui-input-block">
+			<input name="threat_level" lay-verify="required" placeholder="请输入威胁等级" autocomplete="off" class="layui-input" type="number">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">可信度分数：</label>
+		<div class="layui-input-block">
+			<input name="confidence" lay-verify="required" placeholder="请输入可信度分数" autocomplete="off" class="layui-input" type="number">
+		</div>
+	</div>
+	<div class="layui-form-item text-center model-form-footer">
+		<button class="layui-btn" lay-filter="submitCtiAddForm" lay-submit="">立即保存</button>
+		<button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">关闭</button>
+	</div>
+</form>
+<script>
+	layui.use(['form'], function(){
+		var form = layui.form,
+				$ = layui.$;
+
+		// 开源形式选择框初始化
+		form.on('select(open_source)', function(data) {
+			console.log(data.value); // 得到被选中的值
+		});
+		
+		// 开关状态切换
+		form.on('switch(status)', function(data) {
+			$(data.elem).attr('type', 'hidden').val(this.checked ? 1 : 2);
+		});
+		
+		// 表单提交事件
+		// form.on('submit(submitForm)', function(data) {
+		// 	console.log(data.field); // 获取表单数据
+		// 	// 这里可以发送 AJAX 请求到服务器
+		// 	return false; // 阻止表单跳转
+		// });
+	});
+</script>
+{{end}}

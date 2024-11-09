@@ -1,0 +1,249 @@
+/*布局*/
+.cti_mbox {
+    width: 1225px;
+    margin: 0px auto;
+}
+/*头部*/
+.cti_index_header{
+    height: 320px;
+    width: 100%;
+    background: url(/static/front/imgs/banner/banner1.png) no-repeat center center;
+    background-size:100% 100%;
+    margin-bottom: 50px;
+    position: relative;
+}
+.cti_index_header .header_title{
+    padding-top: 100px;
+    width: 100%;
+    padding-left: 300px;
+    font-size: 30px;
+    font-weight: 800px;
+    color: white;
+    margin-bottom: 20px;
+}
+.header_title .header_title_2{
+    font-size: 20px;
+}
+.cti_index_header .header_body{
+    width: 100%;
+    height: 200px;
+    padding-left: 300px;
+    
+}
+.header_body .header_body_a {
+    background-color: rgba(16, 86, 147, 0.933);
+    font-size: 16px;
+    margin-top: 20px;
+    padding: 10px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    
+}
+.cti_index_header .header_tab{
+    position: absolute;
+    bottom: -50px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    background-color: white;
+    min-height: 50px;
+}
+.header_tab .header_tab_item{
+    height: 100%;
+    padding: 20px 40px;
+    font-size: 20px;
+    cursor: pointer;
+}
+.header_tab .header_tab_item:hover{
+ background-color: rgba(16, 86, 147, 0.933); 
+ color: white;
+ 
+}
+/*平台介绍*/
+.cti_headLine{
+    width: 100%;
+    text-align: center;
+    padding-top: 50px;
+    padding-bottom: 40px;
+}
+.cti_intent {
+    width: 100%;
+    padding-top: 10px;
+    height: 930px;
+    box-sizing: border-box;
+    background: url(/static/front/imgs/intro/intentbg.png) no-repeat center;
+}
+
+.cti_intent .cti_intentDet {
+    padding-top: 5px;
+}
+
+.cti_intent .cti_intentDet .cti_intentList {
+    padding: 0px 35px 0px 25px;
+    line-height: 36px;
+    font-size: 16px;
+    color: #444;
+    text-indent: 2em;
+    margin-bottom: 18px;
+}
+/*激励机制*/
+.cti-incentive{
+    background: #F9FAFB;
+    padding-bottom: 100px;
+}
+
+.cti_incentive_box{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 200px;
+    margin-bottom: 20px;
+}
+.cti_incentive_box_item{
+    width: 25%;
+    margin: 20px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 20px;
+    border-radius: 15px;
+}
+
+.cti_incentive_intro{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.cti_incentive_intro .cti_incentive_icon{
+    width: 100%;
+    text-align: center;
+    font-size: 60px;
+    font-weight: 800;
+}
+.cti_incentive_icon i{
+    /**/
+}
+.cti_incentive_intro .cti_incentive_title{
+    width: 100%;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 800;
+    padding-bottom: 15px;
+    
+}
+.cti_incentive_intro .cti_incentive_content{
+    width: 100%;
+    text-align: left;
+    font-size: 15px;
+    padding-bottom: 20px;
+    color: rgb(81, 80, 80);
+}
+/*平台原则*/
+.cti_explain {
+    height: 840px;
+    background: url(/static/front/imgs/intro/explainbg.png) no-repeat center;
+}
+
+.cti_explain .cti_explainCon {
+    position: relative;
+    height: 392px;
+}
+
+.cti_explain .cti_explainCon .cti_explainList {
+    position: absolute;
+    width: 200px;
+    background: #fff;
+    border: 1px solid #dadada;
+    border-radius: 5px;
+    padding-top: 85px;
+    padding-bottom: 18px;
+    list-style: none;
+}
+
+.cti_expfirst {
+    left: 0px;
+    top: 70px;
+}
+
+.cti_expsecond {
+    left: 255px;
+    top: 250px;
+}
+
+.cti_expthird {
+    left: 512px;
+    top: 70px;
+}
+
+.cti_expforth {
+    left: 770px;
+    top: 250px;
+}
+
+.cti_expfifth {
+    right: 0px;
+    top: 70px;
+}
+.cti_explain .cti_explainCon .cti_explainList img {
+    position: absolute;
+    left: 40px;
+    top: -68px;
+}
+
+.cti_explain .cti_explainCon .cti_explainList .cti_explainDet {
+    font-size: 14px;
+    line-height: 26px;
+    padding: 0px 16px;
+    text-align: center;
+    color: #444444;
+    margin-bottom: 0px;
+}
+
+/*数据类型*/
+.cti_mold {
+    background: #fff;
+}
+
+.cti_moldSheet .cti_moldTitle {
+    padding-top: 40px;
+    height: 96px;
+    font-size: 16px;
+    line-height: 56px;
+    color: #444444;
+    box-sizing: border-box;
+    margin-bottom: 0px;
+}
+
+.cti_moldSheet .cti_moldTable {
+    font-size: 14px;
+    width:100%;
+    color: #666;
+    margin-bottom: 60px;
+    border-color: #d7d7d7;
+}
+
+.cti_moldSheet .cti_moldTable th,
+.cti_moldSheet .cti_moldTable td {
+    height: 38px;
+    line-height: 38px;
+    text-align: center;
+}
+
+.cti_moldSheet .cti_moldTable th {
+    background: #eeeeee;
+}
+
+.cti_moldSheet .cti_moldTable tr.cti_odd {
+    background: #ffffff;
+}
+
+.cti_moldSheet .cti_moldTable tr.cti_even {
+    background: #f8f8f8;
+}

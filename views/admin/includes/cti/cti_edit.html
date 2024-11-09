@@ -1,0 +1,172 @@
+{{define "form"}}
+<style type="text/css">
+	.layui-upload-drag {
+		position: relative;
+		padding: 10px;
+		border: 1px dashed #e2e2e2;
+		background-color: #fff;
+		text-align: center;
+		cursor: pointer;
+		color: #999;
+	}
+</style>
+<form class="layui-form model-form" action="">
+	<input name="id" id="id" type="hidden" value="{{.info.ID}}">
+	<div class="layui-form-item">
+		<label class="layui-form-label">情报ID：</label>
+		<div class="layui-input-block">
+			<input name="cti_id" value="{{.info.CTIId}}" lay-verify="required" placeholder="请输入情报ID" autocomplete="off" class="layui-input" type="text">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">CTI名称：</label>
+		<div class="layui-input-block">
+			<input name="cti_name" value="{{.info.CTIName}}" lay-verify="required" placeholder="请输入CTI名称" autocomplete="off" class="layui-input" type="text">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">标签：</label>
+		<div class="layui-input-block">
+			<input name="tags" value="{{.info.Tags}}" placeholder="请输入标签" autocomplete="off" class="layui-input" type="text">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">发布者：</label>
+		<div class="layui-input-block">
+			<input name="publisher" value="{{.info.Publisher}}" lay-verify="required" placeholder="请输入发布者" autocomplete="off" class="layui-input" type="text">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">开源形式：</label>
+		<div class="layui-input-block">
+			<select name="open_source" lay-verify="required" lay-filter="open_source">
+				<option value="0" {{if eq .info.OpenSource 0}}selected{{end}}>不开源</option>
+				<option value="1" {{if eq .info.OpenSource 1}}selected{{end}}>开源</option>
+				<option value="2" {{if eq .info.OpenSource 2}}selected{{end}}>部分开源</option>
+			</select>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">类型：</label>
+		<div class="layui-input-block">
+			<select name="type" lay-verify="required" value="{{.info.Type}}" lay-filter="type">
+				<option value="1">钓鱼地址</option>
+				<option value="2">恶意程序</option>
+				<option value="3">放马地址</option>
+				<option value="4">恶意邮箱</option>
+				<option value="5">恶意手机号</option>
+				<option value="6">僵尸网络</option>
+				<option value="7">社交账号</option>
+				<option value="8">DDoS数据</option>
+				<option value="9">开源情报</option>
+			</select>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">数据：</label>
+		<div class="layui-input-block">
+			<textarea name="data"  placeholder="请输入数据" class="layui-textarea">{{.info.Data}}</textarea>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">数据大小：</label>
+		<div class="layui-input-block">
+			<input name="data_size" value="{{.info.DataSize}}"  lay-verify="required" placeholder="请输入数据大小(B)" autocomplete="off" class="layui-input" type="number">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">加密密钥：</label>
+		<div class="layui-input-block">
+			<input name="cryto_pwd" placeholder="输入加密密钥" autocomplete="off" class="layui-input" type="text">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">下载地址：</label>
+		<div class="layui-input-block">
+			<input name="download_url" value="{{.info.DownloadUrl}}"  lay-verify="required" placeholder="请输入下载地址" autocomplete="off" class="layui-input" type="text">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">数据描述：</label>
+		<div class="layui-input-block">
+			<textarea name="description"  placeholder="请输入数据描述" class="layui-textarea">{{.info.Description}}</textarea>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">威胁等级：</label>
+		<div class="layui-input-block">
+			<input name="threat_level" value="{{.info.ThreatLevel}}" lay-verify="required" placeholder="请输入威胁等级" autocomplete="off" class="layui-input" type="number">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">可信度分数：</label>
+		<div class="layui-input-block">
+			<input name="confidence" value="{{.info.Confidence}}" lay-verify="required" placeholder="请输入可信度分数" autocomplete="off" class="layui-input" type="number">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">需求量：</label>
+		<div class="layui-input-block">
+			<input name="need" value="{{.info.Need}}" lay-verify="required" placeholder="请输入需求量" autocomplete="off" class="layui-input" type="number">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">平台评估的价值：</label>
+		<div class="layui-input-block">
+			<input name="value" value="{{.info.Value}}" lay-verify="required" placeholder="请输入平台评估的价值" autocomplete="off" class="layui-input" type="number">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">综合价值：</label>
+		<div class="layui-input-block">
+			<input name="compre_value" value="{{.info.CompreValue}}" lay-verify="required" placeholder="请输入综合价值" autocomplete="off" class="layui-input" type="number">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">数据Hash(MD5)：</label>
+		<div class="layui-input-block">
+			<input name="hash" value="{{.info.Hash}}" placeholder="请输入数据Hash(MD5)" autocomplete="off" class="layui-input" type="text">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">链上ID：</label>
+		<div class="layui-input-block">
+			<input name="chain_id" value="{{.info.ChainID}}" placeholder="请输入链上ID" autocomplete="off" class="layui-input" type="text">
+		</div>
+	</div>
+	<div class="layui-form-item text-center model-form-footer">
+		<button class="layui-btn" lay-filter="submitCtiEditForm" lay-submit="">立即保存</button>
+		<button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">关闭</button>
+	</div>
+</form>
+<script>
+	layui.use(['form','common'], function(){
+		var form = layui.form,
+				$ = layui.$;
+		var common = layui.common
+		// 开源形式选择框初始化
+		form.on('select(open_source)', function(data) {
+			console.log(data.value); // 得到被选中的值
+		});
+
+		form.on('submit(submitCtiEditForm)', function (data) {
+			// 在发送数据之前，进行数据格式转换
+			data.field.id = parseInt(data.field.id, 10);
+        	data.field.data_size = parseInt(data.field.data_size, 10);
+			data.field.type = parseInt(data.field.type, 10);
+			data.field.open_source = parseInt(data.field.open_source, 10);
+			data.field.threat_level = parseInt(data.field.threat_level, 10);
+			data.field.confidence = parseFloat(data.field.confidence);
+			data.field.need = parseInt(data.field.need, 10);
+			data.field.value = parseFloat(data.field.value);
+			data.field.compre_value = parseFloat(data.field.compre_value);
+
+			// // 提交表单
+			common.submitForm(data.field, null, function (res, success) {
+				console.log("保存成功回调");
+			});
+			return false;
+		});
+	});
+</script>
+{{end}}

@@ -1,0 +1,50 @@
+.cti-knowledge-plane-box{
+    width: 100%;
+    margin: 0 auto;
+    min-height: 600px;
+}
+/*头部box*/
+.cti-knowledge-plane-box .cti-knowledge-plane-box-header{
+    width: 100%;
+    height: 280px;
+    background: url(/static/front/imgs/banner/banner5.png) no-repeat center;
+    background-size:100% 100%;
+    background-position: center center;
+    text-align: center;
+    padding-top: 50px;
+}
+
+.cti-knowledge-plane-box-header .plane-box-search{
+    width: 50%;
+    margin: 0 auto;
+}
+.plane-box-search input{
+    font-size: 17px;
+}
+
+/*body box*/
+.cti-knowledge-plane-box .cti-knowledge-plane-box-body{
+    width: 80%;
+    min-height: 300px;
+    margin: 0 auto;
+    margin-top: -100px;
+    
+}
+.cti-knowledge-plane-box-body .plane-box-body-nav{
+    width: 100%;
+    height: 50px;
+    text-align: left;
+    padding: 10px 20px;
+}
+.plane-box-body-nav .nav-item{
+    width: 25%;
+}
+.cti-knowledge-plane-box-body
+.plane-box-body-box-1,
+.plane-box-body-box-2{
+    min-height: 200px;
+    width: 100%;
+    background: white;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    margin-bottom: 20px;
+}

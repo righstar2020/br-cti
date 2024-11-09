@@ -1,0 +1,177 @@
+/*布局box*/
+.cti_mbox {
+    width: 1125px;
+    margin: 0px auto;
+}
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+    font-size: 0;
+    line-height: 0;
+}
+/*导航*/
+.cti_nav {
+    background: #242934;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    box-shadow: #242934 0px 1px 1px;
+    z-index: 1000;
+    position: fixed;
+    top:0;
+    height: 50px;
+}
+/*头部logo*/
+.cti_logo-box{
+    width: 260px;
+    margin-left: 4%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.cti_logo-box  a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    color: white;
+    font-size: 15px;
+}
+.cti_logo-box a:hover{
+    color: white;
+}
+.cti_nav-box{
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.cti_nav-box .nav_li_active{
+    background-color: #285191;
+}
+.cti_nav-box .nav_li_active:hover{
+    background-color: #285191!important;
+}
+.cti_nav-box .nav_li:hover{
+    background-color: #535a66;
+}
+
+/*左导航*/
+.cti_nav .cti_nav-box .cti_nav-boxl {
+    margin-bottom: 0px;
+    padding-left: 0px;
+    height: 100%;
+}
+
+.pull-left {
+    float: left!important;
+}
+.cti_nav .cti_nav-box .cti_nav-boxl .nav_li {
+    list-style: none;
+    float: left;
+    height: 50px;
+    line-height: 50px;
+    font-size: 14px;
+    text-align: center;
+}
+.cti_nav-boxl .nav_li {
+    position: relative;
+}
+.nav_li .nav_li_sub_ul {
+    display: none;
+}
+.cti_nav-boxl .nav_li:hover .nav_li_sub_ul{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    position: absolute;
+    top:50px;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    color: black;
+    z-index: 1000;
+    box-shadow: gainsboro 1px 1px 1px;
+}
+.nav_li .nav_li_sub_li {
+    list-style: none;
+    width: 100%;
+}
+.nav_li .nav_li_sub_li:hover {
+    background-color: aliceblue;
+}
+.nav_li .nav_li_sub_li a {
+    display: inline-block;
+    color: black!important;
+    padding: 0px 25px;
+    text-decoration: none;
+    text-align: center;
+}
+.cti_nav .cti_nav-box .cti_nav-boxl .nav_li  a {
+    display: inline-block;
+    color: #fff;
+    padding: 0px 25px;
+    text-decoration: none;
+}
+
+/*右导航*/
+.pull-right {
+    float: right!important;
+    margin-right: 14%;
+}
+.cti_nav-box .cti_nav-boxr {
+    background-color: transparent;
+    cursor: pointer;
+}
+.cti_nav-boxr .layui-nav{
+    background-color: transparent;
+}
+.layui-header {
+    height: 50px!important;
+}
+.layui-header .layui-nav .layui-this:after, 
+.layui-header .layui-nav-bar {
+    top: 0 !important;
+    background-color: transparent!important;
+}
+/*登录样式*/
+.cti_nav .cti_nav-box .cti_nav-boxr{
+    font-size: 14px;
+}
+.cti_nav .cti_nav-box .cti_nav-boxr a{
+    display: block;
+    font-size: 14px;
+    color: #fff;
+    height: 50px;
+    line-height: 50px;
+    padding: 0 10px;
+    text-decoration: none;
+}
+/*用户信息样式*/
+.cti_nav-boxr .layui-nav-child a{
+    color: #333!important;
+    cursor: pointer;
+}
+.cti_nav-boxr .layui-nav-child dd:first-child{
+    border-bottom: gainsboro solid 1px;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+.cti_nav-boxr .layui-nav-child span{
+    display: block;
+    padding: 0 10px;
+    color: #333;
+}
+.cti_nav-boxr .layui-nav-item{
+    padding-left: 5px;
+}
+.cti_nav-boxr .layui-nav-item:hover{
+    background-color: #2a446e;
+}
+.cti_nav-boxr .layui-nav-child{
+    top: 50px!important;
+}
+

@@ -1,0 +1,66 @@
+.client-network-box{
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+.client-network-box .client-network-head{
+    width: 100%;
+    min-height: 50px;
+    margin: 5px 3%;
+    margin-top: 10px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    background-color: white;
+    padding: 10px 20px;
+}
+.client-network-head .client-network-head-title{
+    text-align: left;
+    font-size: 15px;
+    font-weight: 800;
+}
+.client-network-head .client-network-head-body{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.client-network-head-body .client-network-head-item{
+    padding-top: 10px;
+    margin-right: 10px;  
+}
+.client-network-head-item .head-item-title{
+    width: 100%;
+    text-align: left;
+}
+.client-network-head-item .head-item-content{
+    width: 100%;
+    text-align: left;
+    padding: 5px 0;
+}
+
+/*body*/
+.client-network-box .client-network-body{
+    width: 94%;
+    margin: 10px 3%;
+    min-height: 100px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    padding: 0 10px;
+    background-color: white;
+}
+
+.layui-tab-brief>.layui-tab-title .layui-this{
+    color: #285191!important;
+}
+.layui-this:after{
+    color: #285191!important;
+    border-bottom: 2px solid #285191!important;
+}
+.client-network-body .client-network-tab-title{
+    font-size: 14px;
+}
+
+.client-network-body .client-network-tab-item{
+    font-size: 14px;
+    width: 100%;
+    min-height: 100px;
+}

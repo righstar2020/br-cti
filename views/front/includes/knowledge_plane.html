@@ -1,0 +1,67 @@
+{{define "content"}}
+<div class="cti-knowledge-plane-box">       
+   <div class="cti-knowledge-plane-box-header">
+        <div class="plane-box-search">
+            <div class="ui fluid action input">
+                <input type="text" placeholder="Search...">
+                <div class="ui button">Search</div>
+            </div>
+        </div>
+   </div>
+   <div class="cti-knowledge-plane-box-body">
+        <div class="plane-box-body-nav">
+            <div class="nav-item">常规攻击</div>
+            <div class="nav-item">流量攻击</div>
+            <div class="nav-item">攻击特征</div>
+        </div>
+        <div class="plane-box-body-box-1">
+            <div class="body-box-1-top">
+                <div class="top-left-box">
+
+                </div>
+                <div class="top-right-box">
+                    
+                </div>
+            </div>
+            <div class="body-box-1-buttom">
+                
+            </div>
+        </div>
+        <div class="plane-box-body-box-2">
+
+        </div>
+   </div>
+</div>
+<script>
+$(document).ready(function() {
+    // 为 '详情' 按钮绑定点击事件
+    $('.cti-detail').click(function() {
+        var ctiId = $(this).data('id');
+        openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
+    });
+
+    // 为 '获取' 按钮绑定点击事件
+    $('.cti-detail-buy').click(function() {
+        var ctiId = $(this).data('id');
+        openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
+    });
+});
+var currentLayerIndex = null; //设置只可打开一个窗口
+function openCtiDetailWindow(url) {
+    if (currentLayerIndex !== null) {
+        layer.close(currentLayerIndex);
+    }
+    currentLayerIndex = layer.open({
+            type: 2,
+            title: '详情',
+            area: ['700px', '550px'], // 设置窗口宽度和高度
+            shade: 0, // 设置遮罩透明度
+            content: url,
+            success: function(layero, index){
+            }
+    });
+}
+</script>
+{{end}}
+	
+ 

@@ -1,0 +1,43 @@
+{{define "content"}}
+<div class="register-wrapper">
+    <form class="layui-form layui-anim layui-anim-scale">
+        <h2>用户注册</h2>
+        <div class="layui-form-item layui-input-icon-group">
+            <i class="layui-icon layui-icon-username"></i>
+            <input class="layui-input" id="username" name="username" placeholder="请输入账号名" autocomplete="off"
+                   lay-verType="tips" lay-verify="required|verifyUserName" required/>
+        </div>
+        <div class="layui-form-item layui-input-icon-group">
+            <i class="layui-icon layui-icon-email"></i>
+            <input class="layui-input" id="email" name="email" placeholder="请输入邮箱" autocomplete="off"
+                   lay-verType="tips" lay-verify="required|verifyEmail" required/>
+        </div>
+        <div class="layui-form-item layui-input-icon-group">
+            <i class="layui-icon layui-icon-password"></i>
+            <input class="layui-input" id="password" name="password" placeholder="请输入注册密码" type="password"
+                   lay-verType="tips" lay-verify="required|verifyPwd" required/>
+        </div>
+        <div class="layui-form-item layui-input-icon-group">
+            <i class="layui-icon layui-icon-password"></i>
+            <input class="layui-input" id="repassword" name="repassword" placeholder="请再次输入密码" type="password"
+                   lay-verType="tips" lay-verify="required|verifyPassword" required/>
+        </div>
+        <div class="layui-form-item layui-input-icon-group register-captcha-group">
+            <i class="layui-icon layui-icon-auz"></i>
+            <input class="layui-input" id="captcha" name="captcha" value="" placeholder="请输入验证码" autocomplete="off"
+                   lay-verType="tips" lay-verify="required" required/>
+            <img src="/captcha" id="imgcode" width="130px" height="48px" class="register-captcha" alt="点击刷新验证码"/>
+            <input id="idkey" name="idkey" type="hidden" />
+        </div>
+        <div class="layui-form-item">
+            <button style="background-color: #278ee2;" class="layui-btn layui-btn-fluid" lay-filter="registerSubmit" lay-submit>注册</button>
+        </div>
+    </form>
+</div>
+
+
+<!-- js部分 -->
+<script type="text/javascript" src="/static/assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="/static/assets/js/common.js?v=318"></script>
+<script type="text/javascript" src="/static/admin/module/cti_admin_register.js"></script>
+{{end}}

@@ -1,0 +1,69 @@
+/*侧边导航*/
+.sidebar-box{
+    position: fixed;
+    top:200px;
+    right: 5px;
+    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    z-index: 1000;
+    background-color: white;
+    border-radius: 5px;
+}
+.sidebar-box .sidebar-body{
+    width: 100%;
+    height: 100%;
+}
+.sidebar-body .sidebar-item{
+    width: 100%;
+    color: #285191;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 10px;
+    text-align: center;
+}
+.sidebar-item .sidebar-item-title{
+    display: none;
+}
+
+.sidebar-body .sidebar-item i{
+    font-size: 25px;
+    width: 100%;
+    height: 30px;
+    line-height: 25px;
+}
+.sidebar-body .sidebar-item i.icon{
+    margin: 0;
+}
+
+.sidebar-body .sidebar-item a{
+    color: #285191;
+}
+.sidebar-body .sidebar-item:hover{
+    background-color: #285191;
+    color: white;
+}
+.sidebar-body .sidebar-item:hover a{
+    color: white;
+}
+.sidebar-item:hover .sidebar-item-title{
+    display: flex;
+    width: 100%;
+    font-size: 15px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.sidebar-body .sidebar-item:first-child{
+    border-radius: 5px 5px 0px 0px;
+}
+.sidebar-body .sidebar-item:last-child{
+    border-radius: 0px 0px 5px 5px;
+}

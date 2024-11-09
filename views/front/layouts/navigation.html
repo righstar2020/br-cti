@@ -1,0 +1,155 @@
+{{define "navigation"}}
+<!-- 导航 -->
+<div class="cti_nav">
+    <!-- 头部logo -->
+    <div class="cti_logo-box">
+        <a href="/" style="margin-left:25px;">
+            <block style="color:purple;">B&R</block>
+            威胁情报共享平台
+        </a>
+    </div>
+    <div class="cti_nav-box clearfix cti_mbox">
+        
+        <ul class="cti_nav-boxl pull-left">
+            <li class="nav_li">
+                <a id="index" href="/index">首页</a>
+            </li>
+            <li class="nav_li">
+               <a id="cti_market" href="/cti-market">情报市场</a>
+               <ul class="nav_li_sub_ul">
+                    <li class="nav_li_sub_li">
+                        <a id="cti_market" href="/cti-market">
+                            通用情报
+                        </a>
+                    </li>
+                    <li class="nav_li_sub_li">
+                        <a id="cti_market" href="/cti-market?item=custom">
+                            定制需求
+                        </a>
+                    </li>
+               </ul>
+            </li>
+            <li class="nav_li">
+                <a id="bc_browser" href="/knowledge-plane">知识平面</a>
+            </li>
+            <li class="nav_li">
+                <a id="bc_browser" href="/bc-browser">区块浏览器</a>
+            </li>
+            
+        </ul>
+        <div class="layui-header cti_nav-boxr  pull-right">
+            <ul class="layui-nav" >
+                {{if .userInfo}}
+                <!--用户已登录-->
+                <li class="layui-nav-item layui-nav" lay-unselect>
+                    <a>
+                        {{if .userInfo.Avatar}}
+                            <img src="{{.userInfo.Avatar}}" class="layui-nav-img">
+                        {{else}}
+                            <img src="" class="layui-nav-img img-circle headImg" alt="User Image">
+                            <canvas id="headImg" style="display:none"></canvas>
+                            <script type="text/javascript">
+                                    textToImg("{{.userInfo.Realname}}");
+                            </script>
+                        {{end}}
+                        <cite id="real_name">{{.userInfo.Realname}}</cite>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd lay-unselect>
+                            <span>积分:{{.userInfo.Value}}</span>
+                        </dd>
+                        <dd lay-unselect>
+                            <a href="/user/info" data-action="info">个人信息</a>
+                        </dd>
+                        <dd lay-unselect>
+                            <a href="/cti-market/upload" data-action="upload">上传情报</a>
+                        </dd>
+                        <dd lay-unselect>
+                            <a href="/cti-market/own" data-action="own">我的情报</a>
+                        </dd>
+                        <hr>
+                        <dd lay-unselect>
+                            <a ew-event="logout" data-url="/logout">退出</a>
+                        </dd>
+                    </dl>
+                </li>
+                {{else}}
+                <!--用户未登录-->
+                <a class="pull-left" id="register" href="/register"><img src="/static/front/imgs/edit.png" alt="" />注册</a>
+                <a class="pull-left" id="login" href="/login"><img src="/static/front/imgs/user.png" alt="" />登录</a>           
+                {{end}}
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const navActive = {
+        '': 1,
+        'index': 1,
+        'cti-market': 2,
+        'knowledge-plane':3,
+        'bc-browser': 4
+    };
+
+    // 获取当前页面的 URL 路径
+    const urlPath = new URL(window.location.href).pathname;
+
+    // 提取出主要路径（去除子路径）
+    const pathParts = urlPath.split('/');
+    const mainPath = pathParts[1] || ''; // 如果pathParts[1]不存在，则默认为空字符串
+
+    console.log(urlPath);
+
+    if (navActive.hasOwnProperty(mainPath)) {
+        const navIndex = navActive[mainPath];
+        // 找到对应的li元素并添加类名
+        const activeLi = document.querySelector(`.cti_nav-boxl li:nth-child(${navIndex})`);
+        if (activeLi) {
+            activeLi.classList.add("nav_li_active");
+        }
+    }
+    //a标签跳转framework函数
+    $('a[data-action]').on('click', function(event) {
+            event.preventDefault(); // 阻止默认的链接跳转行为
+            
+            var action = $(this).data('action'); // 获取data-action属性的值
+            var title = $(this).text(); // 获取链接文本作为标题
+            var url = $(this).attr('href'); // 获取链接的href属性值
+            //调用函数并传入参数
+            if(action=="own"){
+                openWindowWithUrl(title, url,'850px');
+            }else{
+                openWindowWithUrl(title, url);
+            }
+            
+            
+
+            // 可以在这里添加更多逻辑，例如记录日志等
+            console.log('Clicked on:', action);
+    });
+    
+});
+var currentLayerIndex = null
+function openWindowWithUrl(title,url,width=null) {
+    if (currentLayerIndex !== null) {
+        layer.close(currentLayerIndex);
+    }
+    if(width==null){
+        width='700px'
+    }
+    currentLayerIndex = layer.open({
+            type: 2,
+            title: title,
+            area: [width, '550px'], // 设置窗口宽度和高度
+            shade: 0, // 设置遮罩透明度
+            content: url,
+            success: function(layero, index){
+                console.log("open new window:"+index)
+            }
+    });
+    
+}   
+</script>
+
+{{end}}

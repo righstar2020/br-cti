@@ -1,0 +1,147 @@
+/* here you can put your own css to customize and override the theme */
+body, h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: "Microsoft YaHei","Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti !important;}
+.pre-header,.header-navigation,.breadcrumb,.dropdown-menu{font-family: "Microsoft YaHei","Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti   !important;}
+
+html,body {
+    height:100%;
+    min-width:1300px;
+}
+.l_wrap {
+    min-height:100%;
+}
+.footer {
+    margin-top:-56px;
+}
+.site-logo{padding-top:18px; padding-bottom: 15px;}
+/*******tong*******/
+/**/
+.t-footer{text-align: right;}
+.t-wxts{font-size: 30px !important;display: block !important;  letter-spacing: 0px !important;  text-align: center !important; line-height: 80px !important; }
+.portlet.box.purple.t-purple{border: 0px solid #a563c1; }
+.portlet.box.purple.t-purple .col-md-2{text-align: right;width: 239px; }
+.portlet.box.purple.t-purple .col-md-2:last-child{text-align: left;}
+.t-table-ul{text-align: center; margin-bottom: 20px;}
+.t-xxbox{border:0px !important;background-color: #fff !important;}
+.t-control img{width:100px; height:60px; margin: 15px auto;}
+.t-control{text-align: center;}
+.t-text-center th:last-child{text-align: center;}
+.t-text-center td:last-child{text-align: center;}
+.t-table-btn{text-align: right;}
+.t-table-btn span{font-size: 16px; margin-right: 20px;}
+.t-table-btn i{font-size: 20px; font-weight: 600; color: #F15517; font-style: normal;}
+.t-active{background-color: #40598f; color: #fff;}
+.portlet > .portlet-body.blue, .portlet.blue
+.t-table-font{font-size: 16px; line-height: 34px; font-weight: 600; text-align: left !important;}
+.t-form-body{height: 35px;}
+/*******liu*******/
+.my-col-5 {
+    float:left;
+    width:228px;
+}
+.my-col-5 .thumbnail {
+    padding:12px 12px 16px;
+    margin-right:10px;
+    margin-bottom:0px
+}
+#company .list-unstyled li {
+    border:1px solid #ccc;
+}
+.mt40 {
+    margin-top:40px!important;
+}
+.mt20 {
+    margin-top:20px;
+}
+.mt8 {
+    margin-top:8px;
+}
+.text {
+    line-height:22px;
+}
+.l_title {
+    line-height:50px!important;
+}
+#explain {
+    margin-bottom:40px;
+}
+/**************/
+.gavin .search-result-item h4{
+    width: 70%;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    overflow: hidden;
+    font-size:14px;
+}
+.gavin .search-result-item{
+    height: 24px;
+}
+.gavin p{
+    line-height: 1.8em;
+}
+.gavin li{
+    line-height: 1.8em;
+}
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{
+        word-break: break-all;
+        vertical-align: middle;
+        
+}
+.g_input{
+    display: inline-block;
+}
+.g_btn{
+    margin-left: 20px;
+    margin-top: -3px;
+}
+/***********/
+.t_company{background-color: #4d7fc6; height: 166px; border-radius: 10px !important; padding-top: 25px;position: relative;}
+.t_company img.img-responsive{width:70px; height: 70px;border-radius:50% !important; display: block; margin:auto; }
+.t_company p{color: #fff; font-size: 12px; font-weight: 600; text-align: center; margin-top: 5px;}
+.t_company img.t_ident{position: absolute; top: 0; right: 15px;}
+.t_control .service-box-v1{height:150px; border:1px solid #e5e5e5; border-radius: 10px !important;cursor: pointer }
+.t_control .service-box-v1 i{margin: 20px auto 10px auto;}
+.t_control h2{font-size: 16px;}
+.service-box-v1:hover {background: #40598f;}
+.t_control_bar{border-radius: 0px !important; background-color: #374f7c; margin-bottom: 0px;}
+.t_control_bar.navbar-default .navbar-nav>li>a{color: #fff;}
+.t_control_bar.navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:focus, .navbar-default .navbar-nav>.open>a:hover{background-color: #233a5f;}
+.t_control_bar.navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:focus, .navbar-default .navbar-nav>.open>a:hover{color:#fff;}
+.t_control_bar .navbar-nav>li>.dropdown-menu{border: 1px solid #233A5F;
+    background-color: #233A5F;}
+.t_control_bar .dropdown-menu li > a{color:#DDDCDC; font-size: 12px !important;}
+.t_control_bar .dropdown-menu li > a:hover{color:#233a5f;}
+.t_control_bar .dropdown-menu li .dropdown-menu{background-color:#233A5F; }
+.t_control_bar .dropdown > .dropdown-menu:after, .dropdown-toggle > .dropdown-menu:after, .btn-group > .dropdown-menu:after{display: none !important;}
+.t_control_bar .dropdown > .dropdown-menu:before, .dropdown-toggle > .dropdown-menu:before, .btn-group > .dropdown-menu:before{display: none !important;}
+.t_lant{width: 5px; height:15px; background-color: #4277cf; display: inline-block; vertical-align: middle; }
+.t-form-body .portlet > .portlet-body.blue, .portlet.blue
+.t-table-font{font-size: 14px; }
+.t_table_form{text-align: left;margin-top: 10px;margin-bottom: 20px; padding-right: 5px !important;}
+.t_table th,.t_table td{text-align: center;}
+.t_select{width: 150px; display: inline-block; vertical-align: middle; margin-right: 5px;}
+
+.l_fs18 {
+    font-size:18px;
+    font-weight: bold;
+}
+.l_fs16{
+    font-size:16px;
+}
+.l_fs14{
+    font-size:14px;
+}
+.l_mt10 {
+    margin-top:10px!important;
+}
+.l_mt20 {
+    margin-top:20px!important;
+}
+.l_fs20 {
+    font-size:20px;
+}
+/* my-skin */
+body .my-skin .layui-layer-title{background:#4476A7; color:#fff; border: none;}
+
+
+

@@ -1,0 +1,112 @@
+.register-wrapper {
+    background-image: url("/static/assets/images/bg-login.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.register-wrapper {
+    width:100%;
+    height: 700px;
+    margin: 0 auto;
+    position: relative;
+    box-sizing: border-box;
+    z-index: 2;
+}
+
+.register-wrapper > .layui-form {
+    position: absolute;
+    top: 8%;
+    right: 10%;
+    padding: 25px 30px;
+    background-color: #fff;
+    box-shadow: 0 3px 6px -1px rgba(0, 0, 0, 0.19);
+    box-sizing: border-box;
+    border-radius: 4px;
+}
+
+.register-wrapper > .layui-form > h2 {
+    color: #333;
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.register-wrapper > .layui-form > .layui-form-item {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.register-wrapper > .layui-form > .layui-form-item:last-child {
+    margin-bottom: 0;
+}
+
+.register-wrapper > .layui-form > .layui-form-item > .layui-input {
+    height: 46px;
+    line-height: 46px;
+    border-radius: 2px !important;
+}
+
+.register-wrapper .layui-input-icon-group > .layui-input {
+    padding-left: 46px;
+}
+
+.register-wrapper .layui-input-icon-group > .layui-icon {
+    width: 46px;
+    height: 46px;
+    line-height: 46px;
+    font-size: 20px;
+    color: #909399;
+    position: absolute;
+    left: 0;
+    top: 0;
+    text-align: center;
+}
+
+.register-wrapper > .layui-form > .layui-form-item.register-captcha-group {
+    padding-right: 135px;
+}
+
+.register-wrapper > .layui-form > .layui-form-item.register-captcha-group > .register-captcha {
+    height: 46px;
+    width: 120px;
+    cursor: pointer;
+    box-sizing: border-box;
+    border: 1px solid #e6e6e6;
+    border-radius: 2px !important;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.register-wrapper > .layui-form > .layui-form-item > .layui-form-checkbox {
+    margin: 0 !important;
+    padding-left: 25px;
+}
+
+.register-wrapper > .layui-form > .layui-form-item > .layui-form-checkbox > .layui-icon {
+    width: 15px !important;
+    height: 15px !important;
+}
+
+.register-wrapper > .layui-form .layui-btn-fluid {
+    height: 48px;
+    line-height: 48px;
+    font-size: 16px;
+    border-radius: 2px !important;
+}
+
+.register-wrapper > .layui-form > .layui-form-item.register-oauth-group > a > .layui-icon {
+    font-size: 26px;
+}
+
+
+
+
+.layui-btn {
+    background-color: #5FB878;
+    border-color: #5FB878;
+}
+
+.layui-link {
+    color: #5FB878 !important;
+}

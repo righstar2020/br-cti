@@ -1,0 +1,240 @@
+{{define "content"}}
+<style>
+    /* CTI信息 */
+    .cti-info-head {
+        width: 110px;
+        height: 110px;
+        line-height: 110px;
+        position: relative;
+        display: inline-block;
+        border: 2px solid #eee;
+        border-radius: 50%;
+        overflow: hidden;
+        cursor: pointer;
+        margin: 0 auto;
+    }
+
+    .cti-info-head:hover:after {
+        content: '\e681';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        color: #fff;
+        background-color: rgba(0, 0, 0, 0.3);
+        font-size: 28px;
+        padding-top: 2px;
+        font-style: normal;
+        font-family: layui-icon;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .cti-info-head img {
+        width: 110px;
+        height: 110px;
+    }
+
+    .cti-info-list-item {
+        position: relative;
+        padding-bottom: 8px;
+    }
+
+    .cti-info-list-item > .layui-icon {
+        position: absolute;
+    }
+
+    .cti-info-list-item > p {
+        padding-left: 30px;
+    }
+
+    .layui-line-dash {
+        border-bottom: 1px dashed #ccc;
+        margin: 15px 0;
+    }
+
+    /* 基本信息 */
+    #ctiDataSubmit .layui-form-item {
+        margin-bottom: 25px;
+    }
+
+    /* 账号绑定 */
+    .cti-bd-list-item {
+        padding: 14px 60px 14px 10px;
+        border-bottom: 1px solid #e8e8e8;
+        position: relative;
+    }
+
+    .cti-bd-list-item .cti-bd-list-lable {
+        color: #333;
+        margin-bottom: 4px;
+    }
+
+    .cti-bd-list-item .cti-bd-list-oper {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        margin-top: -8px;
+        cursor: pointer;
+    }
+
+    .cti-bd-list-item .cti-bd-list-img {
+        width: 48px;
+        height: 48px;
+        line-height: 48px;
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        margin-top: -24px;
+    }
+
+    .cti-bd-list-item .cti-bd-list-img + .cti-bd-list-content {
+        margin-left: 68px;
+    }
+</style>
+<div class="layui-row layui-col-space15">
+    <!-- 左 -->
+    <div class="layui-col-sm12 layui-col-md3">
+        <div class="layui-card">
+            <div class="layui-card-body" style="padding: 25px;">
+                <div class="text-center layui-text">
+                    <div class="cti-info-head" id="adminInfoHead">
+                        {{if .ctiData.Avatar}}
+                        <img src="{{.ctiData.Avatar}}" alt="CTI头像">
+                        {{else}}
+                        <img src="" class="img-circle headImg" alt="User Image">
+                        <canvas id="headImg" style="display:none"></canvas>
+                        <script type="text/javascript">
+                            textToImg("{{.ctiData.Publisher}}");
+                        </script>
+                        {{end}}
+                    </div>
+                    <h2 style="padding-top: 20px;">{{.ctiData.CTIName}}</h2>
+                    <p style="padding-top: 8px;">{{.ctiData.Tags}}</p>
+                </div>
+                <div class="layui-text" style="padding-top: 30px;">
+                    <div class="cti-info-list-item">
+                        <i class="layui-icon layui-icon-username"></i>
+                        <p>{{.ctiData.Publisher}}</p>
+                    </div>
+    
+                </div>
+                <div class="layui-line-dash"></div>
+<!--                <h3>标签</h3>-->
+<!--                <div class="layui-badge-list" style="padding-top: 6px;">-->
+<!--                    <span class="layui-badge layui-bg-gray">标签一</span> -->
+<!--                </div>-->
+            </div>
+        </div>
+    </div>
+    <!-- 右 -->
+    <div class="layui-col-sm12 layui-col-md9">
+        <div class="layui-card">
+            <!-- 选项卡开始 -->
+            <div class="layui-tab layui-tab-brief" lay-filter="adminInfoTab">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">基本信息</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <!-- tab1 -->
+                    <div class="layui-tab-item layui-show">
+                        <form class="layui-form" id="ctiDataSubmit" lay-filter="ctiDataSubmit"
+                              style="max-width: 400px;padding: 25px 10px 0 0;">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label layui-form-required">CTI名称:</label>
+                                <div class="layui-input-block">
+                                    <input name="cti_name" value="{{.ctiData.CTIName}}" class="layui-input" lay-verify="required" required/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">标签:</label>
+                                <div class="layui-input-block">
+                                    <input name="tags" value="{{.ctiData.Tags}}" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">发布者:</label>
+                                <div class="layui-input-block">
+                                    <input name="publisher" value="{{.ctiData.Publisher}}" class="layui-input" lay-verify="required" required/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">开源形式:</label>
+                                <div class="layui-input-block">
+                                    <select name="open_source" lay-verify="required" lay-filter="open_source">
+                                        <option value="0" {{if eq .ctiData.OpenSource 0}}selected{{end}}>不开源</option>
+                                        <option value="1" {{if eq .ctiData.OpenSource 1}}selected{{end}}>开源</option>
+                                        <option value="2" {{if eq .ctiData.OpenSource 2}}selected{{end}}>部分开源</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">类型:</label>
+                                <div class="layui-input-block">
+                                    <input name="type" value="{{.ctiData.Type}}" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">数据:</label>
+                                <div class="layui-input-block">
+                                    <textarea name="data" placeholder="请输入数据" class="layui-textarea">{{.ctiData.Data}}</textarea>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">威胁等级:</label>
+                                <div class="layui-input-block">
+                                    <input name="threat_level" value="{{.ctiData.ThreatLevel}}" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">可信度分数:</label>
+                                <div class="layui-input-block">
+                                    <input name="confidence" value="{{.ctiData.Confidence}}" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">需求量:</label>
+                                <div class="layui-input-block">
+                                    <input name="need" value="{{.ctiData.Need}}" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">平台评估的价值:</label>
+                                <div class="layui-input-block">
+                                    <input name="value" value="{{.ctiData.Value}}" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">综合价值:</label>
+                                <div class="layui-input-block">
+                                    <input name="compre_value" value="{{.ctiData.CompreValue}}" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">数据Hash(MD5):</label>
+                                <div class="layui-input-block">
+                                    <input name="hash" value="{{.ctiData.Hash}}" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">链上ID:</label>
+                                <div class="layui-input-block">
+                                    <input name="chain_id" value="{{.ctiData.ChainID}}" class="layui-input"/>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" lay-filter="ctiDataSubmit" lay-submit>更新基本信息
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- //选项卡结束 -->
+        </div>
+    </div>
+</div>
+{{end}}

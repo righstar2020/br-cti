@@ -1,0 +1,305 @@
+
+/*布局*/
+.bc-browser-box{
+    margin: 20px auto;
+    width: 980px;
+    padding: 10px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+}
+/*区块Summary面板*/
+.bc-browser-box-1{
+    width: 100%;
+    min-height: 80px;
+    margin: 10px auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    border: #ddd 1px solid;
+}
+.bc-data-summary{
+    width:100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.bc-data-summary .summary-item{
+    width: 19%;
+    border-right: gainsboro solid 1px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+    cursor: default;
+}
+.bc-data-summary .summary-item:last-child{
+    border-right: none;
+}
+.summary-item .summary-item-title{
+    width: 100%;
+    height: 20px;
+    padding-top: 5px;
+    text-align: center;
+    color: #929292;
+}
+.summary-item .summary-item-content{
+    width: 100%;
+    height: 35px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 800;
+}
+.bc-data-summary .summary-item:nth-child(1) .summary-item-content{
+    color: black;
+}
+.bc-data-summary .summary-item:nth-child(2) .summary-item-content{
+    color: rgb(172, 185, 188);
+}
+.bc-data-summary .summary-item:nth-child(3) .summary-item-content{
+    color: #76c3dd;
+}
+.bc-data-summary .summary-item:nth-child(4) .summary-item-content{
+    color: #f1eb3c;
+}
+.bc-data-summary .summary-item:last-child .summary-item-content{
+    color: rgb(15, 213, 147);
+}
+/*轮播box布局*/
+.bc-browser-box-2{
+    width: 100%;
+    margin: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+/*轮播面板*/
+.box-2-left{
+    width: 49%;
+    height: 240px;
+    margin-right: 2%;
+}
+.front-bc-market-carousel{
+    width: 100%;
+    position: relative;
+    height: 240px;
+}
+.front-bc-market-carousel .carousel-item-box{
+    width: 100%;
+    height: 240px;
+    cursor: pointer;
+}
+.front-bc-market-carousel .carousel-item-box img{
+    width: 100%; /* 图片宽度为容器宽度的100% */
+    height: 100%; /* 图片高度为容器高度的100% */
+    object-fit:cover; /* 这将使得图片保持原始宽高比的同时填充整个容器 */
+}
+/*轮播表效果*/
+.box-2-right{
+    width: 49%;
+    height: 240px;
+}
+.carousel-table {
+    width: 100%;
+    height: 240px;
+    border-collapse: collapse;
+    overflow: hidden;
+    border: 1px solid gainsboro; 
+    cursor:default;
+}
+
+.carousel-table th,
+.carousel-table td {
+    padding: 10px;
+    border: none; /* 移除单元格边框 */
+    text-align: center;
+    background-color: transparent; 
+}
+
+.carousel-table th {
+    font-weight: bold;
+    background-color: #117396; 
+    color: #ffffff;
+}
+
+.carousel-table tr {
+    height: 30px; /* 明确设置行的高度 */
+    overflow: hidden; /* 防止内容溢出 */
+}
+
+.carousel-table tr:nth-child(even) {
+    background-color: #d6e4f1; 
+}
+
+.carousel-table tr:nth-child(odd) {
+    background-color: #ffffff; 
+}
+/*CTI交易信息*/
+.bc-browser-box-title{
+    width: 100%;
+    text-align: left;
+    line-height: 35px;
+    padding-left: 10px;
+    border-left: #117396 solid 5px;
+    margin: 10px 0;
+    color: black;
+    font-size: 16px;
+    font-weight: 700;
+    position: relative;
+}
+.bc-browser-box-3 {
+    min-height: 300px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    margin-bottom: -30px;
+}
+/*1-CTI交易*/
+.box-3-left {
+    width: 49%;
+    margin-right: 2%;
+}
+.box-3-left .cti-sale-info-table{
+    width: 100%;
+    border-bottom: #117396 solid 2px;
+    text-align: center;
+    cursor: default;
+}
+.cti-sale-info-table .cti-sale-info-table-head{
+    border-bottom: #117396 solid 2px;
+}
+.cti-sale-info-table th,
+.cti-sale-info-table td{
+    padding: 10px 0;
+}
+
+/*2-链上数据趋势*/
+.box-3-right {
+    width: 49%;
+    margin-bottom: -30px;
+}
+#cti-trac-data-canva{
+    width: 100%;
+    height: 280px;
+}
+/*1-工具栏*/
+.table-toolbar{
+    height: 40px;
+    position: absolute;
+    top: 0;
+    right: 15px;    
+    color: black;
+    font-size: 14px;
+    font-weight: 500;
+}
+.table-toolbar-search{
+    width: 100%;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border: 1px solid gainsboro;
+}
+.table-toolbar-search input{
+    width: 150px;
+    border-right: 1px solid gainsboro;
+}
+
+.table-toolbar-search .table-toolbar-search-btn{
+    height: 38px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    
+}
+
+/*CTI上链*/
+.bc-browser-box-4{
+    width: 100%;
+    min-height: 300px;
+    margin-top: 15px;
+}
+
+/*CTI上链表格*/
+.cti-upchain-table-box{
+    width: 100%;
+    min-height: 300px;
+    margin-bottom: 20px;
+}
+
+.cti-upchain-table-box .cti-upchain-table {
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid gainsboro; 
+    cursor:default;
+}
+
+
+.cti-upchain-table  th{
+    padding: 5px;
+    border: 1px solid gainsboro; 
+    text-align: center;
+    background-color: #117396;
+    color: white;
+}
+.cti-upchain-table  td {
+    padding: 5px;
+    border: 1px solid gainsboro; 
+    text-align: center;
+}
+
+.cti-upchain-table  th {
+    font-weight: bold;
+}
+
+.cti-upchain-table  tr {
+    overflow: hidden; /* 防止内容溢出 */
+}
+
+.cti-upchain-table  tr:nth-child(even) {
+    background-color: #f7f8fa; 
+}
+
+.cti-upchain-table  tr:nth-child(odd) {
+    background-color: #ffffff; 
+}
+.cti-upchain-table  a{
+    color: #64aed9;
+    text-align: center;
+}
+
+/*表格动态数据*/
+.cti-upchain-table {
+    width: 100%;
+    position: relative;
+    border-collapse: collapse;
+    table-layout: fixed; /* 固定表格布局 */
+}
+
+.cti-upchain-table thead {
+    position: sticky;
+    top: 0;
+    background-color: white; /* 保持背景色一致 */
+    z-index: 1; /* 确保表头始终在最前面 */
+}
+.cti-upchain-table thead tr{
+    width: 100%;
+}
+
+.cti-upchain-table tbody {
+    height: 100px; /* 设置最大高度 */
+    overflow-y: scroll; /* 滚动条只出现在tbody部分 */
+}
+
+.cti-upchain-table th,
+.cti-upchain-table td {
+    border: 1px solid #ddd;
+    overflow: hidden; /* 隐藏超出部分 */
+    text-overflow: ellipsis; /* 显示省略号 */
+}
+
+/* 保持表头和表格单元格的高度一致 */
+.cti-upchain-table thead th {
+    padding: 5px 10px;
+}

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<!-- 引入头部 -->
+{{template "header" .}}
+<body>
+
+<!-- 主体部分开始 -->
+ <!-- 引入导航 -->
+{{template "navigation" .}}
+ <!-- 引入侧边栏 -->
+ {{template "sidebar" .}}
+<!-- 正文开始 -->
+<div class="main">
+    {{block "content" .}}{{end}}
+</div>
+<!-- 主体部分结束 -->
+
+<!-- 引入脚部 -->
+{{template "footer" .}}
+</body>
+</html>

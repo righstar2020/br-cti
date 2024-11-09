@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>CTI详情</title>
+    <link rel="stylesheet" href="/static/assets/libs/layui/css/layui.css"/>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        html{
+            overflow: auto; /* 或者使用 overflow-y: scroll; 来允许垂直滚动 */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE 和 Edge */
+        }
+
+        /* 隐藏Webkit核心浏览器（如Chrome, Safari等）中的滚动条 */
+        html::-webkit-scrollbar {
+            display: none;
+        }
+        /** 应用快捷块样式 */
+        .cti-detail-box{
+            width: 100%;
+            min-height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            margin-top: 80px;
+        }
+        /*工具栏*/
+        .cti-detail-toolbar{
+            position: fixed;
+            top:0;
+            height: 75px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+            padding: 10px 0;
+            background-color: white;
+            border-bottom: 1px solid gainsboro;
+        }
+        .cti-detail-toolbar .cti-info{
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+        }
+        .cti-info span{
+            margin-right: 10px;
+        }
+        .cti-info span a{
+            color: blue;
+        }
+        .cti-detail-toolbar button{
+            margin-left: 10px;
+        }
+        /*CTI详细表格*/
+        .cti-detail-title{
+            width: 100%;
+            margin-left: 10px;
+            padding: 10px;
+            line-height: 30px;
+            font-size: 18px;
+            font-weight: 800;
+            border-left: #285191 3px solid ;
+        }
+        .cti-detail-table{
+            width: 100%;
+            margin: 10px 0;
+            min-height: 300px;
+        }
+        .cti-detail-table .cti-detail-item{
+            width: 94%;
+            margin: 10px auto;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+        }
+        .cti-detail-item .cti-detail-label{
+            display: inline-block;
+            width: 80px;
+            text-align: right;
+            font-weight: bold;
+            padding: 10px;
+            overflow: hidden;
+        }
+        .cti-detail-item .cti-detail-content{
+            display: inline-block;
+            width: 80%;
+            text-align: left;
+            background-color: #ebebe4;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="cti-detail-box">
+    <div class="cti-detail-toolbar">
+        
+        <div class="cti-info">
+            <span>
+                当前情报所需积分:
+                {{.ctiData.compre_value}}
+            </span>
+            <span>
+                我的积分:
+                {{ if .userInfo}}
+                    {{.userInfo.Value}}
+                    <a href="/cti-market" target="_blank">获取积分</a>
+                {{else}}
+                    <a href="/login" target="_blank">请登录</a>
+                {{end}}
+            </span>
+            
+        </div>
+        {{ if .userInfo}}
+            <button data-value="{{.ctiData.value}}" data-id="{{.ctiData.id}}" style="background-color: #285191;" class="layui-btn layui-btn-sm">获取授权</button>
+        {{end }}
+    </div>
+    <div class="cti-detail-table">
+            {{range $data := .ctiDataRange}}
+            <div class="cti-detail-item">
+                <div class="cti-detail-label">
+                    {{$data.label}}
+                </div>
+                <div class="cti-detail-content">
+                    {{$data.value}}
+                </div>
+            </div>
+            {{end}}
+    </div>
+    
+     
+</div>
+<!-- js部分 -->
+<script type="text/javascript" src="/static/assets/libs/layui/layui.js"></script>
+<script>
+function getWindowLayerIndex(){
+    var layerIndex = parent.layer.getFrameIndex(window.name); 
+    return layerIndex;
+}
+function closeParentLayer(){
+    var index = parent.layer.getFrameIndex(window.name); // 先得到当前 iframe 层的索引
+    parent.layer.close(index); // 再执行关闭
+}
+layui.use(['layer'], function(){
+    var layer = layui.layer
+    $ = layui.$;
+    $('.cti-detail-toolbar button[data-id]').on('click', function(event) {
+        var id = $(this).data('id'); // 获取data-id属性的值
+        var value = $(this).data('value'); // 获取data-value属性的值
+        layer.confirm('确定要获取授权吗？', {
+            btn: ['确定','取消']
+        }, function(){
+            // 确定按钮的回调函数
+            $.ajax({
+                url: '/cti-market/buy',
+                type: 'POST',
+                data: {
+                    id: id,
+                },
+                success: function(data) {
+                    layer.msg(data.msg);
+                    setTimeout(function(){
+                        closeParentLayer()
+                    }, 1000);
+                    
+                }
+            })
+        }
+        )
+    });
+});
+</script>
+</body>
+</html>

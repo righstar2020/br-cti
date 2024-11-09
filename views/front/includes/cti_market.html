@@ -1,0 +1,145 @@
+{{define "content"}}
+<div class="cti-market-box">       
+    <!--内容开始-->
+    <div class="breadcrumb">		 	 
+        <li>
+            <a href="/cti-market">通用市场</a>
+            >
+        </li>
+        <li>
+            <a href="/cti-market?type=open_source">开源情报</a>
+            
+        </li>      
+    </div>
+    <!--导航栏---->
+    <div class="cti-market-nav">
+        <ul class="navbar-ul">
+            <li >
+                <a href="/cti-market?type=phishing" >
+                钓鱼地址 
+            </a>
+            </li>
+            <li >
+                <a href="/cti-market?type=malware">
+                恶意程序
+                </a>
+            </li>
+            <li >
+                <a href="/cti-market?type=trojan"> 
+                放马地址
+                </a>
+            </li>
+            
+            <li >
+                <a href="/cti-market?type=mal_email">
+                恶意邮箱
+                </a>
+            </li>
+            <li >
+                <a href="/cti-market?type=mal_phone">
+                恶意手机号 
+                
+                </a>
+            </li>
+            <li >
+                <a href="/cti-market?type=botnet"> 
+                僵尸网络
+                </a>
+            </li>
+            <li >
+                <a href="/cti-market?type=social_account"  > 
+                社交账号
+            </a>
+            </li>
+            <li >
+                <a href="/cti-market?type=ddos">
+                    DDoS数据
+                </a>
+            </li>
+            <li >
+                <a href="/cti-market?type=open_source">   
+                    开源情报
+                </a>
+            </li>
+        </ul>
+
+    </div>
+    <!--CTI数据表格--->
+    <div class="cti-table-title">
+        开源威胁情报
+    </div>
+    <div class="cti-data-table-box">
+        <table class="cti-data-table ui celled padded table">
+            <tr>
+                <th>序号</th>
+                <th>CTI编号</th>
+                <th>标签</th>
+                <th>发布者</th>
+                <th>发布时间</th>
+                <th>操作</th>   
+            </tr>
+            {{range $ctiData := .ctiDataList}}
+            <tr>
+                <td>{{$ctiData.ID}}</td>
+                <td>{{$ctiData.CTIId}}</td>
+                <td>{{$ctiData.Tags}}</td>
+                <td>{{$ctiData.Publisher}}</td>
+                <td>{{formatMyTime $ctiData.CreatedTime}}</td>
+                <td>
+                    <a class="cti-detail" data-id="{{$ctiData.ID}}">详情</a>
+                    <a class="cti-detail-buy" data-id="{{$ctiData.ID}}">获取</a>
+                </td>
+            </tr>
+            {{end}}
+        </table>
+        <div class="ui right floated pagination menu cti-data-table-nav">
+            <a class="icon item">
+                <i class="left chevron icon"></i>
+            </a>
+            <a class="item">1</a>
+            <a class="item">2</a>
+            <a class="item">3</a>
+            <a class="item">4</a>
+            <a class="icon item">
+                <i class="right chevron icon"></i>
+            </a>
+        </div>
+                
+</div>
+<script>
+function inputPageNow(){
+    var inputPageNow = document.getElementById("inputPageNow").value;
+    window.location.href="/cti-market?page="+inputPageNow;
+}
+$(document).ready(function() {
+        // 为 '详情' 按钮绑定点击事件
+        $('.cti-detail').click(function() {
+            var ctiId = $(this).data('id');
+            openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
+        });
+
+        // 为 '获取' 按钮绑定点击事件
+        $('.cti-detail-buy').click(function() {
+            var ctiId = $(this).data('id');
+            openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
+        });
+});
+var currentLayerIndex = null; //设置只可打开一个窗口
+function openCtiDetailWindow(url) {
+    if (currentLayerIndex !== null) {
+        layer.close(currentLayerIndex);
+    }
+    currentLayerIndex = layer.open({
+            type: 2,
+            title: '详情',
+            area: ['700px', '550px'], // 设置窗口宽度和高度
+            shade: 0, // 设置遮罩透明度
+            content: url,
+            success: function(layero, index){
+            }
+    });
+}
+</script>
+{{end}}
+	
+ 
