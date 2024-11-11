@@ -1,5 +1,6 @@
 module github.com/righstar2020/br-cti
 
+//注意本地的Go版本
 go 1.16
 
 require (

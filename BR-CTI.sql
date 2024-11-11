@@ -3,12 +3,12 @@
 
  Source Server         : localhost
  Source Server Type    : MySQL
- Source Server Version : 50736
+ Source Server Version : 80036
  Source Host           : 127.0.0.1:3306
  Source Schema         : br-cti
 
  Target Server Type    : MySQL
- Target Server Version : 50736
+ Target Server Version : 80036
  File Encoding         : 65001
 
  Date: 03/04/2023 16:55:50
