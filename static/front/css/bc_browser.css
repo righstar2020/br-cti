@@ -1,20 +1,34 @@
 
 /*布局*/
+.bc-browser{
+    width:100%;
+    background-color:  #F9FAFB;;
+}
 .bc-browser-box{
-    margin: 20px auto;
-    width: 980px;
-    padding: 10px;
+    background-color: white;
     box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    cursor: default;
+}
+.bc-browser-box:hover{
+
+}
+.bc-browser-box-title{
+    width: 100%;
+    padding: 10px 3px;
+    background-color: transparent;
+    color: black;
+    font-size: 15px;
+    text-align: left;
+}
+.bc-browser-container{
+    width: 980px;
+    margin: 0 auto;
+    padding-bottom: 20px;
 }
 /*区块Summary面板*/
 .bc-browser-box-1{
     width: 100%;
     min-height: 80px;
-    margin: 10px auto;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    border: #ddd 1px solid;
 }
 .bc-data-summary{
     width:100%;
@@ -24,168 +38,101 @@
     justify-content: center;
 }
 .bc-data-summary .summary-item{
-    width: 19%;
-    border-right: gainsboro solid 1px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    flex-wrap: wrap;
+    width: 18%;
     cursor: default;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-left: 1%;
 }
-.bc-data-summary .summary-item:last-child{
-    border-right: none;
+.summary-item-left{
+    height: 70px;
+    width: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.summary-item .summary-item-title{
+.summary-item-left i{
+    font-size: 25px;
+    color: #4183c4;
+}
+.summary-item-right {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+.summary-item-right .summary-item-title{
     width: 100%;
-    height: 20px;
-    padding-top: 5px;
-    text-align: center;
+    text-align: left;
     color: #929292;
+    padding: 3px 0;
 }
-.summary-item .summary-item-content{
+.summary-item-right .summary-item-content{
     width: 100%;
     height: 35px;
-    text-align: center;
+    text-align: left;
     font-size: 20px;
     font-weight: 800;
 }
-.bc-data-summary .summary-item:nth-child(1) .summary-item-content{
-    color: black;
-}
-.bc-data-summary .summary-item:nth-child(2) .summary-item-content{
-    color: rgb(172, 185, 188);
-}
-.bc-data-summary .summary-item:nth-child(3) .summary-item-content{
-    color: #76c3dd;
-}
-.bc-data-summary .summary-item:nth-child(4) .summary-item-content{
-    color: #f1eb3c;
-}
-.bc-data-summary .summary-item:last-child .summary-item-content{
-    color: rgb(15, 213, 147);
-}
-/*轮播box布局*/
+/*最新交易*/
 .bc-browser-box-2{
     width: 100%;
-    margin: 0;
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
+    background-color: transparent;
+    box-shadow: none;
 }
-/*轮播面板*/
-.box-2-left{
-    width: 49%;
-    height: 240px;
-    margin-right: 2%;
-}
-.front-bc-market-carousel{
-    width: 100%;
-    position: relative;
-    height: 240px;
-}
-.front-bc-market-carousel .carousel-item-box{
-    width: 100%;
-    height: 240px;
+.bc-browser-box-2 .bc-tx-info-card{
+    width: 24.5%;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    margin-right: 1%;
+    height: 160px;
+    padding: 10px;
     cursor: pointer;
 }
-.front-bc-market-carousel .carousel-item-box img{
-    width: 100%; /* 图片宽度为容器宽度的100% */
-    height: 100%; /* 图片高度为容器高度的100% */
-    object-fit:cover; /* 这将使得图片保持原始宽高比的同时填充整个容器 */
+.bc-browser-box-2 .bc-tx-info-card:hover{
+    box-shadow: rgba(0, 0, 0, 0.15) 5px 12px 24px;
 }
-/*轮播表效果*/
-.box-2-right{
-    width: 49%;
-    height: 240px;
+.bc-browser-box-2 .bc-tx-info-card:last-child{
+    margin-right: 0;
 }
-.carousel-table {
+.bc-tx-info-card .info-card-title{
     width: 100%;
-    height: 240px;
-    border-collapse: collapse;
-    overflow: hidden;
-    border: 1px solid gainsboro; 
-    cursor:default;
+    font-size: 18px;
+    height: 30px;
+    color: #096a8e;
+    font-weight: 800;
 }
 
-.carousel-table th,
-.carousel-table td {
-    padding: 10px;
-    border: none; /* 移除单元格边框 */
-    text-align: center;
-    background-color: transparent; 
+.bc-tx-info-card .info-card-row.tags{
+    padding-bottom: 5px;
 }
-
-.carousel-table th {
-    font-weight: bold;
-    background-color: #117396; 
-    color: #ffffff;
-}
-
-.carousel-table tr {
-    height: 30px; /* 明确设置行的高度 */
-    overflow: hidden; /* 防止内容溢出 */
-}
-
-.carousel-table tr:nth-child(even) {
-    background-color: #d6e4f1; 
-}
-
-.carousel-table tr:nth-child(odd) {
-    background-color: #ffffff; 
-}
-/*CTI交易信息*/
-.bc-browser-box-title{
+.bc-tx-info-card .info-card-row{
     width: 100%;
-    text-align: left;
-    line-height: 35px;
-    padding-left: 10px;
-    border-left: #117396 solid 5px;
-    margin: 10px 0;
-    color: black;
-    font-size: 16px;
-    font-weight: 700;
-    position: relative;
+    margin-top: 5px;
+    color: rgb(86, 82, 82);
+    font-size: 13px;
 }
-.bc-browser-box-3 {
+
+
+
+/*上链情报*/
+.bc-browser-box-3{
+    width: 100%;
     min-height: 300px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    margin-bottom: -30px;
+    position: relative;
+    padding: 15px;
+    padding-top: 60px;
 }
-/*1-CTI交易*/
-.box-3-left {
-    width: 49%;
-    margin-right: 2%;
-}
-.box-3-left .cti-sale-info-table{
-    width: 100%;
-    border-bottom: #117396 solid 2px;
-    text-align: center;
-    cursor: default;
-}
-.cti-sale-info-table .cti-sale-info-table-head{
-    border-bottom: #117396 solid 2px;
-}
-.cti-sale-info-table th,
-.cti-sale-info-table td{
-    padding: 10px 0;
-}
-
-/*2-链上数据趋势*/
-.box-3-right {
-    width: 49%;
-    margin-bottom: -30px;
-}
-#cti-trac-data-canva{
-    width: 100%;
-    height: 280px;
-}
-/*1-工具栏*/
+/*查询Tab*/
 .table-toolbar{
     height: 40px;
     position: absolute;
-    top: 0;
+    top: 10px;
     right: 15px;    
     color: black;
     font-size: 14px;
@@ -213,14 +160,6 @@
     
     
 }
-
-/*CTI上链*/
-.bc-browser-box-4{
-    width: 100%;
-    min-height: 300px;
-    margin-top: 15px;
-}
-
 /*CTI上链表格*/
 .cti-upchain-table-box{
     width: 100%;

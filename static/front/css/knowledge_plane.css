@@ -8,10 +8,11 @@
     width: 100%;
     height: 280px;
     background: url(/static/front/imgs/banner/banner5.png) no-repeat center;
+    
     background-size:100% 100%;
     background-position: center center;
     text-align: center;
-    padding-top: 50px;
+    padding-top: 60px;
 }
 
 .cti-knowledge-plane-box-header .plane-box-search{
@@ -31,13 +32,30 @@
     
 }
 .cti-knowledge-plane-box-body .plane-box-body-nav{
-    width: 100%;
-    height: 50px;
     text-align: left;
-    padding: 10px 20px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: transparent;
+    margin-bottom: 10px;
+    /* box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px; */
 }
 .plane-box-body-nav .nav-item{
-    width: 25%;
+    height: 30px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    border-bottom: white solid 2px;
+    margin-right: 20px;
+}
+.plane-box-body-nav .nav-item-active{
+    color: #117396;
+    border-bottom: #117396 solid 2px;
+}
+.plane-box-body-nav .nav-item:hover{
+    color: #117396;
+    border-bottom: #117396 solid 2px;
 }
 .cti-knowledge-plane-box-body
 .plane-box-body-box-1,

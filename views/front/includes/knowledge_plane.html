@@ -3,16 +3,22 @@
    <div class="cti-knowledge-plane-box-header">
         <div class="plane-box-search">
             <div class="ui fluid action input">
-                <input type="text" placeholder="Search...">
-                <div class="ui button">Search</div>
+                <input type="text" placeholder="IP、URL、HASH、CVE、 国家">
+                <div class="ui primary button">查询</div>
             </div>
         </div>
    </div>
    <div class="cti-knowledge-plane-box-body">
         <div class="plane-box-body-nav">
-            <div class="nav-item">常规攻击</div>
-            <div class="nav-item">流量攻击</div>
-            <div class="nav-item">攻击特征</div>
+            <a class="nav-item" href="/knowledge-plane?tab=normal">
+                常规攻击(1209)
+            </a>
+            <a class="nav-item" href="/knowledge-plane?tab=traffic">
+                流量攻击(123)
+            </a>
+            <a class="nav-item" href="/knowledge-plane?tab=feature">
+                攻击特征(556)
+            </a>
         </div>
         <div class="plane-box-body-box-1">
             <div class="body-box-1-top">
@@ -45,6 +51,14 @@ $(document).ready(function() {
         var ctiId = $(this).data('id');
         openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
     });
+    //tab激活
+    var currentTab = getUrlQueryString("tab")
+    if(currentTab){
+        $(".nav-item[href='/knowledge-plane?tab="+currentTab+"']").addClass("nav-item-active")
+    }else{
+        //激活第一个tab
+        $(".nav-item").first().addClass("nav-item-active")
+    }
 });
 var currentLayerIndex = null; //设置只可打开一个窗口
 function openCtiDetailWindow(url) {

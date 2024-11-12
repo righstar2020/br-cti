@@ -61,6 +61,15 @@
                 document.head.appendChild(link);
             }
         });
+        
+        function getUrlQueryString(name) {
+            var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) {
+                return unescape(r[2]);
+            }
+            return null;
+        }
     </script>
     
     <style>
@@ -71,11 +80,9 @@
             color: #3e4d5c;
             font: 400 13px 'Open Sans', Arial, sans-serif;
         }
-        /* html,body{
-            overflow: auto!important; 
-            scrollbar-width: none!important; 
-            -ms-overflow-style: none!important; 
-        } */
+        html,body{
+            overflow: auto
+        }
 
         /* 隐藏Webkit核心浏览器（如Chrome, Safari等）中的滚动条 */
         /* html::-webkit-scrollbar {
@@ -83,7 +90,8 @@
         } */
         /* 设置滚动条的宽度和颜色 */
         ::-webkit-scrollbar {
-            width: 5px; /* 对于水平滚动条的高度，垂直滚动条的宽度 */
+            width: 8px; /* 对于水平滚动条的高度， */
+            height: 12px;
         }
         
         /* 滚动条轨道 */

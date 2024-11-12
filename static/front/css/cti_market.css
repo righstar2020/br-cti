@@ -73,16 +73,14 @@
     overflow: hidden;
     border: 1px solid gainsboro; 
     cursor:default;
-    
+    margin-bottom: 15px;
+    text-align:center;
 }
 
-.cti-data-table th,
-.cti-data-table td {
+.cti-data-table th, td {
     padding: 10px;
-    text-align: center;
     border: 1px solid gainsboro; 
 }
-
 .cti-data-table th {
     font-weight: bold;
 }

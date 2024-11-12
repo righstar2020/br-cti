@@ -2,7 +2,7 @@
 .sidebar-box{
     position: fixed;
     top:200px;
-    right: 5px;
+    right: 8px;
     width: 60px;
     display: flex;
     align-items: center;
