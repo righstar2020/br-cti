@@ -23,10 +23,28 @@
         <div class="plane-box-body-box-1">
             <div class="body-box-1-top">
                 <div class="top-left-box">
-
+                    <div class="box-head">
+                        IOC分布地图
+                        <div class="box-head-toolbar head-toolbar-1">
+                            <a class="ui small blue  label" data-tab="world">世界</a>
+                            <a class="ui small label" data-tab="china">中国</a>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div id="ctiWorldMap"></div>
+                    </div>
                 </div>
                 <div class="top-right-box">
-                    
+                    <div class="box-head">
+                        IOC类型分布
+                        <div class="box-head-toolbar head-toolbar-2">
+                            <a class="ui small blue  label" data-tab="ioc_type">IOC类型</a>
+                            <a class="ui small label" data-tab="attack_type">攻击类型</a>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <div id="typePieChart"></div>
+                    </div>
                 </div>
             </div>
             <div class="body-box-1-buttom">
@@ -38,6 +56,9 @@
         </div>
    </div>
 </div>
+<script type="text/javascript" src="/static/map/world.js"></script>
+<script type="text/javascript" src="/static/map/init_map.js"></script>
+<script type="text/javascript" src="/static/front/js/init_kp_echart.js"></script>
 <script>
 $(document).ready(function() {
     // 为 '详情' 按钮绑定点击事件
@@ -59,6 +80,30 @@ $(document).ready(function() {
         //激活第一个tab
         $(".nav-item").first().addClass("nav-item-active")
     }
+    //地图切换
+    $('.head-toolbar-1 a').on('click', function() {
+        // 移除所有 a 元素的 blue 类
+        $('.head-toolbar-1 a').removeClass('blue');
+        $('.head-toolbar-1 a').removeClass('red')
+        var tabName = $(this).data("tab")
+        console.log(tabName)
+        if(tabName=="china")
+            $(this).removeClass('grey').addClass('red');
+        else
+            $(this).removeClass('grey').addClass('blue');
+    });
+    //类型切换
+    $('.head-toolbar-2 a').on('click', function() {
+        // 移除所有 a 元素的 blue 类
+        $('.head-toolbar-2 a').removeClass('blue');
+        $('.head-toolbar-2 a').removeClass('red')
+        var tabName = $(this).data("tab")
+        console.log(tabName)
+        if(tabName=="attack_type")
+            $(this).removeClass('grey').addClass('red');
+        else
+            $(this).removeClass('grey').addClass('blue');
+    });
 });
 var currentLayerIndex = null; //设置只可打开一个窗口
 function openCtiDetailWindow(url) {

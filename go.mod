@@ -1,7 +1,7 @@
 module github.com/righstar2020/br-cti
 
 //注意本地的Go版本
-go 1.16
+go 1.14
 
 require (
 	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
