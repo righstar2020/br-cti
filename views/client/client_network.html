@@ -37,51 +37,116 @@
         <div class="client-network-head-title">区块链网络状态</div>
         <div class="client-network-head-body">
             <div class="client-network-head-item">
-                <div class="head-item-title">连接方式</div>
+                <div class="head-item-title">客户端地址</div>
                 <div class="head-item-content">
-                    <a class="ui grey label">本地</a>
+                    <a class="ui teal label" id="client_address">127.0.0.1:5000</a>
                 </div>
             </div>
             <div class="client-network-head-item">
-                <div class="head-item-title">节点地址</div>
+                <div class="head-item-title">链节点地址</div>
                 <div class="head-item-content">
-                    <a class="ui blue label">127.0.0.1:8099</a>
+                    <a class="ui blue label" id="node_address">127.0.0.1:8099</a>
                 </div>
             </div>
-            <!-- <div class="client-network-head-item">
-                <div class="head-item-title">节点类型</div>
-                <div class="head-item-content">
-                    <a class="ui purple label">fabric</a>
-                </div>
-            </div> -->
+    
             <div class="client-network-head-item">
                 <div class="head-item-title">通信状态</div>
                 <div class="head-item-content">
-                    <a class="ui green label">正常</a>
+                    <a onclick="CheckNetworkStatus()" class="ui green label" id="network_status">正常</a>
                 </div>
             </div>
         </div>
     </div>
     <div class="client-network-body layui-tab layui-tab-brief"> 
         <ul class="layui-tab-title">
-          <li class="client-network-tab-title layui-this">本地连接</li>
-          <li class="client-network-tab-title">远程连接</li>
+          <li class="client-network-tab-title layui-this">客户端连接</li>
+          <li class="client-network-tab-title">区块链连接</li>
         </ul>
         <div class="layui-tab-content">
           <div class="client-network-tab-item layui-tab-item layui-show">
-            123
+             <div class="client-network-box">
+                <form class="ui form">
+                    <div class="field">
+                        <label>客户端地址</label>
+                        <div class="ui action input small">
+                            <input type="text" value="http://127.0.0.1:5000">
+                            <button class="ui teal left  icon button">
+                              <i class="globe icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- <div class="ui button blue right">保存</div> -->
+                </form>
+             </div>
            </div>
           <div class="client-network-tab-item layui-tab-item">
-            23123
+            <div class="blockchain-network-box">
+                
+            </div>
          </div>
         </div>
     </div>
 </div>
 <script>
-function getWindowLayerIndex(){
-    var layerIndex = parent.layer.getFrameIndex(window.name); 
-    return layerIndex;
+//检测网络状态
+function CheckNetworkStatus(){
+    //从localStorage中获取client服务地址
+    var clientServerHost = localStorage.getItem('clientServerHost')
+    if (clientServerHost==null){
+        //设置默认cleint地址
+        clientServerHost = "http://127.0.0.1:5000"
+        localStorage.setItem("clientServerHost",clientServerHost)
+    }
+    var loadIndex = layer.load(1, {shade: false});
+    fetch(clientServerHost, {
+        method: 'HEAD', // 使用 HEAD 方法来检查服务器是否可用
+    })
+    .then(response => {
+        layer.close(loadIndex); // 关闭 loading
+        console.log("Response:", response);
+        if (response.ok) {
+            console.log("Network status: Online");
+            $("#network_status").removeClass("red").addClass("green")
+            $("#network_status").text("正常")
+            layer.msg('客户端连接成功!',{'time':1200},function(){
+            })
+        } else {
+            console.log("Network status: Offline");
+            layer.msg('client网络异常,请检查网络连接!',{'time':1600},function(){
+            })
+            $("#network_status").removeClass("green").addClass("grey")
+            $("#network_status").text("异常")
+            
+        }
+    })
+    .catch(error => {
+        layer.close(loadIndex); // 关闭 loading
+        console.error("Network error:", error);
+        layer.msg('client网络异常,请检查网络连接!</br>'+clientServerHost,{'time':1600},function(){
+        })
+        $("#network_status").removeClass("green").addClass("grey")
+        $("#network_status").text("异常")
+    });
 }
+CheckNetworkStatus()
+
+//加载本地配置信息(浏览器)
+function loadLocalConfigData(){
+    var clientServerHost = localStorage.getItem('clientServerHost')
+    if (clientServerHost==null){
+        //设置默认cleint地址
+        clientServerHost = "http://127.0.0.1:6000"
+        localStorage.setItem("clientServerHost",clientServerHost)
+    }
+    //显示
+    $("#client_address").text(clientServerHost)
+}
+loadLocalConfigData()
+
+
+
+
+
 function closeParentLayer(){
     var index = parent.layer.getFrameIndex(window.name); // 先得到当前 iframe 层的索引
     parent.layer.close(index); // 再执行关闭
@@ -90,7 +155,7 @@ var currentLayerIndex = null
 layui.use(['layer'], function(){
     var layer = layui.layer
     $ = layui.$;
-    function openCtiDetailWindow(url) {
+    function openParentWindow(url) {
         var parentLayer = window.parent.layer;
         if(currentLayerIndex!=null){
             //默认只打开一个窗口

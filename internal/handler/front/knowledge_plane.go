@@ -33,18 +33,3 @@ func (c *knowledgePlaneHandler) Index(ctx *gin.Context) {
 	}
 
 }
-//获取区块链数据摘要
-func (c *knowledgePlaneHandler) QueryBCSummary(ctx *gin.Context) {
-	response := app.NewResponse(ctx)
-	svc := service.New(ctx.Request.Context())
-	bcSummary, _ := svc.GetBCSummary(svc.GetCtx()) //获取区块链数据摘要
-	response.ToResponse(bcSummary)
-	return
-}
-func (c *knowledgePlaneHandler) QueryCTISaleData(ctx *gin.Context) {
-	response := app.NewResponse(ctx)
-	svc := service.New(ctx.Request.Context())
-	bcSummary, _ := svc.GetBCSummary(svc.GetCtx()) //获取区块链数据摘要
-	response.ToResponse(bcSummary)
-	return
-}

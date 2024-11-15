@@ -195,6 +195,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        
                     </tbody>
                 </table>
             </div>
@@ -241,32 +242,23 @@
     }
    
     //-------------------------轮播table数据------------------------
-    var new_publish_cti_data = [
-            ['类型1', '发布商A', 'hash123'],
-            ['类型2', '发布商B', 'hash456'],
-            ['类型3', '发布商C', 'hash789'],
-            ['类型4', '发布商D', 'hash000'],
-            ['类型5', '发布商E', 'hash111'],
-            ['类型6', '发布商F', 'hash222']
-        ];
     var new_upchain_cti_data = [
-        [ '11010000001256', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '12', '2024-05-25', '0xcce26bb', '<a href="/cti-market/info?id=1">详情</a>'],
-        [ '11010000001257', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '123', '2024-05-26', '0xcce26bc', '<a href="/cti-market/info?id=2">详情</a>'],
-        [ '11010000001258', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '123', '2024-05-27', '0xcce26bd', '<a href="/cti-market/info?id=3">详情</a>'],
-        [ '11010000001259', '勒索软件; IOC; HASH; FILE; EMAIL', '213', '2024-05-28', '0xcce26be', '<a href="/cti-market/info?id=4">详情</a>'],
-        [ '11010000001250', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '123', '2024-05-29', '0xcce26bf', '<a href="/cti-market/info?id=5">详情</a>'],
-        [ '11010000001251', '勒索软件; IOC; HASH; FILE; EMAIL', '123', '2024-05-30', '0xcce26c0', '<a href="/cti-market/info?id=6">详情</a>']
+        [ '11010000001256', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '12', '2024-05-25', '0xcce26bb', '<a class="open-cti-detail" data-id="1" >详情</a>'],
+        [ '11010000001257', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '123', '2024-05-26', '0xcce26bc', '<a class="open-cti-detail" data-id="2" >详情</a>'],
+        [ '11010000001258', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '123', '2024-05-27', '0xcce26bd', '<a class="open-cti-detail" data-id="3" >详情</a>'],
+        [ '11010000001259', '勒索软件; IOC; HASH; FILE; EMAIL', '213', '2024-05-28', '0xcce26be', '<a class="open-cti-detail" data-id="3">详情</a>'],
+        [ '11010000001250', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '123', '2024-05-29', '0xcce26bf', '<a class="open-cti-detail" data-id="4">详情</a>'],
+        [ '11010000001251', '勒索软件; IOC; HASH; FILE; EMAIL', '123', '2024-05-30', '0xcce26c0', '<a class="open-cti-detail" data-id="5">详情</a>'],
+        [ '11010000001252', '勒索软件; IOC; HASH; FILE; EMAIL', '123', '2024-05-30', '0xcce26c0', '<a class="open-cti-detail" data-id="6">详情</a>'],
+        [ '11010000001253', '勒索软件; IOC; HASH; FILE; EMAIL', '123', '2024-05-30', '0xcce26c0', '<a class="open-cti-detail" data-id="7">详情</a>']
     ];
     var tableIndexMap = {
-        'cti-publish-table': 0,
         'cti-upchain-table': 0,
     }
     var fixedRowsMap={
-        'cti-publish-table': 5,
-        'cti-upchain-table': 6,
+        'cti-upchain-table': 8,
     }
     tableBodyDomNameMap = {
-        'cti-publish-table': '#carouselTable tbody',
         'cti-upchain-table': '.cti-upchain-table tbody',
     }
     //初始化轮播表
@@ -307,7 +299,6 @@
         for (var j = 0; j < tableData[tableIndexMap[tableName]].length; j++) {
             newRow.append('<td>' + tableData[tableIndexMap[tableName]][j] + '</td>');
         }
-
         // 添加新行并淡入
         table.append(newRow);
         //newRow.hide().fadeIn(500); // 淡入新行
@@ -322,17 +313,36 @@
     
     //-------------------------启动函数----------------------------
     $(document).ready(function() {
-            //定时查询数据
-            setTimeout(() => {
-                queryBcSummaryData()
-            }, 3000);
-            initializeCarouselTable('cti-upchain-table',new_upchain_cti_data)
-    
-            setInterval(function(){
-                carouselTableLoop('cti-upchain-table',new_upchain_cti_data)
-            },3000);
-            
+        //定时查询数据
+        setTimeout(() => {
+            queryBcSummaryData()
+        }, 3000);
+        initializeCarouselTable('cti-upchain-table',new_upchain_cti_data)
+
+        setInterval(function(){
+            carouselTableLoop('cti-upchain-table',new_upchain_cti_data)
+        },3000);
+        // 为 '详情' 按钮绑定点击事件
+        $('.open-cti-detail').click(function() {
+            var ctiId = $(this).data('id');
+            openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
+        });
     });
+    var currentLayerIndex = null; //设置只可打开一个窗口
+    function openCtiDetailWindow(url) {
+        if (currentLayerIndex !== null) {
+            layer.close(currentLayerIndex);
+        }
+        currentLayerIndex = layer.open({
+                type: 2,
+                title: '详情',
+                area: ['700px', '550px'], // 设置窗口宽度和高度
+                shade: 0, // 设置遮罩透明度
+                content: url,
+                success: function(layero, index){
+                }
+        });
+    }
 </script>
 
 

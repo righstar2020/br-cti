@@ -32,7 +32,6 @@
     justify-content: center;
 }
 .navbar-ul li{
-    
     width: 100px;
     text-align: center;
     height: 100%;
@@ -110,10 +109,10 @@
     height: 50px;
 }
 .table-bottom-nav .pagination{
- width: 100%;
- display: flex;
- align-items: center;
- justify-content: center;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .pagination li {
     margin: 10px;

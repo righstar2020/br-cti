@@ -10,7 +10,11 @@ type ServerSettingS struct {
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 }
-
+type BlockchainSettingS struct {
+	Name      		string
+	ServerHost     string
+	NodeHost      string
+}
 type AppSettingS struct {
 	Name                  string
 	DefaultPageSize       int

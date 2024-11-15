@@ -127,9 +127,7 @@ func createFrontRouter(r *gin.RouterGroup) *gin.RouterGroup {
 	knowledgePlane := r.Group("/knowledge-plane")
 	{
 		knowledgePlane.GET("/", frontHandler.KnowledgePlaneHandler.Index)
-		knowledgePlane.GET("/index", frontHandler.KnowledgePlaneHandler.Index)
-		knowledgePlane.POST("/query_bc_summary", frontHandler.KnowledgePlaneHandler.QueryBCSummary)
-		knowledgePlane.POST("/query_cti_sale_data", frontHandler.KnowledgePlaneHandler.QueryCTISaleData)				
+		knowledgePlane.GET("/index", frontHandler.KnowledgePlaneHandler.Index)			
 	}
 	BCBrowser := r.Group("/bc-browser")
 	{

@@ -1,20 +1,4 @@
-.client-network-box{
+.client-wallet-box{
     width: 100%;
-    margin: 0 auto;
-    min-height: 600px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    margin-top: 20px;
-}
-.layui-tab-brief>.layui-tab-title .layui-this{
-    color: #285191!important;
-}
-.layui-this:after{
-    color: #285191!important;
-    border-bottom: 2px solid #285191!important;
-}
-.client-network-box .client-network-tab-title{
-    font-weight: 800px;
-    font-size: 1.2rem;
+    min-height: 100px;
 }

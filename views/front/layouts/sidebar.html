@@ -3,7 +3,7 @@
 <div class="sidebar-box" style="position: fixed;">
    <div class="sidebar-body">
         <div class="sidebar-item">
-            <a href="/client/network" data-action="wallet" data-title="区块链网络">
+            <a href="/client/network" data-action="network">
                 <i class="globe icon"></i>
                 <div class="sidebar-item-title">网络连接</div>
             </a>
@@ -46,9 +46,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 title = $(this).text(); // 获取链接文本作为标题
             var url = $(this).attr('href'); // 获取链接的href属性值
             //调用函数并传入参数
-            if(action=="own"){
-                openWindowWithUrl(title, url,'830px');
-            }else{
+            if(action=="wallet"){
+                openFramelessWindowWithUrl(title, url,"350px");
+            }
+            else{
                 openWindowWithUrl(title, url);
             }
             
@@ -76,7 +77,39 @@ function openWindowWithUrl(title,url,width=null) {
             }
     });
     
-}   
+}
+function openFramelessWindowWithUrl(title, url, width = null) {
+    if (currentLayerIndex !== null) {
+        layer.close(currentLayerIndex);
+    }
+
+    // 如果未指定宽度，则默认为850px
+    if (width == null) {
+        width = '850px';
+    }
+
+    // 打开一个新的layer
+    currentLayerIndex = layer.open({
+        type: 2, // iframe层
+        title: false, // 不显示标题栏
+        area: [width, '550px'], // 设置窗口宽度和高度
+        shade: 0, // 设置遮罩透明度
+        content: url, // 要打开的内容URL
+        move: '.drag-handle', // 指定可拖动的区域
+        closeBtn: 0, // 不显示关闭按钮
+        success: function(layero, index) {
+            console.log("open new window:" + index);
+           
+        }
+    });
+    // esc键关闭窗口
+    $(document).on('keyup', function(e){
+        if(e.keyCode === 27){
+            layer.close(currentLayerIndex);
+        }
+    });
+}
+
 </script>
 
 {{end}}

@@ -106,6 +106,10 @@ func setupSetting() error {
 	if err != nil {
 		return err
 	}
+	err = s.ReadSection("Blockchain", &global.BlockchainSetting)
+	if err != nil {
+		return err
+	}
 	err = s.ReadSection("App", &global.AppSetting)
 	if err != nil {
 		return err

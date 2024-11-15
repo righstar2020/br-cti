@@ -242,3 +242,6 @@
 .cti-upchain-table thead th {
     padding: 5px 10px;
 }
+.open-cti-detail{
+    cursor: pointer;
+}

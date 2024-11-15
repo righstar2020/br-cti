@@ -7,6 +7,7 @@ import (
 
 var (
 	ServerSetting   *setting.ServerSettingS
+	BlockchainSetting   *setting.BlockchainSettingS
 	AppSetting      *setting.AppSettingS
 	EmailSetting    *setting.EmailSettingS
 	JWTSetting      *setting.JWTSettingS

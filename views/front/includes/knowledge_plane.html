@@ -48,30 +48,182 @@
                 </div>
             </div>
             <div class="body-box-1-buttom">
-                
+                <div class="box-head">
+                    攻击类型统计
+                    <div class="box-head-toolbar head-toolbar-3">
+                        <a class="ui small blue label" data-tab="hour">小时</a>
+                        <a class="ui small label" data-tab="day">天</a>
+                        <a class="ui small label" data-tab="month">月</a>
+                       
+                        
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div id="ctiTimelineChart"></div>
+                </div>
             </div>
         </div>
         <div class="plane-box-body-box-2">
-
+            <div class="box-head">
+                攻击IOC信息
+                <!-- <div class="box-head-toolbar head-toolbar-3">
+                    <a class="ui small blue label" data-tab="hour">小时</a>
+                    <a class="ui small label" data-tab="day">天</a>
+                    <a class="ui small label" data-tab="month">月</a>             
+                </div> -->
+            </div>
+            <div class="box-body ioc-info-table-box">
+                <table class="ioc-info-table">
+                    <colgroup>
+                        <col style="width: 100px;">
+                        <col style="width: 100px;">
+                        <col style="width: 60px;">
+                        <col style="width: 60px;">
+                        <col style="width: 100px;">
+                        <col style="width: 100px;">
+                        <col style="width: 60px;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>IP地址</th>
+                            <th>物理地址</th>
+                            <th>攻击类型</th>
+                            <th>端口</th>
+                            <th>HASH</th>
+                            <th>观测时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>12.127.8.1</td>
+                            <td>越南</td>
+                            <td>DDoS</td>
+                            <td>7070</td>
+                            <td>adbdbca54ab</td>
+                            <td>2024-11-15 10:25:06</td>
+                            <td>
+                                <a class="open-cti-detail" data-id="1">详情</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>12.127.8.1</td>
+                            <td>越南</td>
+                            <td>DDoS</td>
+                            <td>7070</td>
+                            <td>adbdbca54ab</td>
+                            <td>2024-11-15 10:25:06</td>
+                            <td>
+                                <a class="open-cti-detail" data-id="1">详情</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>12.127.8.1</td>
+                            <td>越南</td>
+                            <td>DDoS</td>
+                            <td>7070</td>
+                            <td>adbdbca54ab</td>
+                            <td>2024-11-15 10:25:06</td>
+                            <td>
+                                <a class="open-cti-detail" data-id="1">详情</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>12.127.8.1</td>
+                            <td>越南</td>
+                            <td>DDoS</td>
+                            <td>7070</td>
+                            <td>adbdbca54ab</td>
+                            <td>2024-11-15 10:25:06</td>
+                            <td>
+                                <a class="open-cti-detail" data-id="1">详情</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>12.127.8.1</td>
+                            <td>越南</td>
+                            <td>DDoS</td>
+                            <td>7070</td>
+                            <td>adbdbca54ab</td>
+                            <td>2024-11-15 10:25:06</td>
+                            <td>
+                                <a class="open-cti-detail" data-id="1">详情</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>12.127.8.1</td>
+                            <td>越南</td>
+                            <td>DDoS</td>
+                            <td>7070</td>
+                            <td>adbdbca54ab</td>
+                            <td>2024-11-15 10:25:06</td>
+                            <td>
+                                <a class="open-cti-detail" data-id="1">详情</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>12.127.8.1</td>
+                            <td>越南</td>
+                            <td>DDoS</td>
+                            <td>7070</td>
+                            <td>adbdbca54ab</td>
+                            <td>2024-11-15 10:25:06</td>
+                            <td>
+                                <a class="open-cti-detail" data-id="1">详情</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>12.127.8.1</td>
+                            <td>越南</td>
+                            <td>DDoS</td>
+                            <td>7070</td>
+                            <td>adbdbca54ab</td>
+                            <td>2024-11-15 10:25:06</td>
+                            <td>
+                                <a class="open-cti-detail" data-id="1">详情</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>12.127.8.1</td>
+                            <td>越南</td>
+                            <td>DDoS</td>
+                            <td>7070</td>
+                            <td>adbdbca54ab</td>
+                            <td>2024-11-15 10:25:06</td>
+                            <td>
+                                <a class="open-cti-detail" data-id="1">详情</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="ui right floated pagination menu cti-data-table-nav tiny">
+                    <a class="icon item">
+                        <i class="left chevron icon"></i>
+                    </a>
+                    <a class="item">1</a>
+                    <a class="item">2</a>
+                    <a class="item">3</a>
+                    <a class="item">4</a>
+                    <a class="icon item">
+                        <i class="right chevron icon"></i>
+                    </a>
+                </div>
+            </div>
         </div>
    </div>
 </div>
 <script type="text/javascript" src="/static/map/world.js"></script>
 <script type="text/javascript" src="/static/map/init_map.js"></script>
 <script type="text/javascript" src="/static/front/js/init_kp_echart.js"></script>
+<script type="text/javascript" src="/static/front/js/init_kp_echart_2.js"></script>
 <script>
 $(document).ready(function() {
     // 为 '详情' 按钮绑定点击事件
-    $('.cti-detail').click(function() {
+    $('.open-cti-detail').click(function() {
         var ctiId = $(this).data('id');
         openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
     });
 
-    // 为 '获取' 按钮绑定点击事件
-    $('.cti-detail-buy').click(function() {
-        var ctiId = $(this).data('id');
-        openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
-    });
     //tab激活
     var currentTab = getUrlQueryString("tab")
     if(currentTab){
@@ -96,13 +248,18 @@ $(document).ready(function() {
     $('.head-toolbar-2 a').on('click', function() {
         // 移除所有 a 元素的 blue 类
         $('.head-toolbar-2 a').removeClass('blue');
-        $('.head-toolbar-2 a').removeClass('red')
         var tabName = $(this).data("tab")
         console.log(tabName)
-        if(tabName=="attack_type")
-            $(this).removeClass('grey').addClass('red');
-        else
-            $(this).removeClass('grey').addClass('blue');
+        $(this).removeClass('grey').addClass('blue');
+    });
+    //时序图切换
+    $('.head-toolbar-3 a').on('click', function() {
+        // 移除所有 a 元素的 blue 类
+        $('.head-toolbar-3 a').removeClass('blue');
+        var tabName = $(this).data("tab")
+        console.log(tabName)
+        $(this).removeClass('grey').addClass('blue');
+        changeTimelineMode(tabName)
     });
 });
 var currentLayerIndex = null; //设置只可打开一个窗口

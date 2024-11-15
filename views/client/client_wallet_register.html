@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>区块链网络</title>
+    <title>钱包创建</title>
     <link href="/static/front/css/custom.css" rel="stylesheet">
     <!--layui引入--->
     <link  href="/static/assets/libs/layui/css/layui.css" rel="stylesheet" media="all">
@@ -12,7 +12,7 @@
     <script type="text/javascript" src="/static/assets/js/jquery.min.js"></script>
     <script type="text/javascript" src="/static/assets/libs/layui/layui.js"></script>
     <script type="text/javascript" src="/static/assets/js/common.js?v=318"></script>
-    <link rel="stylesheet" href="/static/client/css/client_ml_model.css"/>
+    <link rel="stylesheet" href="/static/client/css/client_wallet_register.css"/>
     <!---semantic引入--->
     <link rel="stylesheet" type="text/css" href="/static/assets/libs/semantic/semantic.min.css">
     <script type="text/javascript" src="/static/assets/libs/semantic/semantic.min.js"></script> 
@@ -32,44 +32,13 @@
 </head>
 <body>
 <!-- 正文开始 -->
-<div class="client-model-box">
-   
+<div class="client-wallet-register-box drag-handle">
+    
 </div>
+<!-- js部分 -->
 <script>
-//检测网络状态
-CheckNetworkStatus()
-function CheckNetworkStatus(){
-    //从localStorage中获取client服务地址
-    var clientServerHost = localStorage.getItem('clientServerHost')
-    if (clientServerHost==null){
-        //设置默认cleint地址
-        clientServerHost = "http://127.0.0.1:5000"
-        localStorage.setItem("clientServerHost",clientServerHost)
-    }
-    var loadIndex = layer.load(1, {shade: false});
-    fetch(clientServerHost, {
-        method: 'HEAD', // 使用 HEAD 方法来检查服务器是否可用
-    })
-    .then(response => {
-        layer.close(loadIndex); // 关闭 loading
-        if (response.ok) {
-            console.log("Network status: Online");
-            $(".loading-box").removeClass("active")
-        } else {
-            console.log("Network status: Offline");
-            layer.msg('client网络异常,请检查网络连接!',{'time':1600},function(){
-            })
-            
-            
-        }
-    })
-    .catch(error => {
-        layer.close(loadIndex); // 关闭 loading
-        console.error("Network error:", error);
-        layer.msg('client网络异常,请检查网络连接!</br>'+clientServerHost,{'time':1600},function(){
-        })
-    });
-}
+
+
 
 function closeParentLayer(){
     var index = parent.layer.getFrameIndex(window.name); // 先得到当前 iframe 层的索引
