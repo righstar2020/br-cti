@@ -64,3 +64,12 @@
     width: 100%;
     min-height: 100px;
 }
+.client-network-tab-item .client-network-content-box{
+    width: 100%;
+}
+.client-network-content-box .field-bottom{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

@@ -1,0 +1,10 @@
+
+/*semantic自定义样式*/
+
+.ui.form .field>.selection.dropdown>.dropdown.icon {
+    float: right;
+    top: 25%;
+}
+.ui.selection.dropdown{
+    padding: 5px 10px;
+}

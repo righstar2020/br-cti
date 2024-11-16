@@ -1,0 +1,15 @@
+
+/*重写layui主题色*/
+/*边距*/
+.layui-tab-content{
+    padding: 10px 0;
+}
+/*按钮颜色*/
+
+/*表单颜色*/
+
+.layui-form-select dl dd.layui-this {
+    background-color: #125fab;
+    color: #fff;
+    opacity: 0.8;
+}
