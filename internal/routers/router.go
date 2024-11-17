@@ -90,7 +90,8 @@ func createClientRouter(r *gin.RouterGroup) *gin.RouterGroup {
 	index := r.Group("/client")
 	{
 		index.GET("/network", clientHandler.ClientNetworkHandler.Index)  
-		index.GET("/wallet", clientHandler.ClientNetworkHandler.Wallet) 
+		index.GET("/wallet", clientHandler.ClientNetworkHandler.Wallet)
+		index.GET("/wallet_register", clientHandler.ClientNetworkHandler.WalletRegister)
 		index.GET("/local-data", clientHandler.ClientNetworkHandler.LocalData)  
 		index.GET("/ml-model", clientHandler.ClientNetworkHandler.MLModel)
 	}

@@ -26,6 +26,13 @@ func (c *clientNetworkHandler) Wallet(ctx *gin.Context) {
 	})
 	
 }
+
+func (c *clientNetworkHandler) WalletRegister(ctx *gin.Context) {
+	response := app.NewResponse(ctx)	
+	response.BuildTpl(ctx, "client_wallet_register.html").WriteTpl(gin.H{
+	})
+}
+
 func (c *clientNetworkHandler) LocalData(ctx *gin.Context) {
 	response := app.NewResponse(ctx)	
 	response.BuildTpl(ctx, "client_local_data.html").WriteTpl(gin.H{

@@ -1,11 +1,11 @@
-.client-network-box{
+.network-box{
     width: 100%;
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
     flex-wrap: wrap;
 }
-.client-network-box .client-network-head{
+.network-box .network-head{
     width: 100%;
     min-height: 50px;
     margin: 5px 3%;
@@ -14,32 +14,32 @@
     background-color: white;
     padding: 10px 20px;
 }
-.client-network-head .client-network-head-title{
+.network-head .network-head-title{
     text-align: left;
     font-size: 15px;
     font-weight: 800;
 }
-.client-network-head .client-network-head-body{
+.network-head .network-head-body{
     display: flex;
     align-items: center;
     justify-content: flex-start;
 }
-.client-network-head-body .client-network-head-item{
+.network-head-body .network-head-item{
     padding-top: 10px;
     margin-right: 10px;  
 }
-.client-network-head-item .head-item-title{
+.network-head-item .head-item-title{
     width: 100%;
     text-align: left;
 }
-.client-network-head-item .head-item-content{
+.network-head-item .head-item-content{
     width: 100%;
     text-align: left;
     padding: 5px 0;
 }
 
 /*body*/
-.client-network-box .client-network-body{
+.network-box .network-body{
     width: 94%;
     margin: 10px 3%;
     min-height: 100px;
@@ -55,15 +55,16 @@
     color: #285191!important;
     border-bottom: 2px solid #285191!important;
 }
-.client-network-body .client-network-tab-title{
+.network-body .network-tab-title{
     font-size: 14px;
 }
 
-.client-network-body .client-network-tab-item{
+.network-body .network-tab-item{
     font-size: 14px;
     width: 100%;
     min-height: 100px;
 }
+/*客户端网络*/
 .client-network-tab-item .client-network-content-box{
     width: 100%;
 }
@@ -73,3 +74,93 @@
     align-items: center;
     justify-content: center;
 }
+/*区块链网络*/
+.network-tab-item .blockchain-network-content-box{
+    width: 100%;
+}
+.blockchain-network-list{
+    width: 100%;
+    padding: 10px;
+}
+.blockchain-network-item{
+    width: 100%;
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    border-left:  4px solid #fff;
+}
+#bc_network_connected,
+#bc_network_connect{
+    display: none;
+}
+/*网络连接active*/
+.blockchain-network-item-active{
+    background-color: #a7d8fe43;
+    border-left: 4px solid #285191;
+}
+
+.blockchain-network-item-active 
+#bc_network_connected{
+    display: flex;
+}
+
+/*网络连接hover*/
+.blockchain-network-item:hover{
+    border-left: 4px solid #d6d9dc7e;
+    background-color: #d6d9dc7e;
+}
+.blockchain-network-item:hover 
+#bc_network_connect{
+    display: block;
+}
+.blockchain-network-item-active:hover{
+    border-left: 4px solid #285191;
+    background-color: #a7d8fe43;
+}
+.blockchain-network-item-active:hover
+#bc_network_connect{
+    display: none!important;
+}
+
+.blockchain-network-item-icon {
+    font-size: 20px;
+    color: #285191;
+    height: 100%;
+    width: 50px;
+    padding: 0 auto;
+    text-align: center;
+}
+.blockchain-network-item-name{
+    font-size: 14px;
+    padding: 0 10px;
+    height: 100%;
+    cursor: pointer;
+    text-align: left;
+}
+.blockchain-network-item-tools{
+    position: absolute;
+    right: 0;
+    height: 100%;
+    width: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.blockchain-network-item-add{
+    margin: 10px 0;
+    width: 100%;
+    padding: 10px 0;
+    cursor: pointer;
+}
+.blockchain-network-item-add .ui.segment.small{
+    padding: 10px 0;
+}
+.blockchain-network-item-add  .ui.segment.small:hover{
+    background-color: #f3f5f620;
+}
+

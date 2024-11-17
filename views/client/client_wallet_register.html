@@ -32,45 +32,151 @@
 </head>
 <body>
 <!-- 正文开始 -->
-<div class="client-wallet-register-box drag-handle">
-    
+<div class="client-wallet-register-box ">
+    <div id="drag-handle" class="wallet-register-header">
+        <div onclick="preSetpPage()" class="pre-page-box">
+            <i class="angle left icon"></i>
+            <span>我的钱包</span>
+        </div>
+    </div>
+    <div id="wallet-register-step-1" class="wallet-register-step-box step-active">
+        <div class="wallet-register-step-header">
+            <div class="wallet-register-banner">
+                <img src="/static/client/imgs/wallet.png" alt="钱包banner">
+            </div>
+        </div>
+        <div class="wallet-register-step-buttons">
+            <div class="wallet-register-step-button-item">
+                <button class="ui blue button" onclick="nextSetpPage(2)">创建钱包</button>
+            </div>
+            <div class="wallet-register-step-button-item">
+                <button class="ui blue basic button" onclick="reloadLocalWallet()">刷新钱包</button>
+            </div>
+        </div>
+    </div>
+    <div id="wallet-register-step-2" class="wallet-register-step-box">
+        <div class="wallet-register-form-title">
+            <span>创建密码</span>
+            <span>系统不保存密码，忘记密码将导致钱包丢失</span>
+        </div>
+        <div class="wallet-register-form-box">
+            <form class="ui form">
+                <div class="field">
+                    <label>钱包密码</label>
+                    <input type="password" name="wallet-password" placeholder="请输入密码">
+                </div>
+                <div class="field">
+                    <label>确认密码</label>
+                    <input type="password" name="wallet-password-confirm" placeholder="请再次输入密码">
+                </div>
+            </form>
+        </div>
+        <div class="wallet-register-step-buttons">
+            <div class="wallet-register-step-button-item">
+                <button class="ui blue button" onclick="saveWalletPassword()">下一步</button>
+            </div>
+        </div>
+    </div>
+    <div id="wallet-register-step-3" class="wallet-register-step-box">
+        <div class="wallet-register-confirm-title">
+            <span>创建确认</span>
+            <span>钱包公私钥文件将加密保存在本地客户端，是否确认创建钱包?</span>
+        </div>
+        <div class="wallet-register-step-buttons">
+            <div class="wallet-register-step-button-item">
+                <button class="ui blue button" onclick="comfirmCreateWallet()">确认创建</button>
+            </div>
+        </div>
+    </div>
+   
 </div>
 <!-- js部分 -->
+<script type="text/javascript" src="/static/client/js/client_wallet.js"></script>
 <script>
+var walletRegisterStep = 1
+var walletRegisterPreStepTitleList = ["我的钱包","创建钱包","输入密码","创建成功"]
+var walletRegisterStepBox = $("#wallet-register-step-"+walletRegisterStep)
 
 
 
-function closeParentLayer(){
-    var index = parent.layer.getFrameIndex(window.name); // 先得到当前 iframe 层的索引
-    parent.layer.close(index); // 再执行关闭
+function setWalletRegisterStep(step){
+    walletRegisterStep = step
+    $(".wallet-register-step-box").removeClass("step-active")
+    $("#wallet-register-step-"+walletRegisterStep).addClass("step-active")
+    $(".wallet-register-header span").text(walletRegisterPreStepTitleList[walletRegisterStep-1])
 }
-var currentLayerIndex = null
-layui.use(['layer'], function(){
-    var layer = layui.layer
-    $ = layui.$;
-    function openParentWindow(url) {
-        var parentLayer = window.parent.layer;
-        if(currentLayerIndex!=null){
-            //默认只打开一个窗口
-            parentLayer.close(currentLayerIndex);
-        }
-        //使用父层级打开窗口
-        currentLayerIndex = parentLayer.open({
-                type: 2,
-                title: '详情',
-                area: ['700px', '550px'], // 设置窗口宽度和高度
-                shade: 0, // 设置遮罩透明度
-                content: url,
-                success: function(layero, index){
-                    //关闭当前窗口
-                    // closeParentLayer()
-                }
-        });
-        
-        
-    }
-})
 
+function preSetpPage(){
+    if(walletRegisterStep>1){
+        setWalletRegisterStep(walletRegisterStep-1)
+    }else{
+        //回到我的钱包
+         window.location.href = "/client/wallet"
+    }
+}
+
+function nextSetpPage(step){
+    setWalletRegisterStep(step)
+}
+
+function reloadLocalWallet(){
+    getLocalUserWallet().then(function(data){
+        console.log(data)
+        if (data.wallet_id==null){
+            layer.msg('未查询到本地钱包',{'time':1000})
+        }
+        if (data.wallet_id!=null){
+            //钱包存在则设置用户钱包信息
+            layer.msg('查询到钱包:<br>'+data.wallet_id,{'time':1000},function(){
+                window.location.href = "/client/wallet"
+            })
+        }
+    }).catch(function(error){
+        console.log(error)
+        layer.msg('网络异常!<br>'+error,{'time':1600})
+    })
+}
+//保存钱包密码
+var walletPassword = ""
+var walletPasswordConfirm = ""
+function saveWalletPassword(){
+    walletPassword = $("input[name='wallet-password']").val()
+    walletPasswordConfirm = $("input[name='wallet-password-confirm']").val()
+    if (walletPassword==""||walletPasswordConfirm==""){
+        layer.msg('密码不能为空!',{'time':1600})
+        return false
+    }
+    if (walletPassword==walletPasswordConfirm){
+        nextSetpPage(3)
+        return true
+    }else{
+        layer.msg('两次输入的密码不一致!',{'time':1600})
+    }
+    
+    return false
+}
+//确认创建钱包
+function comfirmCreateWallet(){
+    if (walletPassword==walletPasswordConfirm){
+        createLocalUserWallet(walletPassword).then(function(response){
+            console.log(response)
+            if (response.code==200){
+                layer.msg('钱包创建成功!',{'time':1600},function(){
+                    window.location.href = "/client/wallet"
+                })
+            }else{
+                layer.msg('钱包创建失败!<br>'+response.message,{'time':1600})
+            }
+        }).catch(function(error){
+            console.log(error)
+            layer.msg('网络异常!<br>'+error,{'time':1600})
+        })
+
+    }else{
+
+        layer.msg('两次输入的密码不一致!',{'time':1600})
+    }   
+}
 </script>
 </body>
 </html>

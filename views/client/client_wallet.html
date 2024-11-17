@@ -37,8 +37,10 @@
 
 </div>
 <!-- js部分 -->
+<script type="text/javascript" src="/static/client/js/client_wallet.js"></script>
 <script>
 //检测网络状态
+CheckNetworkStatus()
 function CheckNetworkStatus(){
     //从localStorage中获取client服务地址
     var clientServerHost = localStorage.getItem('clientServerHost')
@@ -47,22 +49,34 @@ function CheckNetworkStatus(){
         clientServerHost = "http://127.0.0.1:5000"
         localStorage.setItem("clientServerHost",clientServerHost)
     }
+    // 创建一个超时的 Promise
+    function timeout(ms) {
+        return new Promise((_, reject) => {
+            setTimeout(() => {
+                reject(new Error('请求超时'));
+            }, ms);
+        });
+    }
     var loadIndex = layer.load(1, {shade: false});
-    fetch(clientServerHost, {
-        method: 'HEAD', // 使用 HEAD 方法来检查服务器是否可用
-    })
+    // 使用 Promise.race 来处理超时
+    Promise.race([
+        fetch(clientServerHost, {
+            method: 'HEAD', // 使用 HEAD 方法来检查服务器是否可用
+        }),
+        timeout(6000) // 设置超时时间为 6 秒
+    ])
     .then(response => {
         layer.close(loadIndex); // 关闭 loading
         if (response.ok) {
             console.log("Network status: Online");
-            $(".loading-box").removeClass("active")
+            //网络正常则检测钱包
+            //检测本地是否存在钱包
+            CheckLocalUserWallet()
         } else {
             console.log("Network status: Offline");
             layer.msg('client网络异常,请检查网络连接!',{'time':1600},function(){
-            closeParentLayer()
+                closeParentLayer()
             })
-            
-            
         }
     })
     .catch(error => {
@@ -74,13 +88,43 @@ function CheckNetworkStatus(){
         })
     });
 }
-CheckNetworkStatus()
-//检测本地是否存在钱包
+
+function CheckLocalUserWallet(){
+    getLocalUserWallet().then(function(response){
+        console.log(response)
+        var data = response.data
+        if (data.wallet_id==null||response.status==400){
+            layer.msg('未查询到本地钱包',{'time':1000},function(){
+                redirectToRegisterWallet()
+            })
+        }
+        if (data.wallet_id!=null){
+            //钱包存在则设置用户钱包信息
+            setLocalUserWallet(data.wallet_id)
+            layer.msg('查询到钱包<br>'+data.wallet_id.substring(0,6)+'...'+data.wallet_id.substring(data.wallet_id.length-6),{'time':1000})
+        }
+    }).catch(function(error){
+        console.log(error)
+        layer.msg('网络异常!<br>'+error,{'time':1600})
+    })
+}
+//钱包不存在则跳转注册界面
+function redirectToRegisterWallet(){
+    window.location.href = "/client/wallet_register"
+}
+
+
+//钱包存在则设置用户钱包信息
+function setLocalUserWallet(walletId){
+    localStorage.setItem("userWalletId",walletId)
+}
+
 
 function closeParentLayer(){
     var index = parent.layer.getFrameIndex(window.name); // 先得到当前 iframe 层的索引
     parent.layer.close(index); // 再执行关闭
 }
+
 var currentLayerIndex = null
 layui.use(['layer'], function(){
     var layer = layui.layer
