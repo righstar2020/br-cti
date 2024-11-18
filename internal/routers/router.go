@@ -287,15 +287,30 @@ func loadTemplates(templatesDir string) multitemplate.Renderer {
 	r = loadAdminTemplates(r,funcMap, templatesDir+"/admin")
 	return r
 }
-func loadClientTemplates(r multitemplate.Renderer,funcMap template.FuncMap , templatesDir string) multitemplate.Renderer {
-	// 非模板嵌套
-	adminHtmls, err := filepath.Glob(templatesDir + "/*.html")
+// 加载客户端模板，并支持嵌套模板
+func loadClientTemplates(r multitemplate.Renderer, funcMap template.FuncMap, templatesDir string) multitemplate.Renderer {
+	// 获取所有主模板文件
+	clientHtmls, err := filepath.Glob(templatesDir + "/*.html")
 	if err != nil {
 		panic(err.Error())
 	}
-	for _, html := range adminHtmls {
-		r.AddFromFilesFuncs(filepath.Base(html), funcMap, html)
+
+	// 获取所有嵌套内容模板文件
+	includes, err := filepath.Glob(templatesDir + "/includes/*.html")
+	if err != nil {
+		panic(err.Error())
 	}
+
+	// 对每个主模板文件进行处理
+	for _, clientHtml := range clientHtmls {
+		//主模板的文件名(包含扩展名)
+		baseName := filepath.Base(clientHtml)
+		// 组合主模板和所有嵌套内容模板
+		files := append([]string{clientHtml}, includes...)
+		// 添加模板到 Renderer
+		r.AddFromFilesFuncs(baseName, funcMap, files...)
+	}
+
 	return r
 }
 func loadFrontTemplates(r multitemplate.Renderer,funcMap template.FuncMap , templatesDir string) multitemplate.Renderer {

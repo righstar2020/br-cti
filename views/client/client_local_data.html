@@ -8,10 +8,13 @@
     <link href="/static/front/css/custom.css" rel="stylesheet">
     <!--layui引入--->
     <link  href="/static/assets/libs/layui/css/layui.css" rel="stylesheet" media="all">
+    
     <!---js库引入--->
     <script type="text/javascript" src="/static/assets/js/jquery.min.js"></script>
     <script type="text/javascript" src="/static/assets/libs/layui/layui.js"></script>
     <script type="text/javascript" src="/static/assets/js/common.js?v=318"></script>
+    <link rel="stylesheet" href="/static/custom/layui_custom.css"/>
+    <link rel="stylesheet" href="/static/custom/semantic_custom.css"/>
     <link rel="stylesheet" href="/static/client/css/client_local_data.css"/>
     <!---semantic引入--->
     <link rel="stylesheet" type="text/css" href="/static/assets/libs/semantic/semantic.min.css">
@@ -33,8 +36,102 @@
 <body>
 <!-- 正文开始 -->
 <div class="client-data-box">
-    
+    <div class="client-data-header-box">
+        <div class="client-data-header-left-box cti-data-box">
+            <div class="cti-data-item">
+                <div class="data-item-num">
+                    2 K+
+                </div>
+                <div class="data-item-title">
+                    链上总情报
+                </div>
+            </div>
+            <div class="cti-data-item">
+                <div class="data-item-num">
+                    200
+                </div>
+                <div class="data-item-title">
+                    我的情报
+                </div>
+            </div>
+            <div class="cti-data-item">
+                <div class="data-item-num">
+                    100
+                </div>
+                <div class="data-item-title">
+                    我的上链
+                </div>
+            </div>
+        </div>
+        <div class="client-data-header-right-box">
+            <div class="local-data-info-left-icon">
+                <i class="database  icon"></i>
+            </div>
+            <div class="local-data-info-right-box">
+                <div class="local-data-info-num">
+                    100
+                </div>
+                <div class="local-data-info-title">
+                    全部数据
+                </div>
+            </div>
+        </div>
+        <div class="client-data-header-right-box">
+            <div class="local-data-info-left-icon">
+                <i class="hdd  icon"></i>
+            </div>
+            <div class="local-data-info-right-box">
+                <div class="local-data-info-num">
+                    100
+                </div>
+                <div class="local-data-info-title">
+                    处理完成
+                </div>
+            </div>
+        </div>
+        <div class="client-data-header-right-box">
+            <div class="local-data-info-left-icon">
+                <i class="hdd outline icon"></i>
+            </div>
+            <div class="local-data-info-right-box">
+                <div class="local-data-info-num">
+                    0
+                </div>
+                <div class="local-data-info-title">
+                    处理中
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="client-data-body-box client-data-precess-box layui-tab layui-tab-brief">
+        <ul class="layui-tab-title client-data-precess-tab">
+            <li class="client-data-tab-title layui-this">流量情报</li>
+            <li class="client-data-tab-title">大模型提取</li>
+            <li class="client-data-tab-title">自动化日志</li>
+        </ul>
+        <div class="layui-tab-content client-data-precess-content">
+            <div class="client-data-tab-item layui-tab-item layui-show">
+                <!-- 流量情报Tab模板 -->
+                {{template "tab_traffic_content" .}}
+            </div>
+            <div class="client-data-tab-item layui-tab-item">
+            
+            </div>
+            <div class="client-data-tab-item layui-tab-item">
+            
+            </div>
+        </div>
+    </div>
+    <div class="client-data-bottom-box">
+        <div class="client-data-tools-box">
+
+        </div>
+        <div class="client-data-table-box">
+
+        </div>
+    </div>
 </div>
+<script type="text/javascript" src="/static/client/js/client_local_data.js"></script>
 <script>
 //检测网络状态
 CheckNetworkStatus()

@@ -8,3 +8,9 @@
 .ui.selection.dropdown{
     padding: 5px 10px;
 }
+.ui.placeholder.segment{
+    min-height: 100px!important;
+}
+.ui.icon.header{
+    margin: 0!important;
+}
