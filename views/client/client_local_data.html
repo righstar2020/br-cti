@@ -24,7 +24,7 @@
             overflow: auto!important; /* 或者使用 overflow-y: scroll; 来允许垂直滚动 */
             scrollbar-width: none!important; /* Firefox */
             -ms-overflow-style: none!important; /* IE 和 Edge */
-            min-width: 200px;
+            min-width: 100px;
         }
 
         /* 隐藏Webkit核心浏览器（如Chrome, Safari等）中的滚动条 */
@@ -124,14 +124,23 @@
     </div>
     <div class="client-data-bottom-box">
         <div class="client-data-tools-box">
-
+            <div class="tools-box-tab-list">
+                <a class="ui small blue label" data-tab="hour">全部</a>
+                <a class="ui small label" data-tab="day">处理中</a>
+            </div>
+            <div class="tools-box-text-box">
+                <span>共查询到</span>
+                <span class="tools-box-text-num">100</span>
+                <span>条数据</span>
+            </div>
         </div>
         <div class="client-data-table-box">
-
+            <table class="layui-hide" id="client-data-table"></table>
         </div>
     </div>
 </div>
 <script type="text/javascript" src="/static/client/js/client_local_data.js"></script>
+<script type="text/javascript" src="/static/client/js/client_local_data_table.js"></script>
 <script>
 //检测网络状态
 CheckNetworkStatus()

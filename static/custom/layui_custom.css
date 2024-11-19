@@ -21,3 +21,11 @@
     color: #285191!important;
     border-bottom: 2px solid #285191!important;
 }
+/*table样式*/
+.layui-table thead tr{
+    /* background-color: #2185d0!important;
+    color: #fff; */
+}
+.layui-laypage .layui-laypage-curr .layui-laypage-em{
+    background-color: #2185d0!important;
+}

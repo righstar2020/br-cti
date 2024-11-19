@@ -98,15 +98,7 @@ function addUploadFileItem(file) {
     uploadFileItem.querySelector('.upload-data-item-delete-btn').setAttribute('data-file-id', fileId);
 
     // 修改内容
-    //判断中文or英文
-    var isChinese = /[\u4e00-\u9fa5]/.test(file.name);
-    var file_name = file.name;
-    if(file_name.length > 15 && isChinese){
-        file_name = truncateText(file.name,15,6);
-    }else{
-        file_name = truncateText(file.name,23,6);
-    }
-    uploadFileItem.querySelector('.upload-data-item-name').innerText = file_name;
+    uploadFileItem.querySelector('.upload-data-item-name').innerText = file.name;
     uploadFileItem.querySelector('.upload-data-item-hash').innerText = ''; // 初始为空，稍后更新
     uploadFileItem.querySelector('.upload-data-item-size').innerText = formatSize(file.size);
 
@@ -190,7 +182,7 @@ function uploadSingleFile(fileId, file) {
             console.log(response);
             if (response.code == 200) {
                 const data = response.data;
-                $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-hash`).text(truncateText(data.file_hash,18,6));
+                $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-hash`).text(data.file_hash);
                 $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-size`).text(formatSize(data.file_size));
                 uploadFileHashMap[fileId] = data.file_hash;
             } else {
@@ -243,7 +235,20 @@ function bindDragDropEvent(){
    function handleDrop(e) {
        const dt = e.dataTransfer;
        const files = dt.files;
-       handleFiles(files);
+       
+       // 过滤文件格式
+       const allowedFiles = Array.from(files).filter(file => {
+           const ext = file.name.split('.').pop().toLowerCase();
+           return ['xlsx', 'csv', 'txt'].includes(ext);
+       });
+       
+       if(allowedFiles.length < files.length) {
+           layer.msg('只支持上传xlsx、csv、txt格式的文件',{'time':1200});
+       }
+       
+       if(allowedFiles.length > 0) {
+           handleFiles(allowedFiles);
+       }
    }
 
    // 点击事件处理
@@ -263,19 +268,222 @@ function bindDragDropEvent(){
 
 /*------------------Setp 2 STIX数据转换------------------------*/
 function initStepProcessStixData(){
-    copyFileDataListHtml();
+    updateStixProcessDataListHtml();
 }
-function copyFileDataListHtml(){
-    var fileDataListHtml =  document.getElementsByClassName(`upload-data-list`)[0].cloneNode(true);
-    fileDataListHtml.id = 'stix-process-data-list';
-    fileDataListHtml.classList.add('stix-process-data-list');
-    $(`.client-data-process-step-box[data-step="2"] .stix-process-data-list-box`).html(fileDataListHtml);
+function updateStixProcessDataListHtml(){
+    //从前一step获取数据填充本step的模板
+    const uploadDataList = $(`.upload-data-list .upload-data-item`);
+    const stixProcessDataList = $(`.stix-process-data-list-box`);
+    //遍历上传文件列表
+    uploadDataList.each(function(index, item) {
+        if($(item).attr('id') == 'upload-file-template'){
+            return;
+        }
+        console.log(item);
+        console.log(document.getElementById("stix-process-data-item-template"));
+        //克隆模板
+        const stixProcessDataItem = document.getElementById("stix-process-data-item-template").cloneNode(true);
+        //移除模板的display:none样式
+        stixProcessDataItem.style.display = 'block';
+        //设置process id
+        var processId = $(item).attr('data-file-id');
+        stixProcessDataItem.id = `stix-process-data-${processId}`;
+        stixProcessDataItem.setAttribute('data-process-id', processId);
+        //设置form的process-id
+        stixProcessDataItem.querySelector('.stix-process-data-config-form').setAttribute('data-process-id', processId);
+        //设置按钮的process-id
+        stixProcessDataItem.querySelector('.upload-data-item-tools button').setAttribute('data-process-id', processId);
+        //设置获取流量特征字段按钮的process-id
+        stixProcessDataItem.querySelector('.get-traffic-feature-field-btn').setAttribute('data-process-id', processId);
+        //设置删除按钮的process-id
+        stixProcessDataItem.querySelector('.stix-process-data-item-delete-btn').setAttribute('data-process-id', processId);
+        //设置文件名
+        stixProcessDataItem.querySelector('.upload-data-item-name').innerText = $(item).find('.upload-data-item-name').text();
+        //设置hash
+        stixProcessDataItem.querySelector('.upload-data-item-hash').innerText = $(item).find('.upload-data-item-hash').text();
+        //设置大小
+        stixProcessDataItem.querySelector('.upload-data-item-size').innerText = $(item).find('.upload-data-item-size').text();
+        //添加到目标元素，如果ID已存在则不添加
+        if(document.getElementById(`stix-process-data-${processId}`)){
+            return;
+        }
+        stixProcessDataList.append(stixProcessDataItem);
+        //初始化下拉框
+        $(`#stix-process-data-${processId} .ui.dropdown`).dropdown();
+        //设置情报类型下拉框
+        $(`#stix-process-data-${processId} .ui.dropdown.stix-type`).dropdown({
+            values: [{
+                name: '恶意流量',
+                value: 'malicious_traffic',
+                selected: true
+            },{
+                name: '应用层攻击',
+                value: 'app_attack',
+                selected: false
+            },
+            {
+                name: '开源情报',
+                value: 'osint',
+                selected: false
+            }]
+        });
+        //设置压缩比例下拉框
+        $(`#stix-process-data-${processId} .ui.dropdown.stix-compress`).dropdown({
+            values: [
+                {name: '10条',value: '10',selected: true},
+                {name: '50条',value: '50'},
+                {name: '100条',value: '100'},
+                {name: '500条',value: '500'},
+                {name: '1000条',value: '1000'}
+            ]
+        });
+    });
 }
-function convertStixData(){
 
+//从服务器获取流量特征字段
+function getTrafficFeatureField(button){
+    var processId = $(button).attr('data-process-id');
+    var file_hash = uploadFileHashMap[processId];
+    console.log("uploadFileHashMap:",uploadFileHashMap);
+    console.log("processId:",processId);
+    console.log("file_hash:",file_hash);
+    if (!file_hash) {
+        console.error("file_hash 未定义，请检查 uploadFileHashMap 是否正确更新");
+        return; // 如果 file_hash 未定义，提前返回以避免后续错误
+    }
+    $.ajax({
+        url: clientServerHost + '/data/get_traffic_data_features',
+        type: "POST",
+        dataType: "json",
+        contentType: "application/json",
+
+        data: JSON.stringify({"file_hash": file_hash}),
+        success: function(response){
+            console.log(response);
+            if(response.code == 200){
+                const data = response.data;
+                $(`.stix-process-data-item[data-process-id="${processId}"] .stix-process-data-config-form input[name="traffic_feature_field"]`).val(data);
+            }else{
+                layer.msg(response.error,{'time':1200});
+            }
+        },
+        error: function(response){
+            console.log(response);
+            layer.msg(response.error,{'time':1200});
+        }
+    });
 }
 
+function deleteStixProcessDataItem(button){
+    const processId = $(button).attr('data-process-id');
+    if(processId == null){
+        return;
+    }
+    const item = $(`.stix-process-data-item[data-process-id="${processId}"]`);
+    item.remove();
+}
 
+//开始数据格式转换
+function startStixProcessData(button){
+    const processId = $(button).attr('data-process-id');
+    if(processId == null){
+        return;
+    }
+    //保存配置
+    startStixProcessDataWithConfig(button);
+}
+
+//保存配置并开始数据格式转换
+function startStixProcessDataWithConfig(button){
+    const processId = $(button).attr('data-process-id');
+    const form = $(`.stix-process-data-config-form[data-process-id="${processId}"]`);
+    var stixProcessDataConfig = {
+        "process_id": processId,
+        "file_hash": uploadFileHashMap[processId],
+        "stix_type": form.find('select[name="stix_type"]').val(),
+        "stix_traffic_features": form.find('input[name="traffic_feature_field"]').val(),
+        "stix_iocs": form.find('select[name="stix_iocs"]').val(),
+        "stix_label": form.find('select[name="stix_label"]').val(),
+        "stix_compress": form.find('select[name="stix_compress"]').val(),
+        "stix_label": form.find('select[name="stix_label"]').val(),
+    };
+    $.ajax({
+        url: clientServerHost + '/data/process_data_to_stix',
+        type: 'POST',
+        dataType: "json",
+        contentType: 'application/json',
+        data: JSON.stringify(stixProcessDataConfig),
+        success: function(response){
+            console.log(response);
+            if(response.code == 200){
+                data = response.data;
+                const current_step = data.current_step;
+                const total_step = data.total_step;
+                if(current_step != null && total_step != null){
+                    $(`.stix-process-data-item[data-process-id="${processId}"] .stix-process-data-item-status`).
+                    text(`处理中${current_step}/${total_step}`);
+                }
+                pollingStixProcessProgress(processId);
+            }else{
+                if(response.error){
+                    layer.msg(response.error,{'time':1200});
+                }
+            }
+        },
+        error: function(response){
+            console.log(response);
+        }
+    });
+    
+}
+//100ms轮询
+var processPollingIntervalMap = {};
+function pollingStixProcessProgress(processId){
+    if(processPollingIntervalMap[processId]){
+        clearInterval(processPollingIntervalMap[processId]);
+    }
+    processPollingIntervalMap[processId] = setInterval(function(){
+        getStixProcessProgress(processId);
+    },100);
+}
+function getStixProcessProgress(processId){
+    $.ajax({
+        url: clientServerHost + '/data/get_stix_process_progress',
+        type: 'POST',
+        dataType: "json",
+        contentType: 'application/json',
+        data: JSON.stringify({"file_hash": uploadFileHashMap[processId]}),
+        success: function(response){
+            console.log(response);
+            if(response.code == 200){
+                const data = response.data;
+                const progress = data.progress;
+                const current_step = data.current_step;
+                const total_step = data.total_step;
+                const progressBar = $(`.stix-process-data-item[data-process-id="${processId}"] .stix-process-data-item-progress`);
+                if(progressBar&&progress!=null){
+                    progressBar.progress({
+                        percent: progress
+                    });
+                }
+                if(current_step != null && total_step != null){
+                    $(`.stix-process-data-item[data-process-id="${processId}"] .stix-process-data-item-status`).
+                    text(`处理中${progress}%(${current_step}/${total_step})`);
+                }
+                //处理完成
+                if(progress == 100){
+                    delete processPollingIntervalMap[processId];
+                    clearInterval(processPollingIntervalMap[processId]);
+                    $(`.stix-process-data-item[data-process-id="${processId}"] .stix-process-data-item-status`).
+                    text(`处理完成${progress}%(${current_step}/${total_step})`);
+                }
+            }
+        },
+        error: function(response){
+            console.log(response);
+        }
+    });
+}
 
 
 /*------------------Setp 2 STIX数据转换 end------------------------*/

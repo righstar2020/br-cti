@@ -6,7 +6,7 @@
     top: 25%;
 }
 .ui.selection.dropdown{
-    padding: 5px 10px;
+    padding: 5px 10px!important;
 }
 .ui.placeholder.segment{
     min-height: 100px!important;
