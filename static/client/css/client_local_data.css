@@ -226,18 +226,21 @@
     width: 100%;
     height: 100%;
 }
+.client-data-process-step-box .stix-process-data-config{
+    padding-bottom: 10px;
+}
 .client-data-process-step-box .stix-process-data-config-title{
     padding: 10px;
     width: 100%;
     font-size: 18px;
     font-weight: bold;
 }
+
 .client-data-process-step-box .stix-process-data-config-box{
     padding: 5px 12px;
 }
 .stix-process-data-list-box .stix-process-data-item{
     box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
-    padding-bottom: 20px;
     margin-bottom: 10px;
 }
 .stix-process-data-item .stix-process-data-item-body{

@@ -42,7 +42,7 @@
     </div>
     <div data-step="2" class="client-data-process-step-box" style="display: none;">
         <div class="stix-process-data-list-box">
-            <div data-process-id="" id="stix-process-data-item-template" style="display: none;"  class="stix-process-data-item upload-data-item" >
+            <div data-finish="false" data-process-id="" id="stix-process-data-item-template" style="display: none;"  class="stix-process-data-item upload-data-item" >
                 <div class="stix-process-data-item-progress ui blue active top attached progress">
                     <div class="bar"></div>
                 </div>
@@ -87,7 +87,6 @@
                                 <label>分类标签</label>
                                 <select  class="ui dropdown tiny" name="stix_label">
                                   <option value="">选择划分情报的标签字段</option>
-                                  <option value="label">label</option>
                                 </select>
                             </div>
                             <div class="field">
@@ -106,7 +105,7 @@
                                 <label>数据压缩</label>
                                 <div class="ui selection dropdown stix-compress">
                                     <i class="dropdown icon"></i>
-                                    <div class="default text">10条</div>
+                                    <div class="default text">1000条</div>
                                     <input class="small" type="hidden" name="stix_compress">
                                 </div>
                             </div>
