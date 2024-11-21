@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>区块链网络</title>
+    <title>本地数据</title>
     <link href="/static/front/css/custom.css" rel="stylesheet">
     <!--layui引入--->
     <link  href="/static/assets/libs/layui/css/layui.css" rel="stylesheet" media="all">
@@ -40,7 +40,7 @@
         <div class="client-data-header-left-box cti-data-box">
             <div class="cti-data-item">
                 <div class="data-item-num">
-                    2 K+
+                    2 K
                 </div>
                 <div class="data-item-title">
                     链上总情报
@@ -48,7 +48,7 @@
             </div>
             <div class="cti-data-item">
                 <div class="data-item-num">
-                    200
+                    0
                 </div>
                 <div class="data-item-title">
                     我的情报
@@ -56,7 +56,7 @@
             </div>
             <div class="cti-data-item">
                 <div class="data-item-num">
-                    100
+                    0
                 </div>
                 <div class="data-item-title">
                     我的上链
@@ -69,7 +69,7 @@
             </div>
             <div class="local-data-info-right-box">
                 <div class="local-data-info-num">
-                    100
+                    0
                 </div>
                 <div class="local-data-info-title">
                     全部数据
@@ -82,7 +82,7 @@
             </div>
             <div class="local-data-info-right-box">
                 <div class="local-data-info-num">
-                    100
+                    0
                 </div>
                 <div class="local-data-info-title">
                     处理完成
@@ -125,8 +125,8 @@
     <div class="client-data-bottom-box">
         <div class="client-data-tools-box">
             <div class="tools-box-tab-list">
-                <a class="ui small blue label" data-tab="hour">全部</a>
-                <a class="ui small label" data-tab="day">处理中</a>
+                <a  onclick="switchDataTableTab(this)" class="ui small blue label" data-tab="all">全部</a>
+                <a  onclick="switchDataTableTab(this)" class="ui small label" data-tab="processing">处理中</a>
             </div>
             <div class="tools-box-text-box">
                 <span>共查询到</span>
@@ -140,7 +140,11 @@
     </div>
 </div>
 <script type="text/javascript" src="/static/client/js/client_local_data.js"></script>
-<script type="text/javascript" src="/static/client/js/client_local_data_table.js"></script>
+<script type="text/javascript" src="/static/client/js/client_local_data/data_table.js"></script>
+<script type="text/javascript" src="/static/client/js/client_local_data/file_upload.js"></script>
+<script type="text/javascript" src="/static/client/js/client_local_data/stix_process.js"></script>
+<script type="text/javascript" src="/static/client/js/client_local_data/cti_process.js"></script>
+<script type="text/javascript" src="/static/client/js/client_local_data/cti_upchain.js"></script>
 <script>
 //检测网络状态
 CheckNetworkStatus()
@@ -185,28 +189,29 @@ var currentLayerIndex = null
 layui.use(['layer'], function(){
     var layer = layui.layer
     $ = layui.$;
-    function openParentWindow(url) {
-        var parentLayer = window.parent.layer;
-        if(currentLayerIndex!=null){
-            //默认只打开一个窗口
-            parentLayer.close(currentLayerIndex);
-        }
-        //使用父层级打开窗口
-        currentLayerIndex = parentLayer.open({
-                type: 2,
-                title: '详情',
-                area: ['700px', '550px'], // 设置窗口宽度和高度
-                shade: 0, // 设置遮罩透明度
-                content: url,
-                success: function(layero, index){
-                    //关闭当前窗口
-                    // closeParentLayer()
-                }
-        });
-        
-        
-    }
 })
+
+function openParentWindow(url) {
+    var parentLayer = window.parent.layer;
+    if(currentLayerIndex!=null){
+        //默认只打开一个窗口
+        parentLayer.close(currentLayerIndex);
+    }
+    //使用父层级打开窗口
+    currentLayerIndex = parentLayer.open({
+            type: 2,
+            title: '详情',
+            area: ['700px', '550px'], // 设置窗口宽度和高度
+            shade: 0, // 设置遮罩透明度
+            content: url,
+            success: function(layero, index){
+                //关闭当前窗口
+                // closeParentLayer()
+            }
+    });
+        
+        
+}
 
 </script>
 </body>

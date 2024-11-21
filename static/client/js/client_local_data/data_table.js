@@ -11,6 +11,7 @@ var clientStixDataList = [{
     "tags": "DDoS;卫星网络;",
     "iocs": "IP;端口;流特征;",
     "source_hash": "15cbac",
+    "stix_file_hash": "15cbac",
     "create_time": "2024-11-09",
     "onchain": "是"
 }];
@@ -26,6 +27,7 @@ function mockClientStixDataList(dataNum = 100){
             tags: exampleTagsList[Math.floor(Math.random() * exampleTagsList.length)],
             iocs: exampleIOCsList[Math.floor(Math.random() * exampleIOCsList.length)],
             source_hash: Math.random().toString(36).substring(2, 15),
+            file_hash: Math.random().toString(36).substring(2, 15),
             create_time: new Date().toLocaleDateString('zh-CN', {year: 'numeric', month: '2-digit', day: '2-digit'}).replace(/\//g, '-'),
             onchain: '是'
         }
@@ -74,11 +76,12 @@ function renderClientDataTable(clientTableData){
                 {field: 'type', title: '类型', width: 100},
                 {field: 'tags', title: 'Tags', width: 100},
                 {field: 'iocs', title: 'IOCs', width: 100},
+                {field: 'file_hash', title: '文件Hash', width: 100},
                 {field: 'source_hash', title: '文件源', width: 100},
                 {field: 'create_time', title: '创建日期', width: 120, sort: true},
                 {field: 'onchain', title: '上链', width: 80},
                 {fixed: 'right', width: 100, title: '操作', align: 'center', templet: function (d) {
-                    return `<a class="ui basic small blue label">查看详情</a>`;
+                    return `<a data-file-hash="${d.file_hash}" data-source-hash="${d.source_hash}" onclick="showStixDetail(this)" class="ui basic small blue label">查看详情</a>`;
                 }}
             ]],
             data: clientTableData,
@@ -88,8 +91,6 @@ function renderClientDataTable(clientTableData){
             limits: [15],
             limit: 15 // 每页默认显示的数量
         });
-        updateClientDataTableUI(clientTableData);
-
 
     }else{
         console.log('layuiTable is not initialized');
@@ -110,9 +111,28 @@ function setIntervalQueryClientStixData(){
             queryLocalStixData(fileHash);
         });
 
-    }, 3000);
+    }, 100000); //100秒查询一次(默认不自动触发更新)
 }
-
+//table Tab 切换
+function switchDataTableTab(element){
+    var tableToolTabList = $('.client-data-bottom-box .tools-box-tab-list');
+    var tableToolTabListItems = tableToolTabList.find('a');
+    var select_type = $(element).data('tab');
+    //清除选中状态
+    tableToolTabListItems.removeClass('blue');
+    //设置选中状态
+    $(element).addClass('blue');
+    //刷新数据
+    refreshDataTable(select_type);
+}
+//数据table刷新
+function refreshDataTable(select_type){
+    //查询当前任务列表是
+    Object.values(taskFileHashMap).forEach(function(fileHash){
+        console.log("query task fileHash:",fileHash);
+        queryLocalStixData(fileHash);
+    });
+}
 function queryLocalStixData(fileHash){ 
     $.ajax({
         url: clientServerHost + '/data/get_local_stix_records',
@@ -121,9 +141,10 @@ function queryLocalStixData(fileHash){
         contentType: 'application/json',
         data: JSON.stringify({file_hash: fileHash}),
         success: function(response){
-            if (response.code == 0){
+            console.log(response);
+            if (response.code == 200){
                 if (response.data!=null){
-                    processLocalStixDataToTableData(response.data);
+                    processLocalStixDataToTableData(fileHash,response.data);
                 }
             }else{
                 if (response.error!=null){
@@ -136,24 +157,28 @@ function queryLocalStixData(fileHash){
         }
     });
 }
-var historyStixDataList = []; //用于对比前后数据差异
-//对比json字符串
-function compareJsonString(oldJson,newJson){
-    var oldJsonString = JSON.stringify(oldJson);
-    var newJsonString = JSON.stringify(newJson);
-    if (oldJsonString != newJsonString){
-        return true;
-    }
-    return false;
-}
+//历史数据map(用于对比数据是否变化)
+var historyStixDataMap = {};
 //处理查询到的数据
-function processLocalStixDataToTableData(stixDataList){
+function processLocalStixDataToTableData(sourceHash,stixDataList){
+    //排序
+    stixDataList.sort(function(a,b){
+        //处理字符串时间
+        var a_time = new Date(a.create_time).getTime();
+        var b_time = new Date(b.create_time).getTime();
+        return a_time - b_time;
+    });
+    //初始化
+    if (historyStixDataMap[sourceHash]==null||historyStixDataMap[sourceHash]==undefined){
+        historyStixDataMap[sourceHash] = [];
+    }
     //对比json字符串
-    if (compareJsonString(historyStixDataList,stixDataList)){
-        return;
+    if (compareJson(historyStixDataMap[sourceHash],stixDataList)){
+        //数据有变化
+        historyStixDataMap[sourceHash] = stixDataList;
     }else{
-        //更新历史数据
-        historyStixDataList = stixDataList;
+        //数据没有变化
+        return;
     }
     var tableData = []; 
     // stixDataList是一个对象,需要遍历其属性
@@ -161,23 +186,59 @@ function processLocalStixDataToTableData(stixDataList){
         var stixInfo = stixDataList[i];
         var data = {
             id: i+1,
-            status: stixInfo.onchain ? '完成' : '处理中',
+            status: stixInfo.stix_file_hash=="" ? '处理中' : '完成',
             type: stixInfo.stix_type_name,
-            tags: stixInfo.stix_tags.join(';'),
-            iocs: stixInfo.stix_iocs.join(';'),
-            source_hash: stixInfo.file_hash,
+            tags: stixInfo.stix_tags,
+            iocs: stixInfo.stix_iocs,
+            source_hash: stixInfo.source_file_hash,
+            file_hash: stixInfo.stix_file_hash,
             create_time: stixInfo.create_time.split(' ')[0],
             onchain: stixInfo.onchain ? '是' : '否'
         };
         tableData.push(data);
     }
-    // 更新表格数据
-    if(clientDataTableInstance) {
-        clientDataTableInstance.reload({
-            data: tableData
-        });
+    //初始化
+    if (taskDataTableMap[sourceHash]==null||taskDataTableMap[sourceHash]==undefined){
+        taskDataTableMap[sourceHash] = [];
     }
-    //更新UI
-    updateClientDataTableUI(tableData);
+
+    //更新taskDataTableMap
+    taskDataTableMap[sourceHash] = tableData;
+    //更新allTaskDataTable
+    var newAllTaskDataTable = [];
+    Object.values(taskDataTableMap).forEach(function(tableData){
+        newAllTaskDataTable = newAllTaskDataTable.concat(tableData);
+    });
+    allTaskDataTable = newAllTaskDataTable;
+
+    // 更新表格数据
+    renderClientDataTable(allTaskDataTable)
+    //更新table UI
+    updateClientDataTableUI(allTaskDataTable);
+    //更新header面板UI
+    if (taskStatusMap[sourceHash]==null||taskStatusMap[sourceHash]==undefined){
+        //初始化面板
+        taskStatusMap[sourceHash]={
+            "total_data_num":tableData.length,
+            "processed_data_num":0,
+            "processing_data_num":0
+        };
+        updateHeaderPanelUI(sourceHash,null,null,null);
+    }else{
+        //更新面板
+        var total_data_num = taskStatusMap[sourceHash]["total_data_num"];
+        total_data_num+=tableData.length;
+        updateHeaderPanelUI(sourceHash,total_data_num,null,null);
+    }
     return tableData;
 }
+
+//查看详情
+function showStixDetail(element){
+    var fileHash = $(element).data('file-hash');
+    var sourceHash = $(element).data('source-hash');
+    console.log("fileHash:",fileHash);
+    console.log("sourceHash:",sourceHash);
+    openParentWindow(clientServerHost+'/data/get_stix_file_content/'+sourceHash+'/'+fileHash);
+}
+

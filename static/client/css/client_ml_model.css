@@ -1,20 +1,344 @@
-.client-network-box{
+.client-model-box{
     width: 100%;
-    margin: 0 auto;
     min-height: 600px;
+    min-width: 400px;
+}
+/* 头部box */
+.client-model-box .client-model-header-box{
+    width: 100%;
+    margin-top: 10px;
+    background-color: white;
+    padding: 10px 20px;
+    height: 100px;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: space-between;
+}
+/* 头部左边box */
+.client-model-header-box .model-data-box{
+    width: 41%;
+    height: 100%;
+    padding: 10px;
+    box-shadow: rgba(0, 0, 0, 0.138) 0px 8px 24px;
+    background: linear-gradient(180deg,#05375d,#05375d);
+    height: 100%;
+    display: flex;
+    align-items: center;
     justify-content: flex-start;
-    margin-top: 20px;
+    border-radius: 4px;
+    cursor: pointer;
 }
-.layui-tab-brief>.layui-tab-title .layui-this{
-    color: #285191!important;
+.model-data-box .model-data-item{
+    width: 33%;
+    height: 100%;
+    color: white;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
 }
+.model-data-item .data-item-num{
+    font-size: 20px;
+}
+.model-data-item .data-item-title{
+    margin-top: 5px;
+    color: #e2dddd;
+    font-size: 14px;
+}
+/* 头部右边 */
+.client-model-header-box .client-model-header-right-box{
+    width: 22%;
+    height: 100%;
+    margin-left: 1%;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: pointer;
+}
+.client-model-header-right-box .local-model-info-left-icon{
+    font-size: 25px;
+    height: 100%;
+    width: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #05375d;
+}
+.client-model-header-right-box .local-model-info-right-box{
+    height: 100%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.local-model-info-right-box .local-model-info-num{
+    font-size: 20px;
+}
+.local-model-info-right-box .local-model-info-title{
+    margin-top: 5px;
+    color: #959090;
+    font-size: 14px;
+}
+/* 主体box */
+.client-model-body-box{
+    width: calc(100% - 40px);
+    margin: 10px 20px;
+    background-color: white;
+    padding: 10px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+}
+/* 主体tab */
+.client-model-precess-box .client-model-precess-tab{
+    width: 100%;
+}
+/* 主体tab内容 */
+.client-model-precess-box .client-model-tab-item{
+    width: 100%;
+}
+/* 主体tab内容-流量模型 */
+.client-model-traffic-box {
+    width: 100%;
+    height: 100%;
+}
+.client-model-traffic-box .client-model-precess-step-box{
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+.client-model-precess-step-box.process-step-active{
+    display: block;
+}
+/*主体tab toolbar*/
+.client-model-process-step-toolbar{
+    width: 100%;
+    height: 50px;
+    padding: 10px;
+    position: relative;
+}
+.client-model-process-step-toolbar .client-model-process-step-prev{
+    width: 100px;
+    cursor: pointer;
+}
+.client-model-process-prev .client-model-process-step-prev-title{
+    margin: 0;
+}
+.client-model-process-step-toolbar button{
+    position: absolute;
+    right: 0;
+    top: 10px;
+}
+/* 主体tab内容-流量模型-step1:上传数据集 */
+.client-model-precess-step-box .upload-data-list{
+    width: 100%;
+    height: 100%;
+}
+/* 上传文件列表item */
+.upload-data-list .upload-data-item{
+    width: 100%;
+    height: 60px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    margin-bottom: 10px;
+}
+/* 上传文件item body*/
+.upload-data-item .upload-data-item-body{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+}
+.upload-data-item-body>div{
+    margin-right: 12px;
+    text-align: left;
+}
+.upload-data-item-body .upload-data-item-icon{
+    margin: 0 10px;
+    width: 50px;
+    height: 100%;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* 上传文件item name 文字省截断*/
+.upload-data-item-body .upload-data-item-name{
+    max-width: 30%;
+    min-width: 25%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
+}
+.upload-data-item-body .upload-data-item-hash{
+    width: 31%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.upload-data-item-body .upload-data-item-size{
+    width: 15%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+}
+.upload-data-item-body .upload-data-item-tools{
+    height: 100%;
+    position: absolute;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.upload-data-item-tools button{
+    margin-right: 10px;
+}
+/* 上传文件item progress*/
+.upload-data-item .upload-data-item-progress{
+    width: 100%;
+}
+/* 上传文件form */
+.upload-data-file-form{
+    width: 100%;
+    height: 100%;
+}
+/*图标*/
+.upload-data-file-form i{
+    color: #05375d;
+}
+/* 上传文件form drop area*/
+#file-drop-area{
+    width: 100%;
+    height: 150px;
+    cursor: pointer;
+}
+#file-drop-area:hover{
+    border-color: #e1ecf4;
+    background-color: #e1ecf4;
+}
+#file-drop-area.highlight {
+    border-color: #e1ecf4;
+}
+/* step2:MODEL训练配置   */
+.client-model-process-box{
+    width: 100%;
+    height: 100%;
+}
+.train-process-data-config{
+    width: 100%;
+}
+.train-process-data-config-title{
+    padding: 10px;
+    width: 100%;
+    font-size: 18px;
+    font-weight: bold;
+}
+.train-process-data-config-box{
+    padding: 5px 12px;
+}
+.train-process-data-list-box .train-process-data-item{
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    margin-bottom: 10px;
+}
+.train-process-data-item .train-process-data-item-body{
+    padding: 20px 10px;
+}
+.train-process-data-item .upload-data-item-icon{
+    margin:0;
+    margin-right: 0px;
+}
+.train-process-data-item .upload-data-item-name{
+   max-width: 25%;
+   min-width: 20%;
+}
+.train-process-data-item .upload-data-item-hash{
+   width: 26%;
+}
+
+.train-process-data-item .upload-data-item-size{
+    width: 13%;
+}
+.train-process-data-item .upload-data-item-status{
+    width: 22%;
+}
+/* 底部box */
+.client-model-bottom-box{
+    width: calc(100% - 40px);
+    margin: 20px;
+    background-color: white;
+    padding: 15px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    min-height: 150px;
+    margin-bottom: 20px;
+}
+/* 底部box-tools */
+.client-model-tools-box{
+    width: 100%;
+    height: 30px;
+    position: relative;
+    
+}
+.client-model-tools-box .tools-box-tab-list{
+    width: 120px;
+    height: 100%;
+}
+.tools-box-tab-list a{
+    margin-right: 10px;
+}
+.client-model-tools-box .tools-box-text-box{
+    position: absolute;
+    right: 0px;
+    top:0px;
+    text-align: right;
+}
+/* 底部box-MODEL数据table */
+.client-model-table-box{
+    width: 100%;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px;
+}
+.client-model-table-box table{
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+}
+
+
+/*特定样式渲染*/
+.layui-tab-brief>.layui-tab-title .layui-this {
+    color: #05375d!important;
+}
+/*tab标签*/
 .layui-this:after{
-    color: #285191!important;
-    border-bottom: 2px solid #285191!important;
+    color: #05375d!important;
+    border-bottom: 2px solid #05375d!important;
 }
-.client-network-box .client-network-tab-title{
-    font-weight: 800px;
-    font-size: 1.2rem;
+.layui-laypage .layui-laypage-curr .layui-laypage-em {
+    background-color: #05375d !important;
 }
+
+.ui.blue.button, .ui.blue.buttons .button{
+    background-color: #05375d!important;
+}
+/*标签*/
+.ui.custom-blue.label, .ui.custom-blue.labels .label {
+    background-color: #05375d !important;
+    border-color: #05375d !important;
+    color: #fff !important;
+}
+.ui.basic.custom-blue.label {
+    background: none #fff !important;
+    color: #05375d !important;
+    border-color: #05375d  !important;
+}
+/*进度条*/
+.ui.progress.success .bar{
+    background-color: #05375d !important;
+}
+.ui.progress.custom-blue .bar{
+    background-color: #05375d !important;
+}   

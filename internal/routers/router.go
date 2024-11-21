@@ -296,7 +296,7 @@ func loadClientTemplates(r multitemplate.Renderer, funcMap template.FuncMap, tem
 	}
 
 	// 获取所有嵌套内容模板文件
-	includes, err := filepath.Glob(templatesDir + "/includes/*.html")
+	includes, err := filepath.Glob(templatesDir + "/includes/**/*.html")
 	if err != nil {
 		panic(err.Error())
 	}

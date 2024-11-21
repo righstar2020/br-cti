@@ -4,15 +4,18 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>区块链网络</title>
+    <title>本地模型</title>
     <link href="/static/front/css/custom.css" rel="stylesheet">
     <!--layui引入--->
     <link  href="/static/assets/libs/layui/css/layui.css" rel="stylesheet" media="all">
+    
     <!---js库引入--->
     <script type="text/javascript" src="/static/assets/js/jquery.min.js"></script>
     <script type="text/javascript" src="/static/assets/libs/layui/layui.js"></script>
     <script type="text/javascript" src="/static/assets/js/common.js?v=318"></script>
+    <link rel="stylesheet" href="/static/custom/layui_custom.css"/>
     <link rel="stylesheet" href="/static/client/css/client_ml_model.css"/>
+    <link rel="stylesheet" href="/static/custom/semantic_custom.css"/>
     <!---semantic引入--->
     <link rel="stylesheet" type="text/css" href="/static/assets/libs/semantic/semantic.min.css">
     <script type="text/javascript" src="/static/assets/libs/semantic/semantic.min.js"></script> 
@@ -21,20 +24,123 @@
             overflow: auto!important; /* 或者使用 overflow-y: scroll; 来允许垂直滚动 */
             scrollbar-width: none!important; /* Firefox */
             -ms-overflow-style: none!important; /* IE 和 Edge */
-            min-width: 200px;
+            min-width: 100px;
         }
 
         /* 隐藏Webkit核心浏览器（如Chrome, Safari等）中的滚动条 */
         html::-webkit-scrollbar {
             display: none!important;
         }
+        
     </style>
 </head>
 <body>
 <!-- 正文开始 -->
 <div class="client-model-box">
-   
+    <div class="client-model-header-box">
+        <div class="client-model-header-left-box model-data-box">
+            <div class="model-data-item">
+                <div class="model-item-num">
+                    2 K
+                </div>
+                <div class="model-item-title">
+                    链上模型数量
+                </div>
+            </div>
+            <div class="model-data-item">
+                <div class="model-item-num">
+                    0
+                </div>
+                <div class="model-item-title">
+                    我的模型
+                </div>
+            </div>
+            <div class="model-data-item">
+                <div class="model-item-num">
+                    0
+                </div>
+                <div class="model-item-title">
+                    我的上链
+                </div>
+            </div>
+        </div>
+        <div class="client-model-header-right-box">
+            <div class="local-model-info-left-icon">
+                <i class="cubes base  icon"></i>
+            </div>
+            <div class="local-model-info-right-box">
+                <div class="local-model-info-num">
+                    0
+                </div>
+                <div class="local-model-info-title">
+                    全部模型
+                </div>
+            </div>
+        </div>
+        <div class="client-model-header-right-box">
+            <div class="local-model-info-left-icon">
+                <i class="hdd  icon"></i>
+            </div>
+            <div class="local-model-info-right-box">
+                <div class="local-model-info-num">
+                    0
+                </div>
+                <div class="local-model-info-title">
+                    训练完成
+                </div>
+            </div>
+        </div>
+        <div class="client-model-header-right-box">
+            <div class="local-model-info-left-icon">
+                <i class="hdd outline icon"></i>
+            </div>
+            <div class="local-model-info-right-box">
+                <div class="local-model-info-num">
+                    0
+                </div>
+                <div class="local-model-info-title">
+                    训练中
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="client-model-body-box client-model-precess-box layui-tab layui-tab-brief">
+        <ul class="layui-tab-title client-model-precess-tab">
+            <li class="client-model-tab-title layui-this">流量模型</li>
+            <li class="client-model-tab-title">STIX模型</li>
+        </ul>
+        <div class="layui-tab-content client-model-precess-content">
+            <div class="client-model-tab-item layui-tab-item layui-show">
+                <!-- 流量模型Tab模板 -->
+                {{template "tab_traffic_model_content" .}}
+            </div>
+            <div class="client-model-tab-item layui-tab-item">
+                <!-- STIX模型Tab模板 -->
+            </div>
+        </div>
+    </div>
+    <div class="client-model-bottom-box">
+        <div class="client-model-tools-box">
+            <div class="tools-box-tab-list">
+                <a  onclick="switchDataTableTab(this)" class="ui small custom-blue label" model-tab="all">全部</a>
+                <a  onclick="switchDataTableTab(this)" class="ui small label" model-tab="processing">处理中</a>
+            </div>
+            <div class="tools-box-text-box">
+                <span>共查询到</span>
+                <span class="tools-box-text-num">0</span>
+                <span>个模型</span>
+            </div>
+        </div>
+        <div class="client-model-table-box">
+            <table class="layui-hide" id="client-model-table"></table>
+        </div>
+    </div>
 </div>
+<script type="text/javascript" src="/static/client/js/client_ml_model.js"></script>
+<script type="text/javascript" src="/static/client/js/client_ml_model/data_table.js"></script>
+<script type="text/javascript" src="/static/client/js/client_ml_model/file_upload.js"></script>
+<script type="text/javascript" src="/static/client/js/client_ml_model/train_process.js"></script>
+<script type="text/javascript" src="/static/client/js/client_ml_model/upchain_process.js"></script>
 <script>
 //检测网络状态
 CheckNetworkStatus()
@@ -79,28 +185,29 @@ var currentLayerIndex = null
 layui.use(['layer'], function(){
     var layer = layui.layer
     $ = layui.$;
-    function openParentWindow(url) {
-        var parentLayer = window.parent.layer;
-        if(currentLayerIndex!=null){
-            //默认只打开一个窗口
-            parentLayer.close(currentLayerIndex);
-        }
-        //使用父层级打开窗口
-        currentLayerIndex = parentLayer.open({
-                type: 2,
-                title: '详情',
-                area: ['700px', '550px'], // 设置窗口宽度和高度
-                shade: 0, // 设置遮罩透明度
-                content: url,
-                success: function(layero, index){
-                    //关闭当前窗口
-                    // closeParentLayer()
-                }
-        });
-        
-        
-    }
 })
+
+function openParentWindow(url) {
+    var parentLayer = window.parent.layer;
+    if(currentLayerIndex!=null){
+        //默认只打开一个窗口
+        parentLayer.close(currentLayerIndex);
+    }
+    //使用父层级打开窗口
+    currentLayerIndex = parentLayer.open({
+            type: 2,
+            title: '详情',
+            area: ['700px', '550px'], // 设置窗口宽度和高度
+            shade: 0, // 设置遮罩透明度
+            content: url,
+            success: function(layero, index){
+                //关闭当前窗口
+                // closeParentLayer()
+            }
+    });
+        
+        
+}
 
 </script>
 </body>
