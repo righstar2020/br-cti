@@ -37,9 +37,7 @@ function updateCtiUpchainDataListHtml(){
         //设置form的process-id
         ctiUpchainDataItem.querySelector('.cti-upchain-data-config-form').setAttribute('data-process-id', processId);
         //设置所有按钮的process-id
-        ctiUpchainDataItem.querySelectorAll('.upload-data-item-tools .button').forEach(function(button){
-            button.setAttribute('data-process-id', processId);
-        });
+        $(ctiUpchainDataItem).find('.button').attr('data-process-id', processId);
         //设置文件名
         ctiUpchainDataItem.querySelector('.upload-data-item-name').innerText = $(item).find('.upload-data-item-name').text();
         //设置hash

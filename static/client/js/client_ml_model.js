@@ -107,7 +107,7 @@ function updateHeaderPanelUI(taskId,total_model_num,processed_model_num,processi
 /*------------------step步骤函数------------------------*/
 var currentStep = 1;
 var stepInitStatusList=[0,0,0,0] //步骤UI初始化
-var processStepTitleList = ["文件上传","重新上传","模型训练","模型测试","模型上链"];
+var processStepTitleList = ["数据集上传","重新上传","模型训练","模型测试","模型上链"];
 //上一步
 function prevStep(){
     if(currentStep <= 1){

@@ -97,8 +97,11 @@ function openFramelessWindowWithUrl(title, url, width = null) {
         title: false, // 不显示标题栏
         area: [width, '550px'], // 设置窗口宽度和高度
         shade: 0, // 设置遮罩透明度
+        shadeClose: true, // 添加点击遮罩关闭功能
         content: url, // 要打开的内容URL
         move: '#drag-handle', // 指定可拖动的区域
+        // moveOut: true, // 允许拖出窗口
+        // moveType: 1, // 1表示可以拖拽整个窗口
         closeBtn: 0, // 不显示关闭按钮
         success: function(layero, index) {
             console.log("open new window:" + index);

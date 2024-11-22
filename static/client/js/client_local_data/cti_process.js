@@ -37,9 +37,7 @@ function updateCtiProcessDataListHtml(){
         //设置form的process-id
         ctiProcessDataItem.querySelector('.cti-process-data-config-form').setAttribute('data-process-id', processId);
         //设置所有按钮的process-id
-        ctiProcessDataItem.querySelectorAll('.cti-process-data-config-form  .button').forEach(function(button){
-            button.setAttribute('data-process-id', processId);
-        });
+        $(ctiProcessDataItem).find('.button').attr('data-process-id', processId);
         //设置文件名
         ctiProcessDataItem.querySelector('.upload-data-item-name').innerText = $(item).find('.upload-data-item-name').text();
         //设置hash

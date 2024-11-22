@@ -13,6 +13,7 @@
     <script type="text/javascript" src="/static/assets/libs/layui/layui.js"></script>
     <script type="text/javascript" src="/static/assets/js/common.js?v=318"></script>
     <link rel="stylesheet" href="/static/client/css/client_wallet.css"/>
+    <link rel="stylesheet" href="/static/custom/layui_custom.css"/>
     <!---semantic引入--->
     <link rel="stylesheet" type="text/css" href="/static/assets/libs/semantic/semantic.min.css">
     <script type="text/javascript" src="/static/assets/libs/semantic/semantic.min.js"></script> 
@@ -32,9 +33,115 @@
 </head>
 <body>
 <!-- 正文开始 -->
-<div class="client-wallet-box drag-handle">
-
-
+<div class="client-wallet-box">
+    <div class="client-wallet-box-header" id="drag-handle">
+        <div class="wallet-box-header-list">
+            <div class="wallet-box-header-item network">
+                <button class="ui  blue circular globe icon button">
+                    <i class="globe  icon"></i>
+                </button>
+            </div>
+            <div class="wallet-box-header-item wallet-info">
+                <div class="wallet-info-top">
+                    <div class="wallet-info-top-item wallet-account-name">
+                        Account 1
+                    </div>
+                </div>
+                <div class="wallet-info-bottom">
+                    <div class="wallet-info-bottom-item wallet-id">
+                        0xbcbc...15bc
+                    </div>
+                </div>
+            </div>
+            <div class="wallet-box-header-item wallet-setting ">
+                <div class="blue ui top right pointing   dropdown icon button">
+                    <i class="settings icon"></i>
+                    <div class="menu">
+                        <div class="item">
+                            新建账户
+                            <!-- <i class="dropdown icon"></i>
+                            <span class="text">新建</span>
+                            <div class="menu">
+                            <div class="item">新账户</div>
+                            <div class="item">子账户</div>
+                            </div> -->
+                        </div>
+                        <div class="item">
+                            刷新账户
+                        </div>
+                        <div class="item">
+                            账户资产
+                        </div>
+                        <div class="divider"></div>
+                        <div class="item">
+                            退出
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="client-wallet-box-body">
+        <div class="client-wallet-info-data-box">
+            <div class="client-wallet-account-num-box">
+                <div class="wallet-account-num">
+                    <span>0</span>积分
+                </div>
+                <div class="wallet-account-num">
+                    <span>+0</span>积分
+                </div>
+            </div>
+            <div class="client-wallet-info-toolbar-box">
+                <div class="client-wallet-info-toolbar-list">
+                    <div class="client-wallet-info-toolbar-item">
+                        <div class="ui circular blue hand lizard outline icon button">
+                            <i class="hand lizard outline icon"></i>
+                        </div>
+                        <span>转入</span>
+                    </div>
+                    <div class="client-wallet-info-toolbar-item ">
+                        <div class="ui circular blue hand point up outline icon button">
+                            <i class="hand point up outline icon"></i>
+                        </div>
+                        <span>转出</span>
+                    </div>
+                    <div class="client-wallet-info-toolbar-item ">
+                        <div class="ui circular blue chart line icon button">
+                            <i class="chart line icon"></i>
+                        </div>
+                        <span>收益</span>
+                    </div>
+                    <div class="client-wallet-info-toolbar-item ">
+                        <div class="ui circular blue gem outline icon button">
+                            <i class="gem outline icon"></i>
+                        </div>
+                        <span>CTI资产</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="client-wallet-tab-box">
+            <div class="wallet-tab-body layui-tab layui-tab-brief"> 
+                <ul class="layui-tab-title">
+                  <li class="wallet-tab-title layui-this">积分收入</li>
+                  <li class="wallet-tab-title">积分支出</li>
+                  <li class="wallet-tab-title">交易记录</li>
+                </ul>
+                <div class="layui-tab-content">
+                  <div class="wallet-tab-item layui-tab-item layui-show">
+                    
+                  </div>
+                  <div class="wallet-tab-item layui-tab-item">
+                    
+                  </div>
+                  <div class="wallet-tab-item layui-tab-item"></div>
+                    
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <!-- js部分 -->
 <script type="text/javascript" src="/static/client/js/client_wallet.js"></script>
@@ -93,15 +200,18 @@ function CheckLocalUserWallet(){
     getLocalUserWallet().then(function(response){
         console.log(response)
         var data = response.data
-        if (data.wallet_id==null||response.status==400){
+
+        if (data==null||data.wallet_id==null||response.status==400){
             layer.msg('未查询到本地钱包',{'time':1000},function(){
                 redirectToRegisterWallet()
             })
+            return;
         }
         if (data.wallet_id!=null){
             //钱包存在则设置用户钱包信息
             setLocalUserWallet(data.wallet_id)
             layer.msg('查询到钱包<br>'+data.wallet_id.substring(0,6)+'...'+data.wallet_id.substring(data.wallet_id.length-6),{'time':1000})
+            updateWalletAccountInfoUI(data.wallet_id)
         }
     }).catch(function(error){
         console.log(error)
@@ -151,6 +261,23 @@ layui.use(['layer'], function(){
         
     }
 })
+//UI组件初始化
+$(document).ready(function(){
+    initUIComponent()
+})
+function initUIComponent(){
+    $('.ui.dropdown')
+    .dropdown({
+        // you can use any ui transition
+        transition: 'drop'
+    });
+}
+//UI更新数据
+function updateWalletAccountInfoUI(wallet_id){
+    $('.wallet-account-name').text("Account 1")
+    $('.wallet-id').text("0x"+wallet_id.substring(0,6)+'...'+wallet_id.substring(wallet_id.length-6))
+}
+
 
 </script>
 </body>
