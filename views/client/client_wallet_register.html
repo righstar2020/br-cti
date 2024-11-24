@@ -79,12 +79,35 @@
     </div>
     <div id="wallet-register-step-3" class="wallet-register-step-box">
         <div class="wallet-register-confirm-title">
-            <span>创建确认</span>
+            <span>创建本地钱包</span>
             <span>钱包公私钥文件将加密保存在本地客户端，是否确认创建钱包?</span>
         </div>
         <div class="wallet-register-step-buttons">
             <div class="wallet-register-step-button-item">
                 <button class="ui blue button" onclick="comfirmCreateWallet()">确认创建</button>
+            </div>
+        </div>
+    </div>
+    <div id="wallet-register-step-4" class="wallet-register-step-box">
+        <div class="wallet-register-form-title">
+            <span>创建链上账户</span>
+            <span>请输入账户名称</span>
+        </div>
+        <div class="wallet-register-form-box">
+            <form class="ui form">
+                <div class="field">
+                    <label>钱包ID</label>
+                    <input type="text" name="wallet-id" value="" readonly>
+                </div>
+                <div class="field">
+                    <label>账户名称</label>
+                    <input type="text" name="account-name" placeholder="请输入账户名称">
+                </div>
+            </form>
+        </div>
+        <div class="wallet-register-step-buttons">
+            <div class="wallet-register-step-button-item">
+                <button class="ui blue button" onclick="createOnchainAccount()">创建账户</button>
             </div>
         </div>
     </div>
@@ -94,9 +117,9 @@
 <script type="text/javascript" src="/static/client/js/client_wallet.js"></script>
 <script>
 var walletRegisterStep = 1
-var walletRegisterPreStepTitleList = ["我的钱包","创建钱包","输入密码","创建成功"]
+var walletRegisterPreStepTitleList = ["我的钱包","创建钱包","输入密码","创建本地钱包","创建链上账户"]
 var walletRegisterStepBox = $("#wallet-register-step-"+walletRegisterStep)
-
+var walletId = ""
 
 
 function setWalletRegisterStep(step){
@@ -161,9 +184,9 @@ function comfirmCreateWallet(){
         createLocalUserWallet(walletPassword).then(function(response){
             console.log(response)
             if (response.code==200){
-                layer.msg('钱包创建成功!',{'time':1600},function(){
-                    window.location.href = "/client/wallet"
-                })
+                walletId = response.data.wallet_id
+                $("input[name='wallet-id']").val(walletId)
+                nextSetpPage(4)
             }else{
                 layer.msg('钱包创建失败!<br>'+response.message,{'time':1600})
             }
@@ -173,9 +196,30 @@ function comfirmCreateWallet(){
         })
 
     }else{
-
         layer.msg('两次输入的密码不一致!',{'time':1600})
     }   
+}
+
+//创建链上账户
+function createOnchainAccount(){
+    var accountName = $("input[name='account-name']").val()
+    if(accountName == ""){
+        layer.msg('账户名称不能为空!',{'time':1600})
+        return
+    }
+    registerOnchainAccount(walletId, accountName).then(function(response){
+        console.log(response)
+        if(response.code == 200){
+            layer.msg('链上账户创建成功!',{'time':1600},function(){
+                window.location.href = "/client/wallet"
+            })
+        }else{
+            layer.msg('链上账户创建失败!<br>'+response.message,{'time':1600})
+        }
+    }).catch(function(error){
+        console.log(error)
+        layer.msg('网络异常!<br>'+error,{'time':1600})
+    })
 }
 </script>
 </body>

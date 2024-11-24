@@ -40,3 +40,25 @@ function createLocalUserWallet(walletPassword){
     })
 
 }
+
+
+function registerOnchainAccount(walletId,userName){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            url: clientServerHost + "/user/registerOnchainUserAccount",
+            data: JSON.stringify({
+                "wallet_id": walletId,
+                "user_name": userName
+            }),
+            success: function(data){
+                resolve(data);
+            },  
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                reject(errorThrown);
+            }
+        })
+    })
+}

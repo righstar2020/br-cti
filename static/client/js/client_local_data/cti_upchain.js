@@ -162,9 +162,24 @@ function startCtiUpchainData(button){
     startCtiUpchainDataWithConfig(processId);
 }
 
-//保存配置并开始上链
+function checkFormInputValid(processId){
+    //检查配置是否输入正确
+    const form = $(`.cti-upchain-data-config-form[data-process-id="${processId}"]`);
+    const ipfsAddress = form.find('input[name="ipfs_address"]').val();
+    const upchainAccount = form.find('input[name="upchain_account"]').val();
+    const upchainAccountPassword = form.find('input[name="upchain_account_password"]').val();
+    if(ipfsAddress == null || ipfsAddress == '' || upchainAccount == null || upchainAccount == '' || upchainAccountPassword == null || upchainAccountPassword == ''){
+        layer.msg('配置输入不能为空',{'time':1200});
+        return false;
+    }
+    return true;
+}
 
+//保存配置并开始上链
 function startCtiUpchainDataWithConfig(processId){
+    if(!checkFormInputValid(processId)){
+        return;
+    }
     const form = $(`.cti-upchain-data-config-form[data-process-id="${processId}"]`);
     var ctiUpchainDataConfig = {
         "process_id": processId,

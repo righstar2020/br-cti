@@ -145,7 +145,7 @@ function deleteCtiProcessDataItem(button){
 
 var ctiProcessingStatusMap = {}; //保存正在处理的任务状态
 //开始数据格式转换
-function startCtiProcessData(button){
+function startProcessCti(button){
     const processId = $(button).attr('data-process-id');
     const fileHash = taskFileHashMap[processId];
     if(processId == null){
@@ -160,12 +160,12 @@ function startCtiProcessData(button){
         return;
     }
     //保存配置并开始转换
-    startCtiProcessDataWithConfig(processId);
+    startProcessCtiWithConfig(processId);
 }
 
 //保存配置并开始数据格式转换
 
-function startCtiProcessDataWithConfig(processId){
+function startProcessCtiWithConfig(processId){
     const form = $(`.cti-process-data-config-form[data-process-id="${processId}"]`);
     var ctiProcessDataConfig = {
         "process_id": processId,
@@ -178,7 +178,7 @@ function startCtiProcessDataWithConfig(processId){
     //开始转换
     setCtiProcessProcessingItemUI(processId);
     $.ajax({
-        url: clientServerHost + '/data/process_data_to_cti',
+        url: clientServerHost + '/data/process_stix_to_cti',
         type: 'POST',
         dataType: "json",
         contentType: 'application/json',
@@ -275,7 +275,7 @@ function setCtiProcessStartItemUI(processId){
     //设置开始按钮
     item.find('.cti-process-data-item-start-btn').text('开始转换');
     item.find('.cti-process-data-item-start-btn').on('click',function(){
-        startCtiProcessData(this);
+        startProcessCti(this);
     });
 }
 //CTI处理中设置itemUI
