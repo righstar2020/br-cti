@@ -130,5 +130,166 @@
 }
 .client-wallet-tab-box .wallet-tab-item{
     width: 100%;
-    padding: 10px;
+    padding: 0;
+}
+/* 积分收入项样式 */
+.points-income-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee;
+    transition: all 0.3s;
+}
+
+.points-income-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* 详细信息样式 */
+.points-details, 
+.transaction-details {
+    flex: 1;
+    text-align: left;
+    font-size: 14px;
+    color: #666;
+    width: 70%;
+    line-height: 1.6;
+}
+
+.points-details > div,
+.transaction-details > div {
+    margin: 5px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+}
+
+.points-details .transfer-account,
+.transaction-details .transaction-account {
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+.points-details .intel-id,
+.transaction-details .transaction-hash {
+    color: #2185d0;
+}
+
+.points-details .transfer-time,
+.transaction-details .transaction-time {
+    font-size: 12px;
+    color: #999;
+}
+
+/* 通用样式 */
+.points-income-item,
+.points-expense-item,
+.transaction-record-item {
+    background: #ffffff;
+    padding: 0 5px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.points-income-item:hover,
+.points-expense-item:hover,
+.transaction-record-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* 积分金额样式 */
+.points-amount {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-weight: bold;
+    color: #2185d0;
+    width: 30%;
+}
+
+.points-amount span {
+    margin-right: 5px;
+}
+
+/* 积分收入特殊样式 */
+.points-income-item .points-amount span {
+    color: #2185d0;
+}
+
+/* 积分支出特殊样式 */
+.points-expense-item .points-amount span {
+    color: #db2828;
+}
+
+/* 交易记录特殊样式 */
+.transaction-type {
+    margin-right: 15px;
+    width: 20%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.transaction-icon {
+    display: block;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    background: #f5f5f5;
+    border-radius: 50%;
+    margin-bottom: 5px;
+    font-size: 18px;
+}
+
+/* 转入图标 */
+.transaction-record-item[data-type="in"] .transaction-icon {
+    color: #2185d0;
+    transform: rotate(180deg);
+}
+
+/* 转出图标 */
+.transaction-record-item[data-type="out"] .transaction-icon {
+    color: #db2828;
+}
+
+.transaction-text {
+    font-size: 12px;
+    color: #999;
+}
+
+.transaction-amount {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.transaction-status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #e8f4ff;
+    color: #2185d0;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* 空状态样式 */
+.wallet-tab-item:empty {
+    padding: 40px 0;
+    text-align: center;
+    color: #999;
+}
+
+.wallet-tab-item:empty::after {
+    content: '暂无记录';
+    font-size: 14px;
 }

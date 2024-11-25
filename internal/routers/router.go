@@ -128,7 +128,9 @@ func createFrontRouter(r *gin.RouterGroup) *gin.RouterGroup {
 	knowledgePlane := r.Group("/knowledge-plane")
 	{
 		knowledgePlane.GET("/", frontHandler.KnowledgePlaneHandler.Index)
-		knowledgePlane.GET("/index", frontHandler.KnowledgePlaneHandler.Index)			
+		knowledgePlane.GET("/index", frontHandler.KnowledgePlaneHandler.Index)
+		knowledgePlane.GET("/normal", frontHandler.KnowledgePlaneHandler.Normal)
+		knowledgePlane.GET("/traffic", frontHandler.KnowledgePlaneHandler.Traffic)
 	}
 	BCBrowser := r.Group("/bc-browser")
 	{
@@ -314,39 +316,41 @@ func loadClientTemplates(r multitemplate.Renderer, funcMap template.FuncMap, tem
 	return r
 }
 func loadFrontTemplates(r multitemplate.Renderer,funcMap template.FuncMap , templatesDir string) multitemplate.Renderer {
-	// 非模板嵌套
-	adminHtmls, err := filepath.Glob(templatesDir + "/*.html")
-	if err != nil {
-		panic(err.Error())
-	}
-	for _, html := range adminHtmls {
-		r.AddFromFilesFuncs(filepath.Base(html), funcMap, html)
-	}
+    // 布局模板
+    layouts, err := filepath.Glob(templatesDir + "/layouts/*.html")
+    if err != nil {
+        panic(err.Error())
+    }
 
-	// 布局模板
-	layouts, err := filepath.Glob(templatesDir + "/layouts/*.html")
-	if err != nil {
-		panic(err.Error())
-	}
+    // 嵌套的内容模板
+    includes, err := filepath.Glob(templatesDir + "/includes/*.html")
+    if err != nil {
+        panic(err.Error())
+    }
 
-	// 嵌套的内容模板
-	includes, err := filepath.Glob(templatesDir + "/includes/*.html")
-	if err != nil {
-		panic(err.Error())
-	}
-
-	
-
-	// 将主模板，include页面，layout子模板组合成一个完整的html页面
-	for _, include := range includes {
-		// 文件名称
-		baseName := filepath.Base(include)
-		files := []string{}
-		files = append(files, templatesDir+"/layouts/main.html", include)
-		files = append(files, layouts...)
-		r.AddFromFilesFuncs(baseName, funcMap, files...)
-	}
-	return r
+    // 将主模板，include页面，layout子模板组合成一个完整的html页面
+    for _, include := range includes {
+        baseName := filepath.Base(include)
+        files := []string{
+            templatesDir + "/layouts/main.html",
+            include,
+        }
+        //双层嵌套
+		includes_includes, err := filepath.Glob(templatesDir + "/includes/includes/*.html")
+		if err != nil {
+			panic(err.Error())
+		}
+        for _, include_include := range includes_includes {
+			baseName_include := filepath.Base(include_include)
+			files = append(files, layouts...)
+            files = append(files, include_include)
+			r.AddFromFilesFuncs(baseName_include, funcMap, files...)
+        }
+        
+        files = append(files, layouts...)
+        r.AddFromFilesFuncs(baseName, funcMap, files...)
+    }
+    return r
 }
 func loadAdminTemplates(r multitemplate.Renderer,funcMap template.FuncMap ,templatesDir string) multitemplate.Renderer {
 	// 非模板嵌套
@@ -380,6 +384,7 @@ func loadAdminTemplates(r multitemplate.Renderer,funcMap template.FuncMap ,templ
 		files := []string{}
 		if strings.Contains(baseName, "edit") || strings.Contains(baseName, "add") {
 			files = append(files, templatesDir+"/layouts/form.html", include)
+
 		} else {
 			files = append(files, templatesDir+"/layouts/layout.html", include)
 		}

@@ -1,0 +1,72 @@
+{{define "kp_content"}}
+<div class="plane-box-body-box-1">
+    <div class="body-box-1-top">
+        <div class="top-left-box">
+            <div class="box-head">
+                特征数量分析
+                <div class="box-head-toolbar head-toolbar-1">
+                </div>
+            </div>
+            <div class="box-body">
+                <div id="featureTypeCharts"></div>
+            </div>
+        </div>
+        <div class="top-right-box">
+            <div class="box-head">
+                流量场景比例
+                <div class="box-head-toolbar head-toolbar-2">
+                </div>
+            </div>
+            <div class="box-body">
+                <div id="trafficSceneTypePieChart"></div>
+            </div>
+        </div>
+    </div>
+    <div class="body-box-1-buttom">
+        <div class="box-head">
+            流量类型统计
+            <div class="box-head-toolbar head-toolbar-3">
+                <a class="ui small blue label" data-tab="hour">小时</a>
+                <a class="ui small label" data-tab="day">天</a>
+                <a class="ui small label" data-tab="month">月</a>                
+            </div>
+        </div>
+        <div class="box-body">
+            <div id="trafficCtiTimelineChart"></div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/static/front/js/init_kp_echart_traffic.js"></script>
+<script>
+    $(document).ready(function() {
+        
+       //特征类型
+       renderFeatureTypePieCharts();
+    
+        // 窗口大小改变时重绘图表
+        window.addEventListener('resize', function() {
+            renderFeatureTypePieCharts();
+        });
+        //类型切换
+        $('.head-toolbar-2 a').on('click', function() {
+            // 移除所有 a 元素的 blue 类
+            $('.head-toolbar-2 a').removeClass('blue');
+            var tabName = $(this).data("tab")
+            console.log(tabName)
+            $(this).removeClass('grey').addClass('blue');
+        });
+        //时序图切换
+        $('.head-toolbar-3 a').on('click', function() {
+            // 移除所有 a 元素的 blue 类
+            $('.head-toolbar-3 a').removeClass('blue');
+            var tabName = $(this).data("tab")
+            console.log(tabName)
+            $(this).removeClass('grey').addClass('blue');
+            changeTimelineMode(tabName)
+        });
+    });
+</script>
+{{end}}
+
+	
+ 

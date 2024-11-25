@@ -1,0 +1,400 @@
+.client-data-box{
+    width: 100%;
+    min-width: 400px;
+}
+/* 头部box */
+.client-data-box .client-data-header-box{
+    width: 100%;
+    margin-top: 10px;
+    background-color: white;
+    padding: 10px 20px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+/* 头部左边box */
+.client-data-header-box .cti-data-box{
+    width: 41%;
+    height: 100%;
+    padding: 10px;
+    box-shadow: rgba(0, 0, 0, 0.138) 0px 8px 24px;
+    background: linear-gradient(180deg,#4183c4,#2a77c4);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.cti-data-box .cti-data-item{
+    width: 33%;
+    height: 100%;
+    color: white;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+}
+.cti-data-item .data-item-num{
+    font-size: 20px;
+}
+.cti-data-item .data-item-title{
+    margin-top: 5px;
+    color: #e2dddd;
+    font-size: 14px;
+}
+/* 头部右边 */
+.client-data-header-box .client-data-header-right-box{
+    width: 22%;
+    height: 100%;
+    margin-left: 1%;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: pointer;
+}
+.client-data-header-right-box .local-data-info-left-icon{
+    font-size: 25px;
+    height: 100%;
+    width: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4183c4;
+}
+.client-data-header-right-box .local-data-info-right-box{
+    height: 100%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.local-data-info-right-box .local-data-info-num{
+    font-size: 20px;
+}
+.local-data-info-right-box .local-data-info-title{
+    margin-top: 5px;
+    color: #959090;
+    font-size: 14px;
+}
+/* 主体box */
+.client-data-body-box{
+    width: calc(100% - 40px);
+    margin: 10px 20px;
+    background-color: white;
+    padding: 10px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+}
+/* 主体tab */
+.client-data-precess-box .client-data-precess-tab{
+    width: 100%;
+}
+/* 主体tab内容 */
+.client-data-precess-box .client-data-tab-item{
+    width: 100%;
+}
+/* 主体tab内容-流量情报 */
+.client-data-traffic-box {
+    width: 100%;
+    height: 100%;
+}
+.client-data-traffic-box .client-data-precess-step-box{
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+.client-data-precess-step-box.process-step-active{
+    display: block;
+}
+/*主体tab toolbar*/
+.client-data-process-step-toolbar{
+    width: 100%;
+    height: 50px;
+    padding: 10px;
+    position: relative;
+}
+.client-data-process-step-toolbar .client-data-process-step-prev{
+    width: 100px;
+    cursor: pointer;
+}
+.client-data-process-step-prev .client-data-process-step-prev-title{
+    margin: 0;
+}
+.client-data-process-step-toolbar button{
+    position: absolute;
+    right: 0;
+    top: 10px;
+}
+/* 主体tab内容-流量情报-step1:上传数据 */
+.client-data-precess-step-box .upload-data-list{
+    width: 100%;
+    height: 100%;
+}
+/* 上传文件列表item */
+.upload-data-list .upload-data-item{
+    width: 100%;
+    height: 60px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    margin-bottom: 10px;
+}
+/* 上传文件item body*/
+.upload-data-item .upload-data-item-body{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+}
+.upload-data-item-body>div{
+    margin-right: 12px;
+    text-align: left;
+}
+.upload-data-item-body .upload-data-item-icon{
+    margin: 0 10px;
+    width: 50px;
+    height: 100%;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* 上传文件item name 文字省截断*/
+.upload-data-item-body .upload-data-item-name{
+    max-width: 30%;
+    min-width: 25%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
+}
+.upload-data-item-body .upload-data-item-hash{
+    width: 31%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.upload-data-item-body .upload-data-item-size{
+    width: 15%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+}
+.upload-data-item-body .upload-data-item-tools{
+    height: 100%;
+    position: absolute;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.upload-data-item-tools button{
+    margin-right: 10px;
+}
+/* 上传文件item progress*/
+.upload-data-item .upload-data-item-progress{
+    width: 100%;
+}
+/* 上传文件form */
+.upload-data-file-form{
+    width: 100%;
+    height: 100%;
+}
+/*上传icon*/
+
+/* 上传文件form drop area*/
+#file-drop-area{
+    width: 100%;
+    height: 150px;
+    cursor: pointer;
+    color: #2185d0;
+}
+#file-drop-area:hover{
+    border-color: #e1ecf4;
+    background-color: #e1ecf4;
+}
+#file-drop-area.highlight {
+    border-color: #e1ecf4;
+}
+/* step2:STIX转换配置   */
+.client-data-process-step-box{
+    width: 100%;
+    height: 100%;
+}
+.client-data-process-step-box .stix-process-data-config{
+    padding-bottom: 10px;
+}
+.client-data-process-step-box .stix-process-data-config-title{
+    padding: 10px;
+    width: 100%;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.client-data-process-step-box .stix-process-data-config-box{
+    padding: 5px 12px;
+}
+.stix-process-data-list-box .stix-process-data-item{
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    margin-bottom: 10px;
+}
+.stix-process-data-item .stix-process-data-item-body{
+    padding: 20px 10px;
+}
+.stix-process-data-item .upload-data-item-icon{
+    margin:0;
+    margin-right: 0px;
+}
+.stix-process-data-item .upload-data-item-name{
+   max-width: 25%;
+   min-width: 20%;
+}
+.stix-process-data-item .upload-data-item-hash{
+   width: 26%;
+}
+
+.stix-process-data-item .upload-data-item-size{
+    width: 13%;
+}
+.stix-process-data-item .upload-data-item-status{
+    width: 22%;
+}
+
+/* step3:CTI转换配置   */
+.client-data-process-step-box{
+    width: 100%;
+    height: 100%;
+}
+.client-data-process-step-box .cti-process-data-config{
+    padding-bottom: 10px;
+}
+.client-data-process-step-box .cti-process-data-config-title{
+    padding: 10px;
+    width: 100%;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.client-data-process-step-box .cti-process-data-config-box{
+    padding: 5px 12px;
+}
+.cti-process-data-list-box .cti-process-data-item{
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    margin-bottom: 10px;
+}
+.cti-process-data-item .cti-process-data-item-body{
+    padding: 20px 10px;
+}
+.cti-process-data-item .upload-data-item-icon{
+    margin:0;
+    margin-right: 0px;
+}
+.cti-process-data-item .upload-data-item-name{
+   max-width: 25%;
+   min-width: 20%;
+}
+.cti-process-data-item .upload-data-item-hash{
+   width: 26%;
+}
+
+.cti-process-data-item .upload-data-item-size{
+    width: 13%;
+}
+.cti-process-data-item .upload-data-item-status{
+    width: 22%;
+}
+
+/* step4:上链转换配置   */
+.client-data-process-step-box{
+    width: 100%;
+    height: 100%;
+}
+.client-data-process-step-box .cti-upchain-data-config{
+    padding-bottom: 10px;
+}
+.client-data-process-step-box .cti-upchain-data-config-title{
+    padding: 10px;
+    width: 100%;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.client-data-process-step-box .cti-upchain-data-config-box{
+    padding: 5px 12px;
+}
+.cti-upchain-data-list-box .cti-upchain-data-item{
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    margin-bottom: 10px;
+}
+.cti-upchain-data-item .cti-upchain-data-item-body{
+    padding: 20px 10px;
+}
+.cti-upchain-data-item .upload-data-item-icon{
+    margin:0;
+    margin-right: 0px;
+}
+.cti-upchain-data-item .upload-data-item-name{
+   max-width: 25%;
+   min-width: 20%;
+}
+.cti-upchain-data-item .upload-data-item-hash{
+   width: 26%;
+}
+
+.cti-upchain-data-item .upload-data-item-size{
+    width: 13%;
+}
+.cti-upchain-data-item .upload-data-item-status{
+    width: 22%;
+}
+
+
+
+
+
+/* 底部box */
+.client-data-bottom-box{
+    width: calc(100% - 40px);
+    margin: 20px;
+    background-color: white;
+    padding: 15px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    min-height: 150px;
+    margin-bottom: 20px;
+}
+/* 底部box-tools */
+.client-data-tools-box{
+    width: 100%;
+    height: 30px;
+    position: relative;
+    
+}
+.client-data-tools-box .tools-box-tab-list{
+    width: 120px;
+    height: 100%;
+}
+.tools-box-tab-list a{
+    margin-right: 10px;
+}
+.client-data-tools-box .tools-box-text-box{
+    position: absolute;
+    right: 0px;
+    top:0px;
+    text-align: right;
+}
+/* 底部box-STIX数据table */
+.client-data-table-box{
+    width: 100%;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px;
+}
+.client-data-table-box table{
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+}

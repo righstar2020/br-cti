@@ -70,6 +70,12 @@
             }
             return null;
         }
+        //获取url尾部路径名
+        function getUrlTailPath() {
+            var path = window.location.pathname;
+            var pathParts = path.split('/');
+            return pathParts[pathParts.length - 1];
+        }
     </script>
     
     <style>

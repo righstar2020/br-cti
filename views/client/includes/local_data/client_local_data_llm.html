@@ -1,5 +1,4 @@
-{{define "tab_traffic_content"}}
-<link rel="stylesheet" href="/static/client/css/client_local_data/traffic.css"/>
+{{define "tab_llm_content"}}
 <div class="client-data-traffic-box">
     <div class="client-data-process-step-toolbar">
         <div onclick="prevStep()" class="client-data-process-step-prev" >
@@ -212,7 +211,7 @@
                                 <label>IPFS地址</label>
                                 <div class="ui action input">
                                     <input type="text" name="ipfs_address" value="">
-                                      <div data-process-id="" onclick="getIpfsAddress(this)" class="check-ipfs-address-btn ui blue left icon button">
+                                      <div data-process-id="" onclick="checkIpfsAddress(this)" class="check-ipfs-address-btn ui blue left icon button">
                                       <i class="left arrow icon"></i>
                                     </div>
                                 </div>
@@ -244,8 +243,5 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="/static/client/js/client_local_data/traffic/file_upload.js"></script>
-<script type="text/javascript" src="/static/client/js/client_local_data/traffic/stix_process.js"></script>
-<script type="text/javascript" src="/static/client/js/client_local_data/traffic/cti_process.js"></script>
-<script type="text/javascript" src="/static/client/js/client_local_data/traffic/cti_upchain.js"></script>
+
 {{end}}

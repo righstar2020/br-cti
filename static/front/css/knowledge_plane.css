@@ -226,3 +226,19 @@
     color: #64aed9;
     text-align: center;
 }
+/* 特征类型图表容器样式 */
+#featureTypeCharts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 5px;
+}
+#trafficSceneTypePieChart {
+    height: 312px;
+    width: 100%;
+}
+#trafficCtiTimelineChart{
+    height: 375px;
+    width: 100%;
+}

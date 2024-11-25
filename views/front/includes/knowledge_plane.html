@@ -10,59 +10,14 @@
    </div>
    <div class="cti-knowledge-plane-box-body">
         <div class="plane-box-body-nav">
-            <a class="nav-item" href="/knowledge-plane?tab=normal">
+            <a class="nav-item" href="/knowledge-plane/normal">
                 常规攻击(1209)
             </a>
-            <a class="nav-item" href="/knowledge-plane?tab=traffic">
+            <a class="nav-item" href="/knowledge-plane/traffic">
                 流量攻击(123)
             </a>
-            <a class="nav-item" href="/knowledge-plane?tab=feature">
-                攻击特征(556)
-            </a>
         </div>
-        <div class="plane-box-body-box-1">
-            <div class="body-box-1-top">
-                <div class="top-left-box">
-                    <div class="box-head">
-                        IOC分布地图
-                        <div class="box-head-toolbar head-toolbar-1">
-                            <a class="ui small blue  label" data-tab="world">世界</a>
-                            <a class="ui small label" data-tab="china">中国</a>
-                        </div>
-                    </div>
-                    <div class="box-body">
-                        <div id="ctiWorldMap"></div>
-                    </div>
-                </div>
-                <div class="top-right-box">
-                    <div class="box-head">
-                        IOC类型分布
-                        <div class="box-head-toolbar head-toolbar-2">
-                            <a class="ui small blue  label" data-tab="ioc_type">IOC类型</a>
-                            <a class="ui small label" data-tab="attack_type">攻击类型</a>
-                        </div>
-                    </div>
-                    <div class="box-body">
-                        <div id="typePieChart"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="body-box-1-buttom">
-                <div class="box-head">
-                    攻击类型统计
-                    <div class="box-head-toolbar head-toolbar-3">
-                        <a class="ui small blue label" data-tab="hour">小时</a>
-                        <a class="ui small label" data-tab="day">天</a>
-                        <a class="ui small label" data-tab="month">月</a>
-                       
-                        
-                    </div>
-                </div>
-                <div class="box-body">
-                    <div id="ctiTimelineChart"></div>
-                </div>
-            </div>
-        </div>
+        {{ block "kp_content" .}}{{end}}
         <div class="plane-box-body-box-2">
             <div class="box-head">
                 攻击IOC信息
@@ -212,10 +167,7 @@
         </div>
    </div>
 </div>
-<script type="text/javascript" src="/static/map/world.js"></script>
-<script type="text/javascript" src="/static/map/init_map.js"></script>
-<script type="text/javascript" src="/static/front/js/init_kp_echart.js"></script>
-<script type="text/javascript" src="/static/front/js/init_kp_echart_2.js"></script>
+
 <script>
 $(document).ready(function() {
     // 为 '详情' 按钮绑定点击事件
@@ -225,42 +177,13 @@ $(document).ready(function() {
     });
 
     //tab激活
-    var currentTab = getUrlQueryString("tab")
+    var currentTab = getUrlTailPath()
     if(currentTab){
-        $(".nav-item[href='/knowledge-plane?tab="+currentTab+"']").addClass("nav-item-active")
+        $(".nav-item[href='/knowledge-plane/"+currentTab+"']").addClass("nav-item-active")
     }else{
         //激活第一个tab
         $(".nav-item").first().addClass("nav-item-active")
     }
-    //地图切换
-    $('.head-toolbar-1 a').on('click', function() {
-        // 移除所有 a 元素的 blue 类
-        $('.head-toolbar-1 a').removeClass('blue');
-        $('.head-toolbar-1 a').removeClass('red')
-        var tabName = $(this).data("tab")
-        console.log(tabName)
-        if(tabName=="china")
-            $(this).removeClass('grey').addClass('red');
-        else
-            $(this).removeClass('grey').addClass('blue');
-    });
-    //类型切换
-    $('.head-toolbar-2 a').on('click', function() {
-        // 移除所有 a 元素的 blue 类
-        $('.head-toolbar-2 a').removeClass('blue');
-        var tabName = $(this).data("tab")
-        console.log(tabName)
-        $(this).removeClass('grey').addClass('blue');
-    });
-    //时序图切换
-    $('.head-toolbar-3 a').on('click', function() {
-        // 移除所有 a 元素的 blue 类
-        $('.head-toolbar-3 a').removeClass('blue');
-        var tabName = $(this).data("tab")
-        console.log(tabName)
-        $(this).removeClass('grey').addClass('blue');
-        changeTimelineMode(tabName)
-    });
 });
 var currentLayerIndex = null; //设置只可打开一个窗口
 function openCtiDetailWindow(url) {

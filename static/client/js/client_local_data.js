@@ -107,7 +107,7 @@ function updateHeaderPanelUI(taskId,total_data_num,processed_data_num,processing
 /*-------------------面板UI更新 end------------------------*/
 /*------------------step步骤函数------------------------*/
 var currentStep = 1;
-var stepInitStatusList=[0,0,0,0,0] //步骤UI初始化
+var stepStatusUpdateList=[1,1,1,1,1] //步骤是否有更新
 var processStepTitleList = ["文件上传","重新上传","STIX转换","CTI转换","数据上链"];
 //上一步
 function prevStep(){
@@ -124,6 +124,13 @@ function nextStep(){
     }
     currentStep++;
     updateStep(currentStep);
+}
+//update step status
+function updateStepStatus(step=1){
+    for(var i=0;i<stepStatusUpdateList.length;i++){
+        stepStatusUpdateList[i] = 1; //全部更新
+    }
+    stepStatusUpdateList[step] = 1;
 }
 //更新stepBar
 function updateStep(step){
@@ -147,23 +154,23 @@ function updateStep(step){
     //判断所在步骤并初始化
     if(step == 2){
         //stix数据转换
-        if(stepInitStatusList[1] == 0){
+        if(stepStatusUpdateList[step-1] == 1){
             initStepProcessStixData();
-            stepInitStatusList[1] = 1;
+            stepStatusUpdateList[0] = 0;
         }
     }
     if(step == 3){
         //cti数据转换
-        if(stepInitStatusList[2] == 0){
+        if(stepStatusUpdateList[step-1] == 1){
             initStepProcessCtiData();
-            stepInitStatusList[2] = 1;
+            stepStatusUpdateList[step-1] = 0;
         }
     }
     if(step == 4){
         //cti数据上链
-        if(stepInitStatusList[3] == 0){
+        if(stepStatusUpdateList[step-1] == 1){
             initStepCtiDataUpchain();
-            stepInitStatusList[3] = 1;
+            stepStatusUpdateList[step-1] = 0;
         }
     }
 
@@ -244,8 +251,6 @@ function compareJson(oldJson, newJson) {
     }
     return false;
 }
-
-
 
 /*------------------工具函数 end------------------------*/
 

@@ -9,7 +9,6 @@ import (
 	"os"
 	"strings"
 	"time"
-
 	"github.com/righstar2020/br-cti/global"
 	"github.com/righstar2020/br-cti/pkg/setting"
 	"gorm.io/driver/mysql"
@@ -23,7 +22,7 @@ const (
 	STATE_CLOSE = 0
 )
 
-//MyTime 自定义时间
+// MyTime 自定义时间
 type MyTime time.Time
 
 type Model struct {

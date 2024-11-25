@@ -99,13 +99,37 @@ function bindCtiUpchainDataFormEvent(processId){
         }
     });
 }
-
+//获取IPFS地址
+function getIpfsAddress(button){
+    var processId = $(button).attr('data-process-id');
+    var file_hash = taskFileHashMap[processId];
+    $.ajax({
+        type: "POST",
+        url: clientServerHost + "/upchain/getIPFSAddress",
+        dataType: "json",
+        success: function(response){
+            console.log(response);
+            if(response.code == 200){
+                const data = response.data;
+                const ipfsAddress = data.ipfs_address;
+                const form = $(`.cti-upchain-data-config-form[data-process-id="${processId}"]`);
+                form.find('input[name="ipfs_address"]').val(ipfsAddress);
+            }else{
+                layer.msg('获取IPFS地址失败',{'time':1200});
+            }
+        },
+        error: function(response){
+            console.log(response);
+            layer.msg('获取IPFS地址失败',{'time':1200});
+        }
+    });
+}
 //获取本地钱包账户
 function getUpchainAccount(button){
     var processId = $(button).attr('data-process-id');
     var file_hash = taskFileHashMap[processId];
     $.ajax({
-        type: "GET",
+        type: "GET", 
         url: clientServerHost + "/user/checkLocalUserWallet",
         dataType: "json",
         success: function(response){
@@ -126,7 +150,53 @@ function getUpchainAccount(button){
         }
     });
 }
-
+//绑定检查钱包密码事件
+function checkUpchainAccountPassword(button){
+    var processId = $(button).attr('data-process-id');
+    checkWalletPassword(processId);
+}
+//检查钱包密码
+function checkWalletPassword(processId) {
+    //检查配置是否输入正确
+    const form = $(`.cti-upchain-data-config-form[data-process-id="${processId}"]`);
+    const upchainAccount = form.find('input[name="upchain_account"]').val();
+    const upchainAccountPassword = form.find('input[name="upchain_account_password"]').val();
+    if(upchainAccount == null || upchainAccount == '' || upchainAccountPassword == null || upchainAccountPassword == ''){
+        layer.msg('账户或钱包密码不能为空',{'time':1200});
+        return;
+    }
+    $.ajax({
+        type: "POST",
+        url: clientServerHost + "/user/checkWalletPassword", 
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify({
+            wallet_id: upchainAccount,
+            password: upchainAccountPassword
+        }),
+        success: function(response) {
+            console.log(response);
+            if(response.code == 200) {
+                const verifyResult = response.data;
+                if(verifyResult){
+                    layer.msg('钱包密码正确',{'time':1200});
+                    return true;
+                }else{
+                    layer.msg('钱包密码错误',{'time':1200});
+                    return false;
+                }
+            } else {
+                layer.msg(response.error, {'time':1200});
+                return false;
+            }
+        },
+        error: function(response) {
+            console.log(response);
+            layer.msg(response.error, {'time':1200});
+            return false
+        }
+    });
+}
 
 function deleteCtiUpchainDataItem(button){
     const processId = $(button).attr('data-process-id');
@@ -170,6 +240,9 @@ function checkFormInputValid(processId){
     const upchainAccountPassword = form.find('input[name="upchain_account_password"]').val();
     if(ipfsAddress == null || ipfsAddress == '' || upchainAccount == null || upchainAccount == '' || upchainAccountPassword == null || upchainAccountPassword == ''){
         layer.msg('配置输入不能为空',{'time':1200});
+        return false;
+    }
+    if(!checkWalletPassword(processId)){
         return false;
     }
     return true;
