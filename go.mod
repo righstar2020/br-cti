@@ -16,7 +16,7 @@ require (
 	github.com/juju/ratelimit v1.0.1
 	github.com/mojocn/base64Captcha v1.2.2
 	github.com/opentracing/opentracing-go v1.2.0
-	github.com/spf13/viper v1.10.1
+	github.com/spf13/viper v1.3.2 //注意这个版本
 	github.com/swaggo/gin-swagger v1.3.3
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
