@@ -99,11 +99,11 @@
     width: 100%;
 }
 /* 主体tab内容-流量情报 */
-.client-data-traffic-box {
+.client-data-llm-box {
     width: 100%;
     height: 100%;
 }
-.client-data-traffic-box .client-data-precess-step-box{
+.client-data-llm-box .client-data-precess-step-box{
     width: 100%;
     height: 100%;
     display: none;

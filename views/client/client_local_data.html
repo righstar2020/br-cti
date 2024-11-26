@@ -106,7 +106,6 @@
         <ul class="layui-tab-title client-data-precess-tab">
             <li class="client-data-tab-title layui-this">流量情报</li>
             <li class="client-data-tab-title">大模型提取</li>
-            <li class="client-data-tab-title">自动化日志</li>
         </ul>
         <div class="layui-tab-content client-data-precess-content">
             <div class="client-data-tab-item layui-tab-item layui-show">
@@ -114,10 +113,8 @@
                 {{template "tab_traffic_content" .}}
             </div>
             <div class="client-data-tab-item layui-tab-item">
-            
-            </div>
-            <div class="client-data-tab-item layui-tab-item">
-            
+                <!-- 大模型提取Tab模板 -->
+                {{template "tab_llm_content" .}}
             </div>
         </div>
     </div>

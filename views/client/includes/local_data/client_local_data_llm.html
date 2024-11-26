@@ -1,5 +1,6 @@
 {{define "tab_llm_content"}}
-<div class="client-data-traffic-box">
+<link rel="stylesheet" href="/static/client/css/client_local_data/llm.css"/>
+<div class="client-data-llm-box">
     <div class="client-data-process-step-toolbar">
         <div onclick="prevStep()" class="client-data-process-step-prev" >
             <i class="bars icon"></i>
@@ -77,8 +78,8 @@
                             <div class="field">
                                 <label>流量特征字段</label>
                                 <div class="ui action input">
-                                    <input type="text" name="traffic_feature_field" value="">
-                                    <div data-process-id="" onclick="getTrafficFeatureField(this)" class="get-traffic-feature-field-btn ui blue left icon button">
+                                    <input type="text" name="llm_feature_field" value="">
+                                    <div data-process-id="" onclick="getTrafficFeatureField(this)" class="get-llm-feature-field-btn ui blue left icon button">
                                       <i class="check icon"></i>
                                     </div>
                                 </div>
@@ -211,7 +212,7 @@
                                 <label>IPFS地址</label>
                                 <div class="ui action input">
                                     <input type="text" name="ipfs_address" value="">
-                                      <div data-process-id="" onclick="checkIpfsAddress(this)" class="check-ipfs-address-btn ui blue left icon button">
+                                      <div data-process-id="" onclick="getIpfsAddress(this)" class="check-ipfs-address-btn ui blue left icon button">
                                       <i class="left arrow icon"></i>
                                     </div>
                                 </div>
@@ -243,5 +244,4 @@
         </div>
     </div>
 </div>
-
 {{end}}
