@@ -152,10 +152,17 @@ function updateStep(step){
         }
     }
     if(step == 3){
-        //model模型转换，模型上链
+        //model模型评估
         if(stepInitStatusList[2] == 0){
-            initStepTestModel();
+            initStepEvalModel();
             stepInitStatusList[2] = 1;
+        }
+    }
+    if(step == 4){
+        //model模型转换，模型上链
+        if(stepInitStatusList[3] == 0){
+            initStepUpchainModel();
+            stepInitStatusList[3] = 1;
         }
     }
 

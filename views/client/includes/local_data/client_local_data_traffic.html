@@ -96,10 +96,10 @@
                                   <option value="">选择需要提取的IOC</option>
                                   <option value="ip">IP</option>
                                   <option value="port">端口</option>
-                                  <option value="flow">流特征</option>
+                                  <option value="payload">Payload</option>
                                   <option value="hash">HASH</option>
                                   <option value="url">URL</option>
-                                  <option value="cve">CVE</option>
+                                  <option value="flow_feature">流特征</option>
                                 </select>
                             </div>
                             <div class="field">
@@ -197,7 +197,7 @@
                     <div class="upload-data-item-size">1.2MB</div>
                     <div class="cti-upchain-data-item-status">配置中</div>
                     <div class="upload-data-item-tools">
-                        <button  data-process-id="" onclick="startProcessCti(this)" class="ui blue button mini cti-process-data-item-start-btn">
+                        <button  data-process-id="" onclick="startCtiUpchainData(this)" class="ui blue button mini cti-process-data-item-start-btn">
                             开始上链
                         </button>
                     </div>

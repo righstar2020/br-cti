@@ -58,8 +58,8 @@ function updateCtiUpchainDataListHtml(){
                 value: 'malicious_traffic',
                 selected: true
             },{
-                name: '应用层攻击',
-                value: 'app_attack',
+                name: '蜜罐数据',
+                value: 'honeypot',
                 selected: false
             },
             {
@@ -71,9 +71,10 @@ function updateCtiUpchainDataListHtml(){
         //设置压缩比例下拉框
         $(`#cti-upchain-data-${processId} .ui.dropdown.upchain-compress`).dropdown({
             values: [
+                {name: '1条',value: '1',selected: true},
                 {name: '100条',value: '100'},
                 {name: '500条',value: '500'},
-                {name: '1000条',value: '1000',selected: true}
+                {name: '1000条',value: '1000'}
             ]
         });
         //绑定form事件
@@ -242,9 +243,6 @@ function checkFormInputValid(processId){
         layer.msg('配置输入不能为空',{'time':1200});
         return false;
     }
-    if(!checkWalletPassword(processId)){
-        return false;
-    }
     return true;
 }
 
@@ -261,10 +259,11 @@ function startCtiUpchainDataWithConfig(processId){
         "upchain_account": form.find('input[name="upchain_account"]').val(),
         "upchain_account_password": form.find('input[name="upchain_account_password"]').val()
     };
+    console.log(ctiUpchainDataConfig);
     //开始上链
     setCtiUpchainProcessingItemUI(processId);
     $.ajax({
-        url: clientServerHost + '/data/process_data_to_upchain',
+        url: clientServerHost + '/blockchain/upload_cti',
         type: 'POST',
         dataType: "json",
         contentType: 'application/json',
@@ -308,7 +307,7 @@ function pollingCtiUpchainProgress(processId){
 }
 function getCtiUpchainProgress(processId){
     $.ajax({
-        url: clientServerHost + '/data/get_upchain_process_progress',
+        url: clientServerHost + '/blockchain/get_upload_cti_progress',
         type: 'POST',
         dataType: "json",
         contentType: 'application/json',

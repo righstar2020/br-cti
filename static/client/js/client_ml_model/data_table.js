@@ -44,8 +44,6 @@ layui.use('table', function(){
     console.log('layuiTable is initialized');  
     //渲染表格
     renderClientDataTable([]);
-    //使用mock数据
-    renderClientDataTable(clientMockModelDataList);
 });
 //更新UI
 function updateClientDataTableUI(clientTableData){
@@ -67,6 +65,9 @@ function renderClientDataTable(clientTableData){
                         }
                         if (d.status == '完成') {
                             div = `<a style="background-color: #285191;color: white;" class="ui small custom-blue label">已完成</a>`;
+                        }
+                        if (d.status == '训练失败') {
+                            div = `<a style="background-color: #ff4500;color: white;" class="ui small custom-red label">训练失败</a>`;
                         }
                         return div;
                     }
@@ -133,7 +134,7 @@ function refreshDataTable(select_type){
 }
 function queryLocalModelData(fileHash){ 
     $.ajax({
-        url: clientServerHost + '/data/get_local_model_records',
+        url: clientServerHost + '/ml/get_model_records_by_hash',
         type: 'POST',
         dataType: 'json',
         contentType: 'application/json',
@@ -184,14 +185,14 @@ function processLocalModelDataToTableData(sourceHash,modelDataList){
         var modelInfo = modelDataList[i];
         var data = {
             id: i+1,
-            status: modelInfo.model_file_hash=="" ? '处理中' : '完成',
-            type: modelInfo.model_type_name,
-            tags: modelInfo.model_tags,
-            iocs: modelInfo.model_iocs,
-            source_hash: modelInfo.source_file_hash,
-            file_hash: modelInfo.model_file_hash,
-            create_time: modelInfo.create_time.split(' ')[0],
-            onchain: modelInfo.onchain ? '是' : '否'
+            status: modelInfo.status == 'train_failed' ? '训练失败' :(modelInfo.status=='training' ? '训练中' : '完成'),
+            type: modelInfo.model_info.model_type == undefined ? '无' : modelInfo.model_info.model_type,
+            tags: modelInfo.model_info.tags || ['无'] ,
+            iocs: modelInfo.model_info.iocs || ['无'] , 
+            source_hash: modelInfo.source_file_hash || '无',
+            file_hash: modelInfo.model_info.model_file_hash || '无',
+            create_time: modelInfo.created_time || '无',
+            onchain: modelInfo.model_info.onchain || '否'
         };
         tableData.push(data);
     }

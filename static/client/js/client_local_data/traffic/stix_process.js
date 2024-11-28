@@ -58,8 +58,8 @@ function updateStixProcessDataListHtml(){
                 value: 'malicious_traffic',
                 selected: true
             },{
-                name: '应用层攻击',
-                value: 'app_attack',
+                name: '蜜罐数据',
+                value: 'honeypot',
                 selected: false
             },
             {
@@ -71,9 +71,10 @@ function updateStixProcessDataListHtml(){
         //设置压缩比例下拉框
         $(`#stix-process-data-${processId} .ui.dropdown.stix-compress`).dropdown({
             values: [
+                {name: '1条',value: '1',selected: true},
                 {name: '100条',value: '100'},
                 {name: '500条',value: '500'},
-                {name: '1000条',value: '1000',selected: true}
+                {name: '1000条',value: '1000'}
             ]
         });
         //绑定form事件

@@ -1,4 +1,4 @@
-/*------------------Setp 1文件上传------------------------*/
+/*------------------Step 1文件上传------------------------*/
 function updateProgress(fileId, progress ,fail=false) {
     let progressBar = $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-progress`);
     let taskFileHash = taskFileHashMap[fileId];
@@ -21,7 +21,8 @@ function updateProgress(fileId, progress ,fail=false) {
         });
     }
 }
-function addUploadFileItem(file) {
+
+function addFileUploadItem(file) {
     // 克隆模板
     const uploadFileItem = document.getElementById("upload-file-template").cloneNode(true);
     // 移除模板的 display: none 样式
@@ -39,20 +40,19 @@ function addUploadFileItem(file) {
     uploadFileItem.querySelector('.upload-data-item-size').innerText = formatSize(file.size);
 
     // 添加到目标元素
-    // 使用jquery选择器
     const uploadDataList = $(`.upload-data-list`);
     uploadDataList.append(uploadFileItem);
     //触发步骤数据更新
     stepInitStatusList[1] = 0;
     return fileId;
 }
-function deleteUploadFileItem(button) {
+
+function deleteUploadFileItem (button) {
     const fileId = $(button).attr('data-file-id');
-    //使用jquery选择器
     const item = $(`.upload-data-item[data-file-id="${fileId}"]`);
     if (item) {
         layer.confirm('确定删除该文件吗？', {
-            btn: ['确定', '取消'] //按钮
+            btn: ['确定', '取消'] 
         }, function(index){
             //删除taskFileIds中的fileId
             taskFileIds = taskFileIds.filter(id => id !== fileId);
@@ -72,35 +72,31 @@ function deleteUploadFileItem(button) {
         });
     }
 }
-/*文件上传-多个文件*/
+
 function uploadFiles(files) {
-    
     for (let i = 0; i < files.length; i++) {
         //添加文件上传item
-        var  fileId = addUploadFileItem(files[i]);
+        var fileId = addFileUploadItem(files[i]);
         taskFileIds.push(fileId);
         // 上传单个文件
         uploadSingleFile(fileId,files[i]);
     }
-    
 }
 
-/*文件上传-单个文件*/
 function uploadSingleFile(fileId, file) {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('file_id', fileId);
 
     $.ajax({
-        url: clientServerHost + '/data/upload_file',
+        url: clientServerHost + '/ml/upload_dataset_file',
         type: 'POST',
         data: formData,
-        contentType: false, // 不设置内容类型
-        processData: false, // 不处理数据
+        contentType: false,
+        processData: false,
         xhr: function() {
             const xhr = $.ajaxSettings.xhr();
             if (xhr.upload) {
-                //进度条
                 xhr.upload.addEventListener('progress', function(event) {
                     if (event.lengthComputable) {
                         const percentComplete = (event.loaded / event.total) * 100;
@@ -117,12 +113,10 @@ function uploadSingleFile(fileId, file) {
                 $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-hash`).text(data.file_hash);
                 $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-size`).text(formatSize(data.file_size));
                 taskFileHashMap[fileId] = data.file_hash;
-                console.log(taskFileHashMap[fileId] );
                 //更新任务状态
                 updateTaskFinishStepStatus(data.file_hash,"0",true);
                 //查询本地MODEL数据(一次)
                 queryLocalModelData(data.file_hash);
-                
             } else {
                 $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-hash`).text('上传失败');
                 $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-size`).text("0 Bytes");
@@ -130,7 +124,6 @@ function uploadSingleFile(fileId, file) {
             updateProgress(fileId, 100);
         },
         error: function() {
-            
             $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-hash`).text('上传失败');
             $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-size`).text("0 Bytes");
             updateProgress(fileId, 100,true);
@@ -138,7 +131,6 @@ function uploadSingleFile(fileId, file) {
     });
 }
 
-//文件上传句柄
 function handleFiles(files) {
     uploadFiles(files);
 }
@@ -146,59 +138,57 @@ function handleFiles(files) {
 //绑定文件拖拽事件
 bindDragDropEvent();
 function bindDragDropEvent(){
-   // 拖放事件处理
-   const fileDropArea = document.getElementById('file-drop-area');
+    const fileDropArea = document.getElementById('file-drop-area');
 
-   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-       fileDropArea.addEventListener(eventName, preventDefaults, false);
-   });
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        fileDropArea.addEventListener(eventName, preventDefaults, false);
+    });
 
-   function preventDefaults(e) {
-       e.preventDefault();
-       e.stopPropagation();
-   }
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
 
-   fileDropArea.addEventListener('dragenter', highlight, false);
-   fileDropArea.addEventListener('dragover', highlight, false);
-   fileDropArea.addEventListener('dragleave', unhighlight, false);
-   fileDropArea.addEventListener('drop', handleDrop, false);
+    fileDropArea.addEventListener('dragenter', highlight, false);
+    fileDropArea.addEventListener('dragover', highlight, false);
+    fileDropArea.addEventListener('dragleave', unhighlight, false);
+    fileDropArea.addEventListener('drop', handleDrop, false);
 
-   function highlight() {
-       fileDropArea.classList.add('highlight');
-   }
+    function highlight() {
+        fileDropArea.classList.add('highlight');
+    }
 
-   function unhighlight() {
-       fileDropArea.classList.remove('highlight');
-   }
+    function unhighlight() {
+        fileDropArea.classList.remove('highlight');
+    }
 
-   function handleDrop(e) {
-       const dt = e.dataTransfer;
-       const files = dt.files;
-       
-       // 过滤文件格式
-       const allowedFiles = Array.from(files).filter(file => {
-           const ext = file.name.split('.').pop().toLowerCase();
-           return ['xlsx', 'csv', 'txt'].includes(ext);
-       });
-       
-       if(allowedFiles.length < files.length) {
-           layer.msg('只支持上传xlsx、csv、txt格式的文件',{'time':1200});
-       }
-       
-       if(allowedFiles.length > 0) {
-           handleFiles(allowedFiles);
-       }
-   }
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        // 过滤文件格式
+        const allowedFiles = Array.from(files).filter(file => {
+            const ext = file.name.split('.').pop().toLowerCase();
+            return ['xlsx', 'csv', 'txt'].includes(ext);
+        });
+        
+        if(allowedFiles.length < files.length) {
+            layer.msg('只支持上传xlsx、csv、txt格式的文件',{'time':1200});
+        }
+        
+        if(allowedFiles.length > 0) {
+            handleFiles(allowedFiles);
+        }
+    }
 
-   // 点击事件处理
-   fileDropArea.addEventListener('click', () => {
-       document.getElementById('file-upload-input').click();
-   });
+    // 点击事件处理
+    fileDropArea.addEventListener('click', () => {
+        document.getElementById('file-upload-input').click();
+    });
 
-   document.getElementById('file-upload-input').addEventListener('change', (e) => {
-       const files = e.target.files;
-       handleFiles(files);
-   });
-
+    document.getElementById('file-upload-input').addEventListener('change', (e) => {
+        const files = e.target.files;
+        handleFiles(files);
+    });
 }
-/*------------------Setp 1文件上传 end------------------------*/
+/*------------------Step 1文件上传 end------------------------*/

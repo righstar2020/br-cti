@@ -1,13 +1,12 @@
-
 //----------------------------IOC类型 pie --------------------------------------
 
 // 数据
 const iocData = [
     { name: 'IP', value: 12200 },
     { name: '端口', value: 800 },
-    { name: 'HASH', value: 1500 },
+    { name: 'Payload', value: 1500 },
     { name: 'URL', value: 2000 },
-    { name: 'CVE', value: 5020 }
+    { name: 'HASH', value: 5020 }
 ];
 // 计算总和
 const total = iocData.reduce((sum, item) => sum + item.value, 0);

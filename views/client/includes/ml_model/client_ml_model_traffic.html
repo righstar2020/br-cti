@@ -67,7 +67,7 @@
                     <div class="train-process-data-config-box">
                         <form data-process-id=""  class="train-process-data-config-form ui form small">
                             <div class="field">
-                                <label>情报类型</label>
+                                <label>模型类型</label>
                                 <div class="ui selection dropdown train-type">
                                     <i class="dropdown icon"></i>
                                     <div class="default text">恶意流量</div>
@@ -90,23 +90,21 @@
                                 </select>
                             </div>
                             <div class="field">
-                                <label>提取IOCs</label>
-                                <select multiple="" class="ui dropdown" name="train_iocs">
-                                  <option value="">选择需要提取的IOC</option>
-                                  <option value="ip">IP</option>
-                                  <option value="port">端口</option>
-                                  <option value="flow">流特征</option>
-                                  <option value="hash">HASH</option>
-                                  <option value="url">URL</option>
-                                  <option value="cve">CVE</option>
+                                <label>评估指标</label>
+                                <select multiple="" class="ui dropdown model-metrics">
+                                    <option value="">选择评估指标</option>
+                                    <option value="accuracy">准确率</option>
+                                    <option value="precision">精确率</option>
+                                    <option value="recall">召回率</option>
                                 </select>
+                                <input type="hidden" name="model_metrics">
                             </div>
                             <div class="field">
-                                <label>数据压缩</label>
-                                <div class="ui selection dropdown train-compress">
+                                <label>测试数据比例</label>
+                                <div class="ui selection dropdown test-ratio">
                                     <i class="dropdown icon"></i>
-                                    <div class="default text">1000条</div>
-                                    <input class="small" type="hidden" name="train_compress">
+                                    <div class="default text">选择测试数据比例</div>
+                                    <input class="small" type="hidden" name="test_ratio">
                                 </div>
                             </div>
                             <button onclick="event.preventDefault(); deleteTrainProcessDataItem(this)" class="ui red mini button train-process-data-item-delete-btn">删除</button>
@@ -116,86 +114,8 @@
                 </div>
             </div>
         </div>
-        
     </div>
     <div data-step="3" class="client-model-process-step-box" style="display: none;">
-        <div class="model-process-data-list-box">
-            <div data-finish="false" data-process-id="" id="test-process-data-item-template" style="display: none;"  class="model-process-data-item upload-data-item" >
-                <div class="model-process-data-item-progress ui blue active top attached progress">
-                    <div class="bar"></div>
-                </div>
-                <div class="model-process-data-item-body upload-data-item-body">
-                    <div class="upload-data-item-icon">
-                        <i class="file icon"></i>
-                    </div>
-                    <div class="upload-data-item-name">mock.csv</div>
-                    <div class="upload-data-item-hash">a1bc52</div>
-                    <div class="upload-data-item-size">1.2MB</div>
-                    <div class="model-process-data-item-status">配置中</div>
-                    <div class="upload-data-item-tools">
-                        <button  data-process-id="" onclick="startCtiProcessData(this)" class="ui blue button mini model-process-data-item-start-btn">
-                            开始测试
-                        </button>
-                    </div>
-                </div>
-                <div class="model-process-data-config">
-                    <div class="model-process-data-config-title">
-                        模型测试配置
-                    </div>
-                    <div class="model-process-data-config-box">
-                        <form data-process-id=""  class="model-process-data-config-form ui form small">
-                            <div class="field">
-                                <label>情报类型</label>
-                                <div class="ui selection dropdown train-type">
-                                    <i class="dropdown icon"></i>
-                                    <div class="default text">恶意流量</div>
-                                    <input class="small" type="hidden" name="cti_type">
-                                </div>
-                            </div>
-                            <div class="field">
-                                <label>流量特征字段</label>
-                                <div class="ui action input">
-                                    <input type="text" name="traffic_feature_field" value="">
-                                    <div data-process-id="" onclick="getTrafficFeatureField(this)" class="get-traffic-feature-field-btn ui blue left icon button">
-                                      <i class="check icon"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="field">
-                                <label>分类标签</label>
-                                <select  class="ui dropdown tiny" name="cti_label">
-                                  <option value="">选择划分情报的标签字段</option>
-                                </select>
-                            </div>
-                            <div class="field">
-                                <label>提取IOCs</label>
-                                <select multiple="" class="ui dropdown" name="cti_iocs">
-                                  <option value="">选择需要提取的IOC</option>
-                                  <option value="ip">IP</option>
-                                  <option value="port">端口</option>
-                                  <option value="flow">流特征</option>
-                                  <option value="hash">HASH</option>
-                                  <option value="url">URL</option>
-                                  <option value="cve">CVE</option>
-                                </select>
-                            </div>
-                            <div class="field">
-                                <label>数据压缩</label>
-                                <div class="ui selection dropdown train-compress">
-                                    <i class="dropdown icon"></i>
-                                    <div class="default text">1000条</div>
-                                    <input class="small" type="hidden" name="cti_compress">
-                                </div>
-                            </div>
-                            <button onclick="event.preventDefault(); deleteCtiProcessDataItem(this)" class="ui red mini button model-process-data-item-delete-btn">删除</button>
-                        </form>
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div data-step="4" class="client-model-process-step-box" style="display: none;">
         <div class="model-upchain-data-list-box">
             <div data-finish="false" data-process-id="" id="model-upchain-data-item-template" style="display: none;"  class="model-upchain-data-item upload-data-item" >
                 <div class="model-upchain-data-item-progress ui blue active top attached progress">
@@ -210,7 +130,7 @@
                     <div class="upload-data-item-size">1.2MB</div>
                     <div class="model-upchain-data-item-status">配置中</div>
                     <div class="upload-data-item-tools">
-                        <button  data-process-id="" onclick="startCtiProcessData(this)" class="ui blue button mini model-process-data-item-start-btn">
+                        <button  data-process-id="" onclick="startModelUpchain(this)" class="ui blue button mini model-process-data-item-start-btn">
                             开始上链
                         </button>
                     </div>
@@ -226,7 +146,7 @@
                                 <div class="ui selection dropdown upchain-type">
                                     <i class="dropdown icon"></i>
                                     <div class="default text">流量模型</div>
-                                    <input class="small" type="hidden" name="cti_type">
+                                    <input class="small" type="hidden" name="model_type">
                                 </div>
                             </div>
                             <div class="field">
@@ -247,7 +167,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button onclick="event.preventDefault(); deleteCtiProcessDataItem(this)" class="ui red mini button model-process-data-item-delete-btn">删除</button>
+                            <button onclick="event.preventDefault(); deleteModelUpchainItem(this)" class="ui red mini button model-process-data-item-delete-btn">删除</button>
                         </form>
                         
                     </div>

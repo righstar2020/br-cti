@@ -316,7 +316,15 @@ func loadClientTemplates(r multitemplate.Renderer, funcMap template.FuncMap, tem
 	return r
 }
 func loadFrontTemplates(r multitemplate.Renderer,funcMap template.FuncMap , templatesDir string) multitemplate.Renderer {
-    // 布局模板
+    // 获取所有主模板文件
+	frontHtmls, err := filepath.Glob(templatesDir + "/*.html")
+	if err != nil {
+		panic(err.Error())
+	}
+	for _, html := range frontHtmls {
+		r.AddFromFilesFuncs(filepath.Base(html), funcMap, html)
+	}
+	// 布局模板
     layouts, err := filepath.Glob(templatesDir + "/layouts/*.html")
     if err != nil {
         panic(err.Error())

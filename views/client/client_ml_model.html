@@ -107,15 +107,11 @@
     <div class="client-model-body-box client-model-precess-box layui-tab layui-tab-brief">
         <ul class="layui-tab-title client-model-precess-tab">
             <li class="client-model-tab-title layui-this">流量模型</li>
-            <li class="client-model-tab-title">STIX模型</li>
         </ul>
         <div class="layui-tab-content client-model-precess-content">
             <div class="client-model-tab-item layui-tab-item layui-show">
                 <!-- 流量模型Tab模板 -->
                 {{template "tab_traffic_model_content" .}}
-            </div>
-            <div class="client-model-tab-item layui-tab-item">
-                <!-- STIX模型Tab模板 -->
             </div>
         </div>
     </div>
@@ -141,6 +137,7 @@
 <script type="text/javascript" src="/static/client/js/client_ml_model/file_upload.js"></script>
 <script type="text/javascript" src="/static/client/js/client_ml_model/train_process.js"></script>
 <script type="text/javascript" src="/static/client/js/client_ml_model/upchain_process.js"></script>
+<script type="text/javascript" src="/static/client/js/client_ml_model/evaluation_process.js"></script>
 <script>
 //检测网络状态
 CheckNetworkStatus()
