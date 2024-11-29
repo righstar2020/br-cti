@@ -106,12 +106,12 @@ function updateHeaderPanelUI(taskId,total_data_num,processed_data_num,processing
 }
 /*-------------------面板UI更新 end------------------------*/
 /*------------------step步骤函数------------------------*/
-var currentStep = 1;
-var stepStatusUpdateList=[1,1,1,1,1] //步骤是否有更新
-var processStepTitleList = ["文件上传","重新上传","STIX转换","CTI转换","数据上链"];
+var currentStep = 0;
+var stepStatusUpdateList=[1,1,1,1] //步骤是否有更新
+var processStepTitleList = ["文件上传","STIX转换","CTI转换","数据上链"];
 //上一步
 function prevStep(){
-    if(currentStep <= 1){
+    if(currentStep <= 0){
         return;
     }
     currentStep--;
@@ -122,28 +122,53 @@ function nextStep(){
     if(currentStep >= processStepTitleList.length-1){
         return;
     }
+        
     currentStep++;
     updateStep(currentStep);
 }
 //update step status
-function updateStepStatus(step=1){
+function updateStepStatus(step=0){
     for(var i=0;i<stepStatusUpdateList.length;i++){
         stepStatusUpdateList[i] = 1; //全部更新
     }
     stepStatusUpdateList[step] = 1;
+   
 }
+//激活下一步按钮
+function updateNextStepButton(step) {
+    // 检查当前步骤是否完成
+    let currentTaskFinished = false;
+    Object.keys(taskFinishStepStatusMap).forEach(function(hash) {
+        if(taskFinishStepStatusMap[hash][step] === true) {
+            currentTaskFinished = true;
+        }
+    });
+    
+    // 更新下一步按钮状态
+    const nextStepBtn = $('.next-step-btn');
+    if(currentTaskFinished) {
+        nextStepBtn.removeClass('disabled');
+        nextStepBtn.addClass('active');
+        nextStepBtn.addClass('blue');
+    } else {
+        nextStepBtn.addClass('disabled');
+        nextStepBtn.removeClass('active');
+        nextStepBtn.removeClass('blue');
+    }
+}
+
 //更新stepBar
-function updateStep(step){
-    console.log("step:",step);
-     //隐藏所有step
-     $(`.client-data-process-step-box`).removeClass('process-step-active');
-     $(`.client-data-process-step-box`).hide();
-     //显示当前step
-     console.log($(`.client-data-process-step-box[data-step="${step}"]`));
-     $(`.client-data-process-step-box[data-step="${step}"]`).show();
-     $(`.client-data-process-step-box[data-step="${step}"]`).addClass('process-step-active');
-     $(`.client-data-process-step-toolbar .client-data-process-step-prev-title`).text(processStepTitleList[step-1]);
-     if(step > 1){
+function updateStep(step) {
+    //隐藏所有step
+    $(`.client-data-process-step-box`).removeClass('process-step-active');
+    $(`.client-data-process-step-box`).hide();
+    
+    //显示当前step
+    $(`.client-data-process-step-box[data-step="${step}"]`).show();
+    $(`.client-data-process-step-box[data-step="${step}"]`).addClass('process-step-active');
+    
+    $(`.client-data-process-step-toolbar .client-data-process-step-title`).text(processStepTitleList[step]);
+    if(step > 0){
         $(`.client-data-process-step-toolbar .client-data-process-step-prev i`).removeClass('bars icon');
         $(`.client-data-process-step-toolbar .client-data-process-step-prev i`).addClass('left arrow icon');
         
@@ -152,36 +177,39 @@ function updateStep(step){
          $(`.client-data-process-step-toolbar .client-data-process-step-prev i`).addClass('bars icon');
     }
     //判断所在步骤并初始化
-    if(step == 2){
+    if(step == 1){
         //stix数据转换
-        if(stepStatusUpdateList[step-1] == 1){
+        if(stepStatusUpdateList[step] == 1){
             initStepProcessStixData();
-            stepStatusUpdateList[0] = 0;
+            stepStatusUpdateList[step] = 0;
+        }
+    }
+    if(step == 2){
+        //cti数据转换
+        if(stepStatusUpdateList[step] == 1){
+            initStepProcessCtiData();
+            stepStatusUpdateList[step] = 0;
         }
     }
     if(step == 3){
-        //cti数据转换
-        if(stepStatusUpdateList[step-1] == 1){
-            initStepProcessCtiData();
-            stepStatusUpdateList[step-1] = 0;
-        }
-    }
-    if(step == 4){
         //cti数据上链
-        if(stepStatusUpdateList[step-1] == 1){
+        if(stepStatusUpdateList[step] == 1){
             initStepCtiDataUpchain();
-            stepStatusUpdateList[step-1] = 0;
+            stepStatusUpdateList[step] = 0;
         }
     }
-
-
+    //更新下一步按钮状态
+    updateNextStepButton(step.toString());
 }
 //任务状态更新
 function updateTaskFinishStepStatus(taskFileHash,step="0",status=false){
     if(taskFinishStepStatusMap[taskFileHash] == null || taskFinishStepStatusMap[taskFileHash] == undefined){
         taskFinishStepStatusMap[taskFileHash] = {};
     }
+    console.log("taskFinishStepStatusMap[taskFileHash]:",taskFinishStepStatusMap[taskFileHash]);
     taskFinishStepStatusMap[taskFileHash][step] = status;
+    //更新下一步按钮状态
+    updateNextStepButton(step);
 }
 /*------------------step步骤函数 end------------------------*/
 /*------------------工具函数------------------------*/
@@ -253,7 +281,6 @@ function compareJson(oldJson, newJson) {
 }
 
 /*------------------工具函数 end------------------------*/
-
 
 
 

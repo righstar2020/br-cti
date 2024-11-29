@@ -17,38 +17,127 @@
 /*导航*/
 .cti-market-nav{
     width: 100%;
-    height: 40px;
-    background-color: #374f7c;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
-}
-.cti-market-nav .navbar-ul{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.navbar-ul li{
-    width: 100px;
-    text-align: center;
-    height: 100%;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    margin: 20px 0;
+    cursor: default;
 }
 
-.navbar-ul li a {
-    font-size: 12px;
-    color: white;
-    text-align: center;
-    height: 100%;
+/* 主标签导航 */
+.main-tabs {
+    display: flex;
+    background: #f5f7fa;
+    border-radius: 4px 4px 0 0;
+   
+}
+
+.tab-item {
+    padding: 15px 30px;
+    color: #666;
+    font-size: 15px;
+    position: relative;
+    transition: all 0.2s;
+   
+}
+
+.tab-item:hover {
+    color: #374f7c;
+    background: rgba(55, 79, 124, 0.05);
+}
+
+.tab-item.active {
+    color: #fff;
+    background: #374f7c;
+}
+
+/* 筛选行 */
+.filter-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin: 0 12px;
+    padding: 12px 20px;
+    border-bottom: 1px solid #eee;
 }
-.navbar-ul li a:hover{
-    background-color: #233a5f;
+
+.filter-row:last-child {
+    border-bottom: none;
+}
+
+.filter-label {
+    color: #666;
+    font-size: 14px;
+    margin-right: 15px;
+    min-width: 42px;
+}
+
+.filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex: 1;
+}
+
+.filter-tag {
+    padding: 6px 16px;
+    color: #666;
+    font-size: 13px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.filter-tag:hover {
+    color: #374f7c;
+    background: rgba(55, 79, 124, 0.05);
+}
+
+.filter-tag.active {
+    color: #374f7c;
+    background: rgba(55, 79, 124, 0.1);
+    font-weight: 500;
+}
+
+/* 结果计数 */
+.result-count {
+    color: #666;
+    font-size: 13px;
+    margin-left: auto;
+}
+
+.result-count span {
+    color: #374f7c;
+    font-weight: 500;
+    margin: 0 3px;
+}
+
+/* 标签样式 */
+.ui.labels {
+    padding: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ui.label {
+    padding: 6px 16px;
+    background: #f5f7fa;
+    color: #374f7c;
+    border-radius: 16px;
+    font-size: 13px;
+    transition: all 0.2s;
+    border: 1px solid #edf0f7;
+}
+
+.ui.label:hover {
+    background: #374f7c;
+    color: #fff;
+    border-color: #374f7c;
+}
+
+.ui.label.active {
+    background: #374f7c;
+    color: #fff;
+    border-color: #374f7c;
 }
 /*CTI数据表格*/
 .cti-table-title{
@@ -64,44 +153,103 @@
 }
 .cti-data-table-box{
     width: 100%;
-    min-height: 500px;
-    margin-bottom: 70px;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    padding-bottom: 1px;
+    margin-bottom: 20px;
 }
-.cti-data-table-box .cti-data-table{
+.cti-data-table{
     width: 100%;
-    overflow: hidden;
-    border: 1px solid gainsboro; 
-    cursor:default;
-    margin-bottom: 15px;
-    text-align:center;
-}
-
-.cti-data-table th, td {
-    padding: 10px;
-    border: 1px solid gainsboro; 
+    border-collapse: collapse;
+    text-align: left;
 }
 .cti-data-table th {
-    font-weight: bold;
+    background: #f5f7fa;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e8e8e8;
+    text-align: center;
 }
-
-.cti-data-table tr {
-    overflow: hidden; /* 防止内容溢出 */
+.cti-data-table td {
+    padding: 5px;
+    color: #666;
+    font-size: 13px;
+    border-bottom: 1px solid #e8e8e8;
+    text-align: center;
 }
-
-.cti-data-table tr:nth-child(even) {
-    background-color: #f7f8fa; 
+.cti-data-table tr:hover {
+    background-color: #f8f9fc;
+    cursor: default;
 }
-
-.cti-data-table tr:nth-child(odd) {
-    background-color: #ffffff; 
+/* 操作按钮样式 */
+.cti-data-table .operation-btns {
+    display: flex;
+    gap: 8px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
 }
-.cti-data-table a{
-    color: #64aed9;
+.cti-data-table .operation-btn {
+    padding: 10px 0px;
+    border-radius: 3px;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+.cti-detail {
+    color: #374f7c;
+}
+.cti-detail-buy {
+    color: #374f7c;
+    margin-left: 10px;
+}
+.cti-detail:hover, .cti-detail-buy:hover {
+    color: #4a699e;
+}
+/* 分页样式更新 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top:15px;
+    margin-bottom: 10px;
+    gap: 4px;
     cursor: pointer;
 }
-.cti-data-table tr td:last-child a{
-    padding: 1px;
-    
+.pagination .item {
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    border-radius: 4px;
+    color: #666;
+    font-size: 13px;
+    transition: all 0.2s;
+    background: #fff;
+    /* border: 1px solid #e8e8e8; */
+}
+.pagination .item:hover {
+    /* color: #374f7c;
+    border-color: #374f7c; */
+}
+.pagination .item.active {
+    background: #374f7c;
+    color: #fff;
+    border-color: #374f7c;
+}
+.pagination .icon.item {
+    color: #666;
+}
+.pagination .icon.item:hover {
+    color: #374f7c;
+}
+.pagination .icon.item.disabled {
+    color: #ccc;
+    cursor: not-allowed;
 }
 /*底部table导航*/
 .table-bottom-nav{
@@ -116,4 +264,58 @@
 }
 .pagination li {
     margin: 10px;
+}
+
+/* 搜索框样式 */
+.search-box {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    margin: 30px 0;
+    margin-bottom: 10px;
+}
+
+.search-input {
+    flex: 1;
+    height: 42px;
+    padding: 0 15px;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+    transition: all 0.3s;
+}
+
+.search-input:focus {
+    border-color: #374f7c;
+    box-shadow: 0 0 0 2px rgba(55, 79, 124, 0.1);
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+.search-btn {
+    width: 100px;
+    height: 42px;
+    background: #374f7c;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.3s;
+}
+
+.search-btn:hover {
+    background: #4a699e;
+}
+
+.search-btn .icon {
+    font-size: 16px;
 }

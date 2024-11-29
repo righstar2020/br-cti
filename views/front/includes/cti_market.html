@@ -1,95 +1,316 @@
 {{define "content"}}
-<div class="cti-market-box">       
-    <!--内容开始-->
-    <div class="breadcrumb">		 	 
-        <li>
-            <a href="/cti-market">通用市场</a>
-            >
-        </li>
-        <li>
-            <a href="/cti-market?type=open_source">开源情报</a>
-            
-        </li>      
+<div class="cti-market-box">     
+    <!-- 搜索栏 -->
+    <div class="search-box">
+        <input type="text" class="search-input" placeholder="请输入关键词搜索">
+        <button class="search-btn">
+            <i class="search icon"></i>
+            搜索
+        </button>
     </div>
+      
     <!--导航栏---->
     <div class="cti-market-nav">
-        <div class="ui labels">
-            <a href="/cti-market?type=phishing" class="ui label">钓鱼地址</a>
-            <a href="/cti-market?type=malware" class="ui label">恶意程序</a>
-            <a href="/cti-market?type=trojan" class="ui label">放马地址</a>
-            <a href="/cti-market?type=mal_email" class="ui label">恶意邮箱</a>
-            <a href="/cti-market?type=mal_phone" class="ui label">恶意手机号</a>
-            <a href="/cti-market?type=botnet" class="ui label">僵尸网络</a>
-            <a href="/cti-market?type=social_account" class="ui label">社交账号</a>
-            <a href="/cti-market?type=ddos" class="ui label">DDoS数据</a>
-            <a href="/cti-market?type=open_source" class="ui label">开源情报</a>
+        <!-- 顶部主导航 -->
+        <!-- <div class="main-tabs">
+            <a href="/cti-market?category=general" class="tab-item active">通用情报</a>
+            <a href="/cti-market?category=custom" class="tab-item">定制需求</a>
+        </div>
+         -->
+        <!-- 筛选条件 -->
+        <div class="filter-row">
+            <div class="filter-label">分类:</div>
+            <div class="filter-tags">
+                <a onclick="btnChangeTab('all');return false;" data-type="all" class="filter-tag active">全部</a>
+                <a onclick="btnChangeTab('honeypot');return false;" data-type="honeypot" class="filter-tag">蜜罐情报</a>
+                <a onclick="btnChangeTab('malicious_traffic');return false;" data-type="malicious_traffic" class="filter-tag">恶意流量</a>
+                <a onclick="btnChangeTab('botnet');return false;" data-type="botnet" class="filter-tag">僵尸网络</a>
+                <a onclick="btnChangeTab('app_attack');return false;" data-type="app_attack" class="filter-tag">应用层攻击</a>
+                <a onclick="btnChangeTab('open_source');return false;" data-type="open_source" class="filter-tag">开源情报</a>
+            </div>
         </div>
 
+        <div class="filter-row">
+            <div class="filter-label">排序:</div>
+            <div class="filter-tags">
+                <a onclick="btnChangeSort('time');return false;" data-sort="time" class="filter-tag active">上传时间</a>
+                <a onclick="btnChangeSort('needs');return false;" data-sort="needs" class="filter-tag">按需求量</a>
+            </div>
+            <div class="result-count">为您找到 <span id="totalCount">0</span> 个相关情报</div>
+        </div>
     </div>
+
+    <!-- 表格容器 -->
     <div class="cti-data-table-box">
         <table class="cti-data-table">
             <colgroup>
-                <col style="width: 50px;">
-                <col style="width: 100px;">
-                <col style="width: 200px;">
-                <col style="width: 80px;">
-                <col style="width: 150px;">
-                <col style="width: 100px;">
+                <col width="5%">  <!-- 序号 -->
+                <col width="15%"> <!-- CTI编号 -->
+                <col width="12%"> <!-- 情报类型 -->
+                <col width="12%"> <!-- 标签 -->
+                <col width="12%"> <!-- 发布者 -->
+                <col width="15%"> <!-- HASH -->
+                <col width="15%"> <!-- 发布时间 -->
+                <col width="14%"> <!-- 操作 -->
             </colgroup>
-            <tr>
-                <th>序号</th>
-                <th>CTI编号</th>
-                <th>标签</th>
-                <th>发布者</th>
-                <th>发布时间</th>
-                <th>操作</th>   
-            </tr>
-            {{range $ctiData := .ctiDataList}}
-            <tr>
-                <td>{{$ctiData.ID}}</td>
-                <td>{{$ctiData.CTIId}}</td>
-                <td>{{$ctiData.Tags}}</td>
-                <td>{{$ctiData.Publisher}}</td>
-                <td>{{formatMyTime $ctiData.CreatedTime}}</td>
-                <td>
-                    <a class="cti-detail" data-id="{{$ctiData.ID}}">详情</a>
-                    <a class="cti-detail-buy" data-id="{{$ctiData.ID}}">获取</a>
-                </td>
-            </tr>
-            {{end}}
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>CTI编号</th>
+                    <th>情报类型</th>
+                    <th>标签</th>
+                    <th>发布者</th>
+                    <th>HASH</th>
+                    <th>发布时间</th>
+                    <th>操作</th>   
+                </tr>
+            </thead>
+            <tbody id="ctiTableBody">
+                <!-- 动态渲染的数据将插入这里 -->
+            </tbody>
         </table>
-        <div class="ui right floated pagination menu cti-data-table-nav tiny">
-            <a class="icon item">
-                <i class="left chevron icon"></i>
-            </a>
-            <a class="item">1</a>
-            <a class="item">2</a>
-            <a class="item">3</a>
-            <a class="item">4</a>
-            <a class="icon item">
-                <i class="right chevron icon"></i>
-            </a>
+        
+        <div class="pagination" id="pagination">
+            <!-- 分页将动态渲染 -->
         </div>
-                
+    </div>
 </div>
 <script>
-function inputPageNow(){
-    var inputPageNow = document.getElementById("inputPageNow").value;
-    window.location.href="/cti-market?page="+inputPageNow;
-}
-$(document).ready(function() {
-        // 为 '详情' 按钮绑定点击事件
-        $('.cti-detail').click(function() {
-            var ctiId = $(this).data('id');
-            openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
-        });
+var $ = layui.jquery;
+var layer = layui.layer;
+var is_development = true;
+var currentPage = 1;
+var currentType = 'all';
+var currentSort = 'time';
+var currentPageSize = 15;
+var currentTotalPages = 5;
+var currentTotalCount = 0;
+var currentCTIData = [];
+// 情报类型int到str名称的映射
+const CTI_TYPE_NAME = {
+    1: "恶意流量",
+    2: "蜜罐情报",
+    3: "僵尸网络",
+    4: "应用层攻击",
+    5: "开源情报"
+};
 
-        // 为 '获取' 按钮绑定点击事件
-        $('.cti-detail-buy').click(function() {
-            var ctiId = $(this).data('id');
-            openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
+
+// 修改mock数据生成函数，增加总数量信息
+function generateMockData(page=1,pageSize = 15) {
+    const totalCount = 108; // 设置一个模拟的总数据量
+    const mockData = [];
+    const tags = ['蜜罐情报', '恶意流量', '僵尸网络', '应用层攻击', '开源情报'];
+    
+    // 生成当前页的数据
+    for (let i = 0; i < pageSize; i++) {
+        const tagIndex = Math.floor(Math.random() * tags.length);
+        mockData.push({
+            id: i + 1,
+            ctiId: `10012411${Math.floor(Math.random() * 10000000)}`,
+            ctiHash:  Math.random().toString(36).substring(2,10), // 情报HASH
+            ctiType: CTI_TYPE_NAME[tagIndex + 1], // 1-5对应tags数组索引+1
+            tags: tags[tagIndex],
+            publisher: Math.random().toString(36).substring(2,10), // 创建者ID
+            createdTime: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
         });
+    }
+    
+    return {
+        data: mockData,
+        currentPage: page,
+        totalCount: totalCount
+    };
+}
+
+// 修改渲染表格函数
+function renderTable(response) {
+    const tableBody = document.getElementById('ctiTableBody');
+    tableBody.innerHTML = '';
+    currentCTIData = response.data;
+    
+    // 更新结果数量显示为总数量
+    document.getElementById('totalCount').textContent = response.totalCount;
+    
+    //更新面板
+    currentTotalCount = response.totalCount;
+    currentTotalPages = Math.ceil(currentTotalCount / currentPageSize);
+    renderPagination(response.currentPage, currentTotalPages);
+    
+    response.data.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${item.id}</td>
+            <td>${item.ctiId}</td>
+            <td>${item.ctiType}</td>
+            <td>${item.tags}</td>
+            <td>${item.publisher}</td>
+            <td>${item.ctiHash}</td>
+            <td>${formatDate(item.createdTime)}</td>
+            <td class="operation-btns">
+                <a class="operation-btn cti-detail" data-id="${item.id}">详情</a>
+                <a class="operation-btn cti-detail-buy" data-id="${item.id}">获取</a>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+    // 重新绑定事件
+    bindTableEvents();
+}
+
+// 渲染分页函数
+function renderPagination(currentPage, totalPages) {
+    const pagination = document.getElementById('pagination');
+    let paginationHtml = `
+        <a class="item icon ${currentPage == 1 ? 'disabled' : ''}" onclick="${currentPage > 1 ? 'changePage(' + (currentPage - 1) + ')' : 'return false;'}" style="cursor:${currentPage == 1 ? 'not-allowed' : 'pointer'}">
+            <i class="left chevron icon"></i>
+        </a>
+    `;
+    
+    // 计算显示的页码范围
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
+    
+    // 调整startPage确保始终显示5个页码(如果有)
+    if(endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+    }
+    
+    // 添加第一页和省略号
+    if(startPage > 1) {
+        paginationHtml += `
+            <a class="item" onclick="changePage(1)">1</a>
+            ${startPage > 2 ? '<span class="item">...</span>' : ''}
+        `;
+    }
+    
+    // 添加中间的页码
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHtml += `
+            <a data-page="${i}" class="item ${currentPage === i ? 'active' : ''}" onclick="changePage(${i})">${i}</a>
+        `;
+    }
+    
+    // 添加最后页和省略号
+    if(endPage < totalPages) {
+        paginationHtml += `
+            ${endPage < totalPages - 1 ? '<span class="item">...</span>' : ''}
+            <a class="item" onclick="changePage(${totalPages})">${totalPages}</a>
+        `;
+    }
+    
+    paginationHtml += `
+        <a class="item icon ${currentPage == totalPages ? 'disabled' : ''}" onclick="${currentPage < totalPages ? 'changePage(' + (currentPage + 1) + ')' : 'return false;'}" style="cursor:${currentPage == totalPages ? 'not-allowed' : 'pointer'}">
+            <i class="right chevron icon"></i>
+        </a>
+    `;
+    
+    pagination.innerHTML = paginationHtml;
+
+    //切换label active
+    $('.pagination .item').removeClass('active');
+    $('.pagination .item[data-page="' + currentPage + '"]').addClass('active');
+}
+
+// 修改获取数据函数
+function fetchCTIData(page = 1, type = '', pageSize = 15) {
+    // 实际项目中替换为真实的API地址
+    const apiUrl = `/api/cti-market?page=${page}&type=${type}&pageSize=${pageSize}`;
+    
+    // 使用mock数据
+    if (is_development) {
+        const mockResponse = generateMockData(page,pageSize);
+        renderTable(mockResponse);
+        return;
+    }
+
+    // 实际的Ajax调用
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            renderTable({
+                data: data.ctiData,
+                currentPage: page,
+                totalCount: data.totalCount
+            });
+        })
+        .catch(error => {
+            console.error('获取数据失败:', error);
+            // 失败时使用mock数据
+            const mockResponse = generateMockData(page,pageSize);
+            renderTable(mockResponse);
+        });
+}
+
+// 日期格式化函数
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+}
+
+// 绑定表格事件
+function bindTableEvents() {
+    document.querySelectorAll('.cti-detail').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            openCtiDetailWindow('/cti-market/detail?id=' + id);
+        });
+    });
+
+    document.querySelectorAll('.cti-detail-buy').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            openCtiDetailWindow('/cti-market/detail?id=' + id);
+        });
+    });
+}
+
+// 切换页面函数
+function changePage(page) {
+    if (page < 1) return;
+    fetchCTIData(page);
+    
+}
+
+// 根据类型筛选数据
+function filterByType(type) {
+    fetchCTIData(1, type);
+}
+
+//tab切换
+function btnChangeTab(tab){
+    fetchCTIData(1, tab);
+    //切换label active
+    $('.filter-tag[data-type]').removeClass('active');
+    $('.filter-tag[data-type="' + tab + '"]').addClass('active');
+}
+//filter排序
+function btnChangeSort(sort){
+    //排序
+    if(currentCTIData && currentCTIData.length > 0){
+        //根据sort参数进行排序
+        currentCTIData.sort((a, b) => {
+            if(sort === 'needs'){
+                return b.price - a.price;
+            }else if(sort === 'time'){
+                return new Date(b.createTime) - new Date(a.createTime);
+            }
+            return 0;
+        });
+        
+        //重新渲染表格
+        renderTable(currentCTIData);
+    }
+    //切换label active
+    $('.filter-tag[data-sort]').removeClass('active');
+    $('.filter-tag[data-sort="' + sort + '"]').addClass('active');
+}
+// 初始化
+document.addEventListener('DOMContentLoaded', function() {
+    fetchCTIData();
 });
+
 var currentLayerIndex = null; //设置只可打开一个窗口
 function openCtiDetailWindow(url) {
     if (currentLayerIndex !== null) {
@@ -105,6 +326,7 @@ function openCtiDetailWindow(url) {
             }
     });
 }
+
 </script>
 {{end}}
 	

@@ -4,13 +4,13 @@
     <div class="client-data-process-step-toolbar">
         <div onclick="prevStep()" class="client-data-process-step-prev" >
             <i class="bars icon"></i>
-            <span class="client-data-process-step-prev-title">
+            <span class="client-data-process-step-title">
                 文件上传
             </span>
         </div>
-        <button onclick="nextStep()"  class="ui blue button mini">下一步</button>
+        <button onclick="nextStep()" class="ui button mini next-step-btn disabled">下一步</button>
     </div>
-    <div data-step="1" class="client-data-process-step-box process-step-active">
+    <div data-step="0" class="client-data-process-step-box process-step-active">
         <div class="upload-data-list">
             <div  id="upload-file-template" style="display: none;"  class="upload-data-item" >
                 <div class="upload-data-item-body">
@@ -41,7 +41,7 @@
             </div>
         </div>
     </div>
-    <div data-step="2" class="client-data-process-step-box" style="display: none;">
+    <div data-step="1" class="client-data-process-step-box" style="display: none;">
         <div class="stix-process-data-list-box">
             <div data-finish="false" data-process-id="" id="stix-process-data-item-template" style="display: none;"  class="stix-process-data-item upload-data-item" >
                 <div class="stix-process-data-item-progress ui blue active top attached progress">
@@ -76,7 +76,7 @@
                                 </div>
                             </div>
                             <div class="field">
-                                <label>流量特征字段</label>
+                                <label>特征字段</label>
                                 <div class="ui action input">
                                     <input type="text" name="traffic_feature_field" value="">
                                     <div data-process-id="" onclick="getTrafficFeatureField(this)" class="get-traffic-feature-field-btn ui blue left icon button">
@@ -106,7 +106,7 @@
                                 <label>数据压缩</label>
                                 <div class="ui selection dropdown stix-compress">
                                     <i class="dropdown icon"></i>
-                                    <div class="default text">1000条</div>
+                                    <div class="default text">1条</div>
                                     <input class="small" type="hidden" name="stix_compress">
                                 </div>
                             </div>
@@ -119,7 +119,7 @@
         </div>
         
     </div>
-    <div data-step="3" class="client-data-process-step-box" style="display: none;">
+    <div data-step="2" class="client-data-process-step-box" style="display: none;">
         <div class="cti-process-data-list-box">
             <div data-finish="false" data-process-id="" id="cti-process-data-item-template" style="display: none;"  class="cti-process-data-item upload-data-item" >
                 <div class="cti-process-data-item-progress ui blue active top attached progress">
@@ -162,6 +162,10 @@
                                 </select>
                             </div>
                             <div class="field">
+                                <label>CTI名称</label>
+                                <input type="text" name="cti_name" value="">
+                            </div>
+                            <div class="field">
                                 <label>情报描述</label>
                                 <textarea name="cti_description"></textarea>
                             </div>
@@ -182,7 +186,7 @@
             </div>
         </div>
     </div>
-    <div data-step="4" class="client-data-process-step-box" style="display: none;">
+    <div data-step="3" class="client-data-process-step-box" style="display: none;">
         <div class="cti-upchain-data-list-box">
             <div data-finish="false" data-process-id="" id="cti-upchain-data-item-template" style="display: none;"  class="cti-upchain-data-item upload-data-item" >
                 <div class="cti-upchain-data-item-progress ui blue active top attached progress">
@@ -208,6 +212,7 @@
                     </div>
                     <div class="cti-upchain-data-config-box">
                         <form data-process-id=""  class="cti-upchain-data-config-form ui form small">
+                            
                             <div class="field">
                                 <label>IPFS地址</label>
                                 <div class="ui action input">

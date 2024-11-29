@@ -55,16 +55,23 @@ function updateCtiProcessDataListHtml(){
         $(`#cti-process-data-${processId} .ui.dropdown.cti-type`).dropdown({
             values: [{
                 name: '恶意流量',
-                value: 'malicious_traffic',
+                value: 1,
                 selected: true
             },{
-                name: '应用层攻击',
-                value: 'app_attack',
+                name: '蜜罐情报', 
+                value: 2,
                 selected: false
-            },
-            {
+            },{
+                name: '僵尸网络',
+                value: 3,
+                selected: false
+            },{
+                name: '应用层攻击',
+                value: 4,
+                selected: false
+            },{
                 name: '开源情报',
-                value: 'osint',
+                value: 5,
                 selected: false
             }]
         });
@@ -172,6 +179,7 @@ function startProcessCtiWithConfig(processId){
         "file_hash": taskFileHashMap[processId],
         "cti_type": form.find('input[name="cti_type"]').val(),
         "open_source": form.find('select[name="open_source"]').val(),
+        "cti_name": form.find('input[name="cti_name"]').val(),
         "cti_description": form.find('textarea[name="cti_description"]').val(),
         "default_value": form.find('input[name="default_value"]').val()
     };

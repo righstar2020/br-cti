@@ -43,7 +43,7 @@ function addUploadFileItem(file) {
     const uploadDataList = $(`.upload-data-list`);
     uploadDataList.append(uploadFileItem);
     //触发步骤数据更新
-    updateStepStatus(2)
+    updateStepStatus(0)
     return fileId;
 }
 function deleteUploadFileItem(button) {
@@ -66,7 +66,7 @@ function deleteUploadFileItem(button) {
             // 重置 input 元素的 value
             document.getElementById('file-upload-input').value = '';
             //触发步骤数据更新
-            updateStepStatus(2)
+            updateStepStatus(1)
             // 关闭 layer 对话框
             layer.close(index);
         });
@@ -122,7 +122,7 @@ function uploadSingleFile(fileId, file) {
                 //查询本地STIX数据(一次)
                 queryLocalStixData(data.file_hash);
                 //更新step
-                updateStepStatus(2)
+                updateStepStatus(1)
             } else {
                 $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-hash`).text('上传失败');
                 $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-size`).text("0 Bytes");

@@ -117,18 +117,31 @@
     height: 50px;
     padding: 10px;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start
 }
 .client-data-process-step-toolbar .client-data-process-step-prev{
-    width: 100px;
+    width: 100%;
     cursor: pointer;
+    width:10%;
 }
-.client-data-process-step-prev .client-data-process-step-prev-title{
+.client-data-process-step-title{
     margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    width: 70%;
 }
-.client-data-process-step-toolbar button{
-    position: absolute;
-    right: 0;
-    top: 10px;
+.client-data-process-step-toolbar .next-step-btn{
+    background-color: #bbb !important;
+    color: white !important;
+}
+.client-data-process-step-toolbar .next-step-btn.active{
+    background-color: #2185d0 !important;
+}
+.client-data-process-step-toolbar .next-step-btn.disabled{
+    cursor: not-allowed;
 }
 /* 主体tab内容-流量情报-step1:上传数据 */
 .client-data-precess-step-box .upload-data-list{

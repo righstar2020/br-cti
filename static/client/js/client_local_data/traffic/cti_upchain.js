@@ -55,16 +55,23 @@ function updateCtiUpchainDataListHtml(){
         $(`#cti-upchain-data-${processId} .ui.dropdown.upchain-type`).dropdown({
             values: [{
                 name: '恶意流量',
-                value: 'malicious_traffic',
+                value: 1,
                 selected: true
             },{
-                name: '蜜罐数据',
-                value: 'honeypot',
+                name: '蜜罐情报', 
+                value: 2,
                 selected: false
-            },
-            {
+            },{
+                name: '僵尸网络',
+                value: 3,
+                selected: false
+            },{
+                name: '应用层攻击',
+                value: 4,
+                selected: false
+            },{
                 name: '开源情报',
-                value: 'osint',
+                value: 5,
                 selected: false
             }]
         });

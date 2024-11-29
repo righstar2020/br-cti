@@ -117,13 +117,16 @@
     height: 50px;
     padding: 10px;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 }
 .client-data-process-step-toolbar .client-data-process-step-prev{
     width: 100px;
     cursor: pointer;
 }
-.client-data-process-step-prev .client-data-process-step-prev-title{
-    margin: 0;
+.client-data-process-step-prev .client-data-process-step-title{
+    margin:0;
 }
 .client-data-process-step-toolbar button{
     position: absolute;
