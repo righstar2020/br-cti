@@ -207,12 +207,16 @@
 <script>
     var $ = layui.jquery;
     var layer = layui.layer;
+    var bc_server_host = localStorage.getItem("bcServerHost");
+    if(bc_server_host == null){
+        bc_server_host = "http://127.0.0.1:7777";
+    }
     //---------------------------区块状态----------------------------
     //定时查询区块数据
     function queryBcSummaryData(){
         $.ajax({
             type: "POST",
-            url: '/bc-browser/query_bc_summary',
+            url: bc_server_host+'/blockchain/queryChain',
             contentType: "application/json",
             dataType: "json",
             success: function (res) {

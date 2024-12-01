@@ -85,6 +85,15 @@
                             </div>
                         </div>
                     </div>
+                    <div class="field">
+                        <label>区块链服务器地址</label>
+                        <div class="ui action input">
+                            <input type="text" name="bc_server_address" value="http://127.0.0.1:7777">
+                            <div onclick="changeBcServerAddress()" class="ui blue left icon button">
+                              <i class="globe icon"></i>
+                            </div>
+                        </div>
+                    </div>
                     <div class="field-bottom">
                         <div onclick="saveClientConfig()" class="ui button blue right tiny">
                             保存
@@ -180,6 +189,47 @@ function CheckNetworkStatus(){
     });
 }
 
+//保存区块链服务器地址
+function saveBcServerAddress(){
+    var bcServerAddress = $("input[name='bc_server_address']").val()
+    if(bcServerAddress!=null&&bcServerAddress!=""){
+        localStorage.setItem("bcServerHost",bcServerAddress)
+    }else{
+       layer.msg('地址错误!',{'time':1600},function(){
+       })
+    }
+}
+
+//检查区块链服务器地址
+function checkBcServerAddress(){
+    var bcServerAddress = $("input[name='bc_server_address']").val()
+    var loadIndex = layer.load(1, {shade: false});
+    $.ajax({
+        type: "HEAD",
+        url: bcServerAddress,
+        complete: function(xhr) {
+            layer.close(loadIndex); // 关闭 loading
+            if(xhr.status == 200) {
+                layer.msg('区块链服务器连接成功!',{'time':1200});
+                $("#bc_network_status").removeClass("grey").addClass("green");
+                $("#bc_network_status").text("正常");
+            } else {
+                layer.msg('区块链服务器连接异常,请检查网络!',{'time':1600});
+                $("#bc_network_status").removeClass("green").addClass("grey");
+                $("#bc_network_status").text("异常");
+            }
+            console.log("Response:", xhr);
+        },
+        error: function() {
+            layer.close(loadIndex);
+            layer.msg('区块链服务器连接异常,请检查网络!',{'time':1600});
+            $("#bc_network_status").removeClass("green").addClass("grey");
+            $("#bc_network_status").text("异常");
+        }
+    });
+}
+
+
 
 //加载本地配置信息(浏览器)
 loadLocalConfigData()
@@ -270,6 +320,8 @@ function saveClientConfig(){
           clientServerHost = localStorage.setItem("clientRemoteServerHost",clientServerHost)
           break;
     }
+    //保存区块链服务器地址
+    saveBcServerAddress()
     //刷新页面
     layer.msg('保存成功!',{'time':1200},function(){
         //刷新页面

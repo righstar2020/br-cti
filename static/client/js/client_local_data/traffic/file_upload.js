@@ -89,7 +89,7 @@ function uploadFiles(files) {
 function uploadSingleFile(fileId, file) {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('file_id', fileId);
+    formData.append('task_id', fileId); //文件ID作为task_id
 
     $.ajax({
         url: clientServerHost + '/data/upload_file',
@@ -117,10 +117,14 @@ function uploadSingleFile(fileId, file) {
                 $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-hash`).text(data.file_hash);
                 $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-size`).text(formatSize(data.file_size));
                 taskFileHashMap[fileId] = data.file_hash;
-                //更新任务状态
-                updateTaskFinishStepStatus(data.file_hash,"0",true);
-                //查询本地STIX数据(一次)
-                queryLocalStixData(data.file_hash);
+                taskRecord = data.task_record;
+                //检查是否有任务记录
+                if(taskRecord && taskRecord != undefined){
+                    //更新历史任务记录状态
+                    updateHistoryTaskRecord(taskRecord);
+                    //查询本地STIX数据(一次)
+                    queryLocalStixData(data.file_hash);
+                }
                 //更新step
                 updateStepStatus(1)
             } else {
@@ -134,6 +138,23 @@ function uploadSingleFile(fileId, file) {
             $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-hash`).text('上传失败');
             $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-size`).text("0 Bytes");
             updateProgress(fileId, 100,true);
+        }
+    });
+}
+
+/**
+ * 更新历史任务记录状态
+ * @param {Object} taskRecord - 任务记录对象
+ */
+function updateHistoryTaskRecord(taskRecord) {
+    if (!taskRecord.step_status || taskRecord.step_status.length === 0) {
+        return;
+    }
+    
+    // 遍历所有已完成的步骤状态
+    taskRecord.step_status.forEach(stepStatus => {
+        if (stepStatus.status === "finished") {
+            updateTaskFinishStepStatus(taskRecord.source_file_hash, stepStatus.step.toString(), true);
         }
     });
 }

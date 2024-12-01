@@ -134,10 +134,15 @@ function updateStepStatus(step=0){
     stepStatusUpdateList[step] = 1;
    
 }
+var development_mode = true;
 //激活下一步按钮
 function updateNextStepButton(step) {
     // 检查当前步骤是否完成
-    let currentTaskFinished = false;
+    let currentTaskFinished = false; //development
+    if(development_mode){
+        currentTaskFinished = true;
+    }
+        
     Object.keys(taskFinishStepStatusMap).forEach(function(hash) {
         if(taskFinishStepStatusMap[hash][step] === true) {
             currentTaskFinished = true;
@@ -154,6 +159,10 @@ function updateNextStepButton(step) {
         nextStepBtn.addClass('disabled');
         nextStepBtn.removeClass('active');
         nextStepBtn.removeClass('blue');
+    }
+    //到达最后一步
+    if(step == processStepTitleList.length-1){
+        nextStepBtn.text("完成");
     }
 }
 

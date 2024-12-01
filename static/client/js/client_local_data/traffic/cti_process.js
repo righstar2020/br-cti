@@ -331,6 +331,6 @@ function setCtiProcessFinishItemUI(processId){
         nextStep();
     });
     //查询本地CTI数据(一次)
-    queryLocalCtiData(taskFileHashMap[processId]);
+    queryLocalStixData(taskFileHashMap[processId]);
 }
 /*------------------Setp 2 CTI数据转换 end------------------------*/
