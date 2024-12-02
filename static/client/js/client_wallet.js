@@ -19,6 +19,28 @@ function getLocalUserWallet(){
         });
     })
 }
+function checkLocalWalletOnchainStatus(wallet_id){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            type: "POST",
+            dataType: "json", 
+            contentType: "application/json",
+            url: clientServerHost + "/user/checkLocalWalletOnchainStatus",
+            data: JSON.stringify({
+                "wallet_id": wallet_id
+            }),
+            success: function(data){
+                resolve(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                reject(errorThrown);
+            }
+        });
+    })
+}
+
+
+
 
 function createLocalUserWallet(walletPassword){
     return new Promise(function(resolve, reject){
@@ -56,6 +78,47 @@ function registerOnchainAccount(walletId,userName){
             success: function(data){
                 resolve(data);
             },  
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                reject(errorThrown);
+            }
+        })
+    })
+}
+
+
+function getUserStatistics(userId){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            type: "POST", 
+            dataType: "json",
+            contentType: "application/json",
+            url: clientServerHost + "/user/getUserStatistics",
+            data: JSON.stringify({
+                "user_id": userId
+            }),
+            success: function(data){
+                resolve(data);
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                reject(errorThrown); 
+            }
+        })
+    })
+}
+
+function queryPointTransactions(userId){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            type: "POST",
+            dataType: "json", 
+            contentType: "application/json",
+            url: clientServerHost + "/user/queryPointTransactions",
+            data: JSON.stringify({
+                "user_id": userId
+            }),
+            success: function(data){
+                resolve(data);
+            },
             error: function(XMLHttpRequest, textStatus, errorThrown){
                 reject(errorThrown);
             }

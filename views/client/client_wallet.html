@@ -244,12 +244,38 @@ function CheckLocalUserWallet(){
             setLocalUserWallet(data.wallet_id)
             layer.msg('查询到钱包<br>'+data.wallet_id.substring(0,6)+'...'+data.wallet_id.substring(data.wallet_id.length-6),{'time':1000})
             updateWalletAccountInfoUI(data.wallet_id)
+            checkLocalWalletOnchain(data.wallet_id)
         }
     }).catch(function(error){
         console.log(error)
         layer.msg('网络异常!<br>'+error,{'time':1600})
     })
 }
+//检查本地钱包链上状态
+function checkLocalWalletOnchain(wallet_id){
+    checkLocalWalletOnchainStatus(wallet_id).then(function(response){
+        console.log(response)
+        var data = response.data
+
+        if (data==null||data.onchain==false||response.status==400){
+            layer.msg('钱包未上链',{'time':1000},function(){
+                redirectToRegisterWallet()
+            })
+            return;
+        }
+        if (data.onchain){
+            //钱包存在则设置用户钱包信息
+            setLocalUserWallet(wallet_id)
+            updateWalletAccountInfoUI(wallet_id)
+        }
+    }).catch(function(error){
+        console.log(error)
+        layer.msg('网络异常!<br>'+error,{'time':1600})
+    })
+}
+
+
+
 //钱包不存在则跳转注册界面
 function redirectToRegisterWallet(){
     window.location.href = "/client/wallet_register"
