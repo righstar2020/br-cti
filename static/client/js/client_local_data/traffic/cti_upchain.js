@@ -418,3 +418,28 @@ function setCtiUpchainFinishItemUI(processId){
     queryLocalUpchainData(taskFileHashMap[processId]);
 }
 /*------------------Setp 2 upchain数据上链 end------------------------*/
+//查询本地upchain数据
+function queryLocalUpchainData(fileHash){ 
+    $.ajax({
+        url: clientServerHost + '/data/get_local_stix_records',
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',
+        data: JSON.stringify({file_hash: fileHash}),
+        success: function(response){
+            console.log(response);
+            if (response.code == 200){
+                if (response.data!=null){
+                    processLocalStixDataToTableData(fileHash,response.data);
+                }
+            }else{
+                if (response.error!=null){
+                    console.log("queryLocalStixData:",response.error);
+                }
+            }
+        },
+        error:function(response){
+            console.log("queryLocalStixData error:",response);
+        }
+    });
+}

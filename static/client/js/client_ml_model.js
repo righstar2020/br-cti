@@ -9,7 +9,7 @@ var taskFileHashMap = {}; //上传文件hash映射表
 var taskFinishStepStatusMap = {
     "bc566bc":{
         "0":false, //文件上传
-        "1":false, //模型转换
+        "1":false, //模型训练及评估
         "2":false, //模型上链
     }
 }; 
@@ -105,12 +105,12 @@ function updateHeaderPanelUI(taskId,total_model_num,processed_model_num,processi
 }
 /*-------------------面板UI更新 end------------------------*/
 /*------------------step步骤函数------------------------*/
-var currentStep = 1;
-var stepInitStatusList=[0,0,0,0] //步骤UI初始化
-var processStepTitleList = ["数据集上传","重新上传","模型训练","模型测试","模型上链"];
+var currentStep = 0;
+var stepInitStatusList = [0, 0, 0]; // 保持与步骤对应
+var processStepTitleList = ["数据集上传", "模型训练", "模型上链"];
 //上一步
 function prevStep(){
-    if(currentStep <= 1){
+    if(currentStep <= 0){
         return;
     }
     currentStep--;
@@ -125,48 +125,34 @@ function nextStep(){
     updateStep(currentStep);
 }
 //更新stepBar
-function updateStep(step){
-    console.log("step:",step);
-     //隐藏所有step
-     $(`.client-model-process-step-box`).removeClass('process-step-active');
-     $(`.client-model-process-step-box`).hide();
-     //显示当前step
-     console.log($(`.client-model-process-step-box[data-step="${step}"]`));
-     $(`.client-model-process-step-box[data-step="${step}"]`).show();
-     $(`.client-model-process-step-box[data-step="${step}"]`).addClass('process-step-active');
-     $(`.client-model-process-step-toolbar .client-model-process-step-prev-title`).text(processStepTitleList[step-1]);
-     if(step > 1){
+function updateStep(step) {
+    console.log("step:", step);
+    // 隐藏所有step
+    $(`.client-model-process-step-box`).removeClass('process-step-active');
+    $(`.client-model-process-step-box`).hide();
+    // 显示当前step
+    $(`.client-model-process-step-box[data-step="${step}"]`).show();
+    $(`.client-model-process-step-box[data-step="${step}"]`).addClass('process-step-active');
+    
+    // 更新前一步标题（如果存在）
+    if (step > 0) {
+        $(`.client-model-process-step-toolbar .client-model-process-step-prev-title`).text(processStepTitleList[step - 1]);
         $(`.client-model-process-step-toolbar .client-model-process-step-prev i`).removeClass('bars icon');
         $(`.client-model-process-step-toolbar .client-model-process-step-prev i`).addClass('left arrow icon');
-        
-    }else{
-         $(`.client-model-process-step-toolbar .client-model-process-step-prev i`).removeClass('left arrow icon');
-         $(`.client-model-process-step-toolbar .client-model-process-step-prev i`).addClass('bars icon');
-    }
-    //判断所在步骤并初始化
-    if(step == 2){
-        //model模型转换
-        if(stepInitStatusList[1] == 0){
-            initStepTrainModel();
-            stepInitStatusList[1] = 1;
-        }
-    }
-    if(step == 3){
-        //model模型评估
-        if(stepInitStatusList[2] == 0){
-            initStepEvalModel();
-            stepInitStatusList[2] = 1;
-        }
-    }
-    if(step == 4){
-        //model模型转换，模型上链
-        if(stepInitStatusList[3] == 0){
-            initStepUpchainModel();
-            stepInitStatusList[3] = 1;
-        }
+    } else {
+        $(`.client-model-process-step-toolbar .client-model-process-step-prev i`).removeClass('left arrow icon');
+        $(`.client-model-process-step-toolbar .client-model-process-step-prev i`).addClass('bars icon');
     }
 
-
+    // 修正步骤初始化逻辑
+    if (step == 1 && stepInitStatusList[1] == 0) {
+        initStepTrainModel();
+        stepInitStatusList[1] = 1;
+    }
+    if (step == 2 && stepInitStatusList[2] == 0) {
+        initStepUpchainModel();
+        stepInitStatusList[2] = 1;
+    }
 }
 //任务状态更新
 function updateTaskFinishStepStatus(taskFileHash,step="0",status=false){

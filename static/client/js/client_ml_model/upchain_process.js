@@ -1,75 +1,71 @@
 /*------------------Setp 3 CTI数据转换(数据上链)------------------------*/
-function initStepProcessModelData(){
+function initStepUpchainModel(){
     updateModelUpchainDataListHtml();
 }
 function updateModelUpchainDataListHtml(){
     //从前一step获取数据填充本step的模板
     const uploadDataList = $(`.upload-data-list .upload-data-item`);
-    const ModelUpchainDataList = $(`.model-process-data-list-box`);
+    const modelUpchainDataList = $(`.model-upchain-data-list-box`); // 修正选择器
+    console.log("uploadDataList:",uploadDataList);
+    console.log("modelUpchainDataList:",modelUpchainDataList);
     //遍历上传文件列表
     uploadDataList.each(function(index, item) {
         if($(item).attr('id') == 'upload-file-template'){
             return;
         }
-        console.log(item);
-        console.log(document.getElementById("model-process-data-item-template"));
         //如果是未完成的任务(不处理)
         var processId = $(item).attr('data-file-id');
         var taskFileHash = taskFileHashMap[processId];
         if (taskFileHash == null || taskFileHash == undefined) {
             return;
         }
-        //stix未处理完成
-        if(taskFinishStepStatusMap[taskFileHash]["2"]==undefined||taskFinishStepStatusMap[taskFileHash]["2"]==false){
-            return;
-        }
+        // //模型训练未处理完成
+        // if(taskFinishStepStatusMap[taskFileHash]["1"]==undefined||taskFinishStepStatusMap[taskFileHash]["1"]==false){
+        //     return;
+        // }
         //如果是已经存在的任务，则不处理
-        if(ModelUpchainDataList.find(`[data-process-id="${processId}"]`).length > 0){
+        if(modelUpchainDataList.find(`[data-process-id="${processId}"]`).length > 0){
             return;
         }
         //克隆模板
-        const ModelUpchainDataItem = document.getElementById("model-process-data-item-template").cloneNode(true);
+        const modelUpchainDataItem = document.getElementById("model-upchain-data-item-template").cloneNode(true);
         //移除模板的display:none样式
-        ModelUpchainDataItem.style.display = 'block';
+        modelUpchainDataItem.style.display = 'block';
         //设置process id
-        var processId = $(item).attr('data-file-id');
-        ModelUpchainDataItem.id = `model-process-data-${processId}`;
-        ModelUpchainDataItem.setAttribute('data-process-id', processId);
+        modelUpchainDataItem.id = `model-upchain-data-${processId}`;
+        modelUpchainDataItem.setAttribute('data-process-id', processId);
         //设置form的process-id
-        ModelUpchainDataItem.querySelector('.model-process-data-config-form').setAttribute('data-process-id', processId);
+        modelUpchainDataItem.querySelector('.model-upchain-data-config-form').setAttribute('data-process-id', processId);
         //设置按钮的process-id
-        ModelUpchainDataItem.querySelector('.upload-data-item-tools button').setAttribute('data-process-id', processId);
-        //设置获取流量特征字段按钮的process-id
-        ModelUpchainDataItem.querySelector('.get-traffic-feature-field-btn').setAttribute('data-process-id', processId);
+        modelUpchainDataItem.querySelector('.model-process-data-item-start-btn').setAttribute('data-process-id', processId);
+        //设置获取账户按钮的process-id
+        modelUpchainDataItem.querySelector('.get-upchain-account-btn').setAttribute('data-process-id', processId);
+        //设置检查密码按钮的process-id
+        modelUpchainDataItem.querySelector('.check-upchain-account-password-btn').setAttribute('data-process-id', processId);
         //设置删除按钮的process-id
-        ModelUpchainDataItem.querySelector('.model-process-data-item-delete-btn').setAttribute('data-process-id', processId);
+        modelUpchainDataItem.querySelector('.model-process-data-item-delete-btn').setAttribute('data-process-id', processId);
         //设置文件名
-        ModelUpchainDataItem.querySelector('.upload-data-item-name').innerText = $(item).find('.upload-data-item-name').text();
+        modelUpchainDataItem.querySelector('.upload-data-item-name').innerText = $(item).find('.upload-data-item-name').text();
         //设置hash
-        ModelUpchainDataItem.querySelector('.upload-data-item-hash').innerText = $(item).find('.upload-data-item-hash').text();
+        modelUpchainDataItem.querySelector('.upload-data-item-hash').innerText = $(item).find('.upload-data-item-hash').text();
         //设置大小
-        ModelUpchainDataItem.querySelector('.upload-data-item-size').innerText = $(item).find('.upload-data-item-size').text();
-        //添加到目标元素，如果ID已存在则不添加
-        if(document.getElementById(`model-process-data-${processId}`)){
+        modelUpchainDataItem.querySelector('.upload-data-item-size').innerText = $(item).find('.upload-data-item-size').text();
+        //添加到目标元素，如果ID已存在则不处理
+        if(document.getElementById(`model-upchain-data-${processId}`)){
             return;
         }
-        ModelUpchainDataList.append(ModelUpchainDataItem);
+        modelUpchainDataList.append(modelUpchainDataItem);
         //初始化下拉框
-        $(`#model-process-data-${processId} .ui.dropdown`).dropdown();
-        //设置情报类型下拉框
-        $(`#model-process-data-${processId} .ui.dropdown.model-type`).dropdown({
+        $(`#model-upchain-data-${processId} .ui.dropdown`).dropdown();
+        //设置模型类型下拉框
+        $(`#model-upchain-data-${processId} .ui.dropdown.upchain-type`).dropdown({
             values: [{
-                name: '恶意流量',
-                value: 'malicious_traffic',
+                name: '流量模型',
+                value: 'traffic_model',
                 selected: true
             },{
-                name: '应用层攻击',
-                value: 'app_attack',
-                selected: false
-            },
-            {
-                name: '开源情报',
-                value: 'osint',
+                name: '应用层模型', 
+                value: 'app_model',
                 selected: false
             }]
         });

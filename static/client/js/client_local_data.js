@@ -24,7 +24,7 @@ var taskStatusMap = {
 };
 //头部面板数据
 var clientHeaderPanelData = {
-    onchainCtiDataNum:10000, //链上所有的情报数据
+    onchainCtiDataNum:0, //链上所有的情报数据
     ownCtiDataNum:0, //拥有的数据(购买+上传 情报数据)
     ownOnchainCtiDataNum:0, //我上链情报数据
     localCtiDataNum:0, //本地情报数据(stix数据),包括历史的
@@ -85,24 +85,60 @@ function updateHeaderPanelUI(taskId,total_data_num,processed_data_num,processing
         }
         
     });
-    onchain_data_list_box = $(`.client-data-header-left-box`);
+    clientHeaderPanelData.localCtiDataNum = total_local_cti_data_num;
+    clientHeaderPanelData.localProcessedCtiDataNum = total_processed_task_num;
+    clientHeaderPanelData.localProcessingCtiDataNum = total_processing_task_num;
+    //更新用户本地任务面板数据
+    updateUserLocalTaskStatisticsUI();
+    //更新用户链上面板数据
+    updateUserOnchainCtiStatisticsUI();
+}
+//更新用户本地任务面板数据
+function updateUserLocalTaskStatisticsUI(){
     local_data_list_box = $(`.client-data-header-right-box`);
+    //本地情报数据
+    local_data_item_list = local_data_list_box.find('.cti-data-item');
+    let item_num_list = $(local_data_list_box).find('.local-data-info-num');
+    $(item_num_list[0]).text(formatNumString(clientHeaderPanelData.localCtiDataNum));
+    $(item_num_list[1]).text(formatNumString(clientHeaderPanelData.localProcessedCtiDataNum));
+    $(item_num_list[2]).text(formatNumString(clientHeaderPanelData.localProcessingCtiDataNum));
+}
+//启动时更新一次
+
+//更新用户链上面板数据
+updateUserOnchainCtiStatisticsUI()
+function updateUserOnchainCtiStatisticsUI(){
+    onchain_data_list_box = $(`.client-data-header-left-box`);
     //链上情报数据
     onchain_data_item_list = onchain_data_list_box.find('.cti-data-item');
     console.log(onchain_data_item_list);
     if(onchain_data_item_list.length > 0){
-        $(onchain_data_item_list[0]).find('.data-item-num').text(formatNumString(clientHeaderPanelData.onchainCtiDataNum));
-        $(onchain_data_item_list[1]).find('.data-item-num').text(formatNumString(clientHeaderPanelData.ownCtiDataNum));
-        $(onchain_data_item_list[2]).find('.data-item-num').text(formatNumString(clientHeaderPanelData.ownOnchainCtiDataNum));
+        getUserOnchainCtiStatistics().then(function(data){  
+            clientHeaderPanelData.onchainCtiDataNum = data.totalCTICount;
+            clientHeaderPanelData.ownCtiDataNum = data.userUploadCount;
+            clientHeaderPanelData.ownOnchainCtiDataNum = data.userCTICount;
+            $(onchain_data_item_list[0]).find('.data-item-num').text(formatNumString(clientHeaderPanelData.onchainCtiDataNum));
+            $(onchain_data_item_list[1]).find('.data-item-num').text(formatNumString(clientHeaderPanelData.ownCtiDataNum));
+            $(onchain_data_item_list[2]).find('.data-item-num').text(formatNumString(clientHeaderPanelData.ownOnchainCtiDataNum));
+        });
     }
-    //本地情报数据
-    local_data_item_list = local_data_list_box.find('.cti-data-item');
-    console.log(local_data_item_list);
-    let item_num_list = $(local_data_list_box).find('.local-data-info-num');
-    $(item_num_list[0]).text(formatNumString(total_local_cti_data_num));
-    $(item_num_list[1]).text(formatNumString(total_processed_task_num));
-    $(item_num_list[2]).text(formatNumString(total_processing_task_num));
-
+}
+//获取用户链上CTI数据
+function getUserOnchainCtiStatistics(){
+    //获取用户ID
+    return new Promise(function(resolve, reject){
+        getLocalUserWallet().then(function(response){
+            var userId = response.data.wallet_id;
+            if(userId == null||userId == undefined){
+                console.error("user id is null");
+                reject("user id is null");
+            }
+            getUserCTIStatistics(userId).then(function(data){
+                console.log("user onchain cti data:",data);
+                resolve(data);
+            });
+        });
+    });
 }
 /*-------------------面板UI更新 end------------------------*/
 /*------------------step步骤函数------------------------*/
@@ -163,6 +199,8 @@ function updateNextStepButton(step) {
     //到达最后一步
     if(step == processStepTitleList.length-1){
         nextStepBtn.text("完成");
+    }else{
+        nextStepBtn.text("下一步");
     }
 }
 

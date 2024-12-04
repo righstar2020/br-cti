@@ -55,6 +55,7 @@ function updateClientDataTableUI(clientTableData){
         $('.tools-box-text-num').text(clientTableData.length);
     }
 }
+
 //渲染表格
 function renderClientDataTable(clientTableData){
     if (layuiTable != null){
@@ -64,11 +65,9 @@ function renderClientDataTable(clientTableData){
                 {field: 'id', title: 'ID', width: 50},
                 {field: 'status', title: '状态', width: 100,align: 'center', sort: true,templet: function (d) {
                         var div = `<a class="ui small label">未知</a>`;
-                        if (d.status == '处理中') {
-                            div = `<a class="ui small label">处理中</a>`;
-                        }
-                        if (d.status == '完成') {
-                            div = `<a style="background-color: #285191;color: white;" class="ui small blue label">已完成</a>`;
+                        var color = stixStatusColorMap[d.status];
+                        if (color!=null){
+                            div = `<a style="background-color: ${color};color: white;" class="ui small label">${d.status}</a>`;
                         }
                         return div;
                     }
@@ -180,13 +179,14 @@ function processLocalStixDataToTableData(sourceHash,stixDataList){
         //数据没有变化
         return;
     }
-    var tableData = []; 
+    var tableData = [];
+    
     // stixDataList是一个对象,需要遍历其属性
     for (var i = 0; i < stixDataList.length; i++) {
         var stixInfo = stixDataList[i];
         var data = {
             id: i+1,
-            status: stixInfo.stix_file_hash=="" ? '处理中' : '完成',
+            status: getStixStatus(stixInfo),
             type: stixInfo.stix_type_name,
             tags: stixInfo.stix_tags,
             iocs: stixInfo.stix_iocs,
@@ -232,7 +232,25 @@ function processLocalStixDataToTableData(sourceHash,stixDataList){
     }
     return tableData;
 }
-
+var stixStatusList = ["STIX", "情报",  "已上链"];
+var stixStatusColorMap = {
+    "STIX": "#9E9E9E", // 灰色
+    "情报": "#64B5F6", // 中蓝色
+    "已上链": "#2196F3" // 深蓝色
+};
+function getStixStatus(stixInfo){
+    var status = stixStatusList[0];
+    if (stixInfo.stix_file_hash==""){
+        status = stixStatusList[0];
+    }
+    if (stixInfo.cti_file_path!=null&&stixInfo.cti_file_path!=""&&stixInfo.cti_file_path!=undefined){
+        status = stixStatusList[1];
+    }
+    if (stixInfo.onchain==true){
+        status = stixStatusList[2];
+    }
+    return status;
+}
 //查看详情
 function showStixDetail(element){
     var fileHash = $(element).data('file-hash');

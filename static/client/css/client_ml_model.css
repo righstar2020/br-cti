@@ -242,6 +242,7 @@
 }
 .train-process-data-config-box{
     padding: 5px 12px;
+    padding-bottom: 12px;
 }
 .train-process-data-list-box .train-process-data-item{
     box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
@@ -268,6 +269,56 @@
 .train-process-data-item .upload-data-item-status{
     width: 22%;
 }
+/* step3: 模型上链配置 */
+.model-upchain-data-list-box .model-upchain-data-item {
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    margin-bottom: 10px;
+}
+
+.model-upchain-data-item .model-upchain-data-item-body {
+    padding: 20px 10px;
+}
+
+.model-upchain-data-item .upload-data-item-icon {
+    margin: 0;
+    margin-right: 0px;
+}
+
+.model-upchain-data-item .upload-data-item-name {
+    max-width: 25%;
+    min-width: 20%;
+}
+
+.model-upchain-data-item .upload-data-item-hash {
+    width: 26%;
+}
+
+.model-upchain-data-item .upload-data-item-size {
+    width: 13%;
+}
+
+.model-upchain-data-item .model-upchain-data-item-status {
+    width: 22%;
+}   
+.model-upchain-data-config{
+    width: 100%;
+}
+
+.model-upchain-data-config-title{
+    padding: 10px;
+    width: 100%;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.model-upchain-data-config-box{
+    padding: 5px 12px;
+    padding-bottom: 12px;
+}
+
+
+
+
 /* 底部box */
 .client-model-bottom-box{
     width: calc(100% - 40px);
@@ -341,4 +392,5 @@
 }
 .ui.progress.custom-blue .bar{
     background-color: #05375d !important;
-}   
+}
+
