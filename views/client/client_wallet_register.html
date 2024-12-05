@@ -143,14 +143,16 @@ function nextSetpPage(step){
 }
 
 function reloadLocalWallet(){
-    getLocalUserWallet().then(function(data){
-        console.log(data)
-        if (data.wallet_id==null){
+    getLocalUserWallet().then(function(response){
+        console.log(response)
+        var data = response.data
+        if (data==null||data.wallet_id==null||response.status==400){
             layer.msg('未查询到本地钱包',{'time':1000})
+            return
         }
         if (data.wallet_id!=null){
             //钱包存在则设置用户钱包信息
-            layer.msg('查询到钱包:<br>'+data.wallet_id,{'time':1000},function(){
+            layer.msg('查询到钱包:<br>'+data.wallet_id.substring(0,6)+'...'+data.wallet_id.substring(data.wallet_id.length-6),{'time':1000},function(){
                 window.location.href = "/client/wallet"
             })
         }

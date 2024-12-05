@@ -118,7 +118,7 @@ func createFrontRouter(r *gin.RouterGroup) *gin.RouterGroup {
 		ctiMarket.GET("/index", frontHandler.CTIMarketHandler.Index)        //CTI市场
 		ctiMarket.POST("/query", frontHandler.CTIMarketHandler.Query)       //CTI详情
 		ctiMarket.POST("/list", frontHandler.CTIMarketHandler.List)       //CTI详情
-		ctiMarket.GET("/detail", frontHandler.CTIMarketHandler.Detail)      //CTI详情
+		ctiMarket.GET("/detail", frontHandler.CTIMarketHandler.DetailEmpty)      //CTI详情(空页面)
 		ctiMarket.POST("/buy", frontHandler.CTIMarketHandler.Buy)           //购买CTI
 		ctiMarket.GET("/upload", frontHandler.CTIMarketHandler.Upload)      //CTI上传界面
 		ctiMarket.POST("/upload", frontHandler.CTIMarketHandler.Upload)      //CTI上传

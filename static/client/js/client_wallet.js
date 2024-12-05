@@ -106,22 +106,4 @@ function getUserStatistics(userId){
     })
 }
 
-function queryPointTransactions(userId){
-    return new Promise(function(resolve, reject){
-        $.ajax({
-            type: "POST",
-            dataType: "json", 
-            contentType: "application/json",
-            url: clientServerHost + "/user/queryPointTransactions",
-            data: JSON.stringify({
-                "user_id": userId
-            }),
-            success: function(data){
-                resolve(data);
-            },
-            error: function(XMLHttpRequest, textStatus, errorThrown){
-                reject(errorThrown);
-            }
-        })
-    })
-}
+

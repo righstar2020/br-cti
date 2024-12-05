@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>CTI详情</title>
     <link rel="stylesheet" href="/static/assets/libs/layui/css/layui.css"/>
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+   <!-- js部分 -->
+    <script type="text/javascript" src="/static/assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/layui/layui.js"></script>
+    <script type="text/javascript" src="/static/assets/js/common.js?v=318"></script>
+    <script type="text/javascript" src="/static/client/js/client_request.js"></script>
     <style>
         html{
             overflow: auto; /* 或者使用 overflow-y: scroll; 来允许垂直滚动 */
@@ -104,46 +105,163 @@
 <body>
 <!-- 正文开始 -->
 <div class="cti-detail-box">
-    <div class="cti-detail-toolbar">
+    <div class="cti-detail-toolbar" style="display: none;">
         
         <div class="cti-info">
-            <span>
+            <span class="cti-info-value">
                 当前情报所需积分:
-                {{.ctiData.compre_value}}
+                <span>0</span>
             </span>
-            <span>
+            <span class="cti-user-value">
                 我的积分:
-                {{ if .userInfo}}
-                    {{.userInfo.Value}}
-                    <a href="/cti-market" target="_blank">获取积分</a>
-                {{else}}
-                    <a href="/login" target="_blank">请登录</a>
-                {{end}}
+                <span>0</span>
             </span>
             
         </div>
-        {{ if .userInfo}}
-            <button data-value="{{.ctiData.value}}" data-id="{{.ctiData.id}}" style="background-color: #285191;" class="layui-btn layui-btn-sm">获取授权</button>
-        {{end }}
+        <button data-value="0" data-id="0" style="background-color: #285191;" class="layui-btn layui-btn-sm">获取授权</button>
     </div>
     <div class="cti-detail-table">
-            {{range $data := .ctiDataRange}}
-            <div class="cti-detail-item">
-                <div class="cti-detail-label">
-                    {{$data.label}}
-                </div>
-                <div class="cti-detail-content">
-                    {{$data.value}}
-                </div>
-            </div>
-            {{end}}
     </div>
     
      
 </div>
-<!-- js部分 -->
-<script type="text/javascript" src="/static/assets/libs/layui/layui.js"></script>
+
 <script>
+//layui
+var $ = layui.jquery;
+var layer = layui.layer;
+//----------------------------------信息初始化------------------------------------------------
+document.addEventListener('DOMContentLoaded', function() {
+    initCTIDetailPage();
+});
+function initCTIDetailPage(){
+    queryUserInfo();
+    queryCTIDetailData();
+}
+// 获取路径中的id
+function getUrlParam(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return decodeURI(r[2]); 
+    return null;
+}
+
+function queryUserInfo(){
+    var userId = localStorage.getItem("userWalletId")
+    if (userId==null){
+        layer.msg('用户ID不存在,请登录钱包',{'time':1000})
+        return;
+    }
+    getUserInfo(userId).then(function(data){
+        console.log("用户信息:", data);
+        if(data != null){
+            updateUserInfoUI(data)
+        }
+    }).catch(function(error){
+        console.log(error)
+        layer.msg('获取用户信息失败!<br>'+error,{'time':1600})
+    })
+}
+function queryCTIDetailData(){
+    var cti_id = getUrlParam('id');
+    if(cti_id!=undefined&&cti_id!=null&&cti_id!=''){
+        var loadIndex = layer.load(1);
+        queryCTIDataById(cti_id).then(function(data){
+            console.log("CTI detail data:", data);
+            updateCTIDetailUI(data);
+            layer.close(loadIndex);
+        }).catch(function(error){
+            layer.close(loadIndex);
+            console.error("Failed to get CTI detail data:", error);
+        });
+    }else{
+        layer.msg('CTI编号不存在');
+    }
+}
+//-------------------------------更新UI-----------------------------------------------------
+
+//更新CTI详情UI
+function updateCTIDetailUI(ctiData){
+    var detailTable = $('.cti-detail-table');
+    detailTable.empty();
+    
+    // 定义要显示的字段和对应的中文标签
+    var fields = [
+        {key: 'cti_id', label: 'CTI编号'},
+        {key: 'cti_hash', label: '情报哈希'}, 
+        {key: 'cti_name', label: '情报名称'},
+        {key: 'cti_type', label: '情报类型'},
+        {key: 'cti_traffic_type', label: '流量类型'},
+        {key: 'open_source', label: '是否开源'},
+        {key: 'creator_user_id', label: '发布者'},
+        {key: 'tags', label: '标签'},
+        {key: 'iocs', label: 'IOC类型'},
+        {key: 'stix_data', label: 'STIX数据'},
+        {key: 'statistic_info', label: '统计信息'},
+        {key: 'description', label: '描述'},
+        {key: 'data_size', label: '数据大小'},
+        {key: 'data_hash', label: '数据哈希'},
+        {key: 'ipfs_hash', label: 'IPFS哈希'},
+        {key: 'need', label: '需求量'},
+        {key: 'value', label: '价值'},
+        {key: 'compre_value', label: '综合价值'},
+        {key: 'create_time', label: '创建时间'}
+    ];
+
+    // 遍历字段生成表格内容
+    fields.forEach(function(field) {
+        var value = ctiData[field.key];
+        
+        // 处理数组类型的值
+        if(Array.isArray(value)) {
+            value = value.join(', ');
+        }
+        
+        // 处理数据大小,转换为KB
+        if(field.key === 'data_size') {
+            value = (value/1024).toFixed(2) + ' KB';
+        }
+
+        var itemHtml = `
+            <div class="cti-detail-item">
+                <div class="cti-detail-label">
+                    ${field.label}:
+                </div>
+                <div class="cti-detail-content">
+                    ${value || '暂无数据'}
+                </div>
+            </div>
+        `;
+        
+        detailTable.append(itemHtml);
+    });
+    //更新情报积分
+    var ctiValueSpan = $('.cti-info-value span');
+    ctiValueSpan.text(ctiData.value);
+    //更新购买按钮
+    var buyButton = $('.cti-detail-toolbar button');
+    buyButton.data('value',ctiData.value);
+    buyButton.data('id',ctiData.id);
+    //显示头部信息面板
+    showHeaderInfoPanel(true);
+}
+//更新用户积分信息
+function updateUserInfoUI(userInfo){
+    var userValueSpan = $('.cti-user-value span');
+    userValueSpan.text(userInfo.value);
+    //显示头部信息面板
+    showHeaderInfoPanel(true);
+}
+//显示头部信息面板
+function showHeaderInfoPanel(show){
+    var headerInfoPanel = $('.cti-detail-toolbar');
+    if(show){
+        headerInfoPanel.show();
+    }else{
+        headerInfoPanel.hide();
+    }
+}
+//-------------------------------其他窗口函数------------------------------------------------
 function getWindowLayerIndex(){
     var layerIndex = parent.layer.getFrameIndex(window.name); 
     return layerIndex;
@@ -152,34 +270,27 @@ function closeParentLayer(){
     var index = parent.layer.getFrameIndex(window.name); // 先得到当前 iframe 层的索引
     parent.layer.close(index); // 再执行关闭
 }
-layui.use(['layer'], function(){
-    var layer = layui.layer
-    $ = layui.$;
-    $('.cti-detail-toolbar button[data-id]').on('click', function(event) {
-        var id = $(this).data('id'); // 获取data-id属性的值
-        var value = $(this).data('value'); // 获取data-value属性的值
-        layer.confirm('确定要获取授权吗？', {
-            btn: ['确定','取消']
-        }, function(){
-            // 确定按钮的回调函数
-            $.ajax({
-                url: '/cti-market/buy',
-                type: 'POST',
-                data: {
-                    id: id,
-                },
-                success: function(data) {
-                    layer.msg(data.msg);
-                    setTimeout(function(){
-                        closeParentLayer()
-                    }, 1000);
-                    
-                }
+$('.cti-detail-toolbar button[data-id]').on('click', function(event) {
+    var ctiId = $(this).data('id'); // 获取data-id属性的值
+    layer.prompt({
+        title: '请输入钱包密码',
+        formType: 1 // 密码输入框
+    }, function(password, index){
+        layer.close(index);
+        // 调用purchaseCTI函数
+        purchaseCTI(localStorage.getItem('walletId'), password, ctiId)
+            .then(function(result){
+                layer.msg('购买成功');
+                setTimeout(function(){
+                    closeParentLayer()
+                }, 1000);
             })
-        }
-        )
+            .catch(function(error){
+                layer.msg('购买失败: ' + error);
+            });
     });
 });
+
 </script>
 </body>
 </html>

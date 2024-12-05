@@ -21,22 +21,23 @@
         <div class="filter-row">
             <div class="filter-label">分类:</div>
             <div class="filter-tags">
-                <a onclick="btnChangeTab('all');return false;" data-type="all" class="filter-tag active">全部</a>
-                <a onclick="btnChangeTab('honeypot');return false;" data-type="honeypot" class="filter-tag">蜜罐情报</a>
-                <a onclick="btnChangeTab('malicious_traffic');return false;" data-type="malicious_traffic" class="filter-tag">恶意流量</a>
-                <a onclick="btnChangeTab('botnet');return false;" data-type="botnet" class="filter-tag">僵尸网络</a>
-                <a onclick="btnChangeTab('app_attack');return false;" data-type="app_attack" class="filter-tag">应用层攻击</a>
-                <a onclick="btnChangeTab('open_source');return false;" data-type="open_source" class="filter-tag">开源情报</a>
+                <a onclick="btnChangeTab(-1);return false;" data-type="-1" class="filter-tag active">全部</a>
+                <a onclick="btnChangeTab(1);return false;" data-type="1" class="filter-tag">恶意流量</a>
+                <a onclick="btnChangeTab(2);return false;" data-type="2" class="filter-tag">蜜罐情报</a>
+                <a onclick="btnChangeTab(3);return false;" data-type="3" class="filter-tag">僵尸网络</a>
+                <a onclick="btnChangeTab(4);return false;" data-type="4" class="filter-tag">应用层攻击</a>
+                <a onclick="btnChangeTab(5);return false;" data-type="5" class="filter-tag">开源情报</a>
+                <a onclick="btnChangeTab(0);return false;" data-type="0" class="filter-tag">其他</a>
             </div>
         </div>
 
         <div class="filter-row">
             <div class="filter-label">排序:</div>
             <div class="filter-tags">
-                <a onclick="btnChangeSort('time');return false;" data-sort="time" class="filter-tag active">上传时间</a>
-                <a onclick="btnChangeSort('needs');return false;" data-sort="needs" class="filter-tag">按需求量</a>
+                <a onclick="btnChangeSort('time');return false;" data-sort="time" class="filter-tag active">发布时间</a>
+                <!-- <a onclick="btnChangeSort('needs');return false;" data-sort="needs" class="filter-tag">按需求量</a> -->
             </div>
-            <div class="result-count">为您找到 <span id="totalCount">0</span> 个相关情报</div>
+            <div class="result-count">为您找到 <span id="totalCount">0</span>个相关情报</div>
         </div>
     </div>
 
@@ -75,19 +76,25 @@
         </div>
     </div>
 </div>
+<script type="text/javascript" src="/static/client/js/client_request.js"></script>
 <script>
 var $ = layui.jquery;
 var layer = layui.layer;
 var is_development = true;
 var currentPage = 1;
-var currentType = 'all';
+var currentType = -1;
 var currentSort = 'time';
 var currentPageSize = 15;
 var currentTotalPages = 5;
 var currentTotalCount = 0;
 var currentCTIData = [];
+var currentBookmark = "";
+var pageBookmarkMap = {
+    1: "",
+};
 // 情报类型int到str名称的映射
 const CTI_TYPE_NAME = {
+    0: "其他",
     1: "恶意流量",
     2: "蜜罐情报",
     3: "僵尸网络",
@@ -95,33 +102,50 @@ const CTI_TYPE_NAME = {
     5: "开源情报"
 };
 
-
-// 修改mock数据生成函数，增加总数量信息
-function generateMockData(page=1,pageSize = 15) {
-    const totalCount = 108; // 设置一个模拟的总数据量
-    const mockData = [];
-    const tags = ['蜜罐情报', '恶意流量', '僵尸网络', '应用层攻击', '开源情报'];
-    
-    // 生成当前页的数据
-    for (let i = 0; i < pageSize; i++) {
-        const tagIndex = Math.floor(Math.random() * tags.length);
-        mockData.push({
-            id: i + 1,
-            ctiId: `10012411${Math.floor(Math.random() * 10000000)}`,
-            ctiHash:  Math.random().toString(36).substring(2,10), // 情报HASH
-            ctiType: CTI_TYPE_NAME[tagIndex + 1], // 1-5对应tags数组索引+1
-            tags: tags[tagIndex],
-            publisher: Math.random().toString(36).substring(2,10), // 创建者ID
-            createdTime: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
+var currentCTIDataList = [];
+//处理数据
+function processCTIResponseData(data){
+    var ctiInfos = [];
+    if (data!=null&&data.cti_infos&&data.cti_infos.length>0){
+        ctiInfos = data.cti_infos.map((item,index) => {
+            // 处理情报类型
+            let ctiType = CTI_TYPE_NAME[item.cti_traffic_type] || CTI_TYPE_NAME[0];
+            
+            // 处理标签
+            let tags = "";
+            if(item.tags && item.tags.length > 0) {
+                tags = item.tags.join(","); 
+            }
+            
+            return {
+                id: index,
+                ctiId: item.cti_id,
+                ctiHash: item.cti_hash,
+                ctiType: ctiType,
+                tags: tags,
+                publisher: item.creator_user_id,
+                createdTime: item.create_time,
+                value: item.value
+            };
         });
+        
     }
-    
-    return {
-        data: mockData,
-        currentPage: page,
-        totalCount: totalCount
+    currentCTIDataList = ctiInfos;
+    if(data.bookmark) {
+        currentBookmark = data.bookmark;
+    }
+    currentPageSize = currentCTIDataList.length;
+    var renderData = {
+        data: currentCTIDataList,
+        currentPage: currentPage,
+        totalCount: currentCTIDataList.length*10
     };
+    console.log("renderData:",renderData);
+    renderTable(renderData);
 }
+
+
+
 
 // 修改渲染表格函数
 function renderTable(response) {
@@ -133,8 +157,8 @@ function renderTable(response) {
     document.getElementById('totalCount').textContent = response.totalCount;
     
     //更新面板
-    currentTotalCount = response.totalCount;
-    currentTotalPages = Math.ceil(currentTotalCount / currentPageSize);
+    currentTotalCount = response.totalCount||0;
+    currentTotalPages = Math.ceil(currentTotalCount / currentPageSize)||0;
     renderPagination(response.currentPage, currentTotalPages);
     
     response.data.forEach(item => {
@@ -144,12 +168,12 @@ function renderTable(response) {
             <td>${item.ctiId}</td>
             <td>${item.ctiType}</td>
             <td>${item.tags}</td>
-            <td>${item.publisher}</td>
-            <td>${item.ctiHash}</td>
+            <td>${truncateString(item.publisher, 10)}</td>
+            <td>${truncateString(item.ctiHash, 10)}</td>
             <td>${formatDate(item.createdTime)}</td>
             <td class="operation-btns">
-                <a class="operation-btn cti-detail" data-id="${item.id}">详情</a>
-                <a class="operation-btn cti-detail-buy" data-id="${item.id}">获取</a>
+                <a class="operation-btn cti-detail" data-id="${item.ctiId}">详情</a>
+                <a class="operation-btn cti-detail-buy" data-id="${item.ctiId}">获取</a>
             </td>
         `;
         tableBody.appendChild(row);
@@ -162,6 +186,9 @@ function renderTable(response) {
 // 渲染分页函数
 function renderPagination(currentPage, totalPages) {
     const pagination = document.getElementById('pagination');
+    pagination.innerHTML = "";
+    if(totalPages<=1||totalPages==null||totalPages==undefined)return;
+
     let paginationHtml = `
         <a class="item icon ${currentPage == 1 ? 'disabled' : ''}" onclick="${currentPage > 1 ? 'changePage(' + (currentPage - 1) + ')' : 'return false;'}" style="cursor:${currentPage == 1 ? 'not-allowed' : 'pointer'}">
             <i class="left chevron icon"></i>
@@ -199,12 +226,13 @@ function renderPagination(currentPage, totalPages) {
             <a class="item" onclick="changePage(${totalPages})">${totalPages}</a>
         `;
     }
-    
+   
     paginationHtml += `
         <a class="item icon ${currentPage == totalPages ? 'disabled' : ''}" onclick="${currentPage < totalPages ? 'changePage(' + (currentPage + 1) + ')' : 'return false;'}" style="cursor:${currentPage == totalPages ? 'not-allowed' : 'pointer'}">
-            <i class="right chevron icon"></i>
+        <i class="right chevron icon"></i>
         </a>
     `;
+    
     
     pagination.innerHTML = paginationHtml;
 
@@ -214,32 +242,23 @@ function renderPagination(currentPage, totalPages) {
 }
 
 // 修改获取数据函数
-function fetchCTIData(page = 1, type = '', pageSize = 15) {
-    // 实际项目中替换为真实的API地址
-    const apiUrl = `/api/cti-market?page=${page}&type=${type}&pageSize=${pageSize}`;
-    
-    // 使用mock数据
-    if (is_development) {
-        const mockResponse = generateMockData(page,pageSize);
-        renderTable(mockResponse);
-        return;
+function fetchCTIData(type = -1, page = 1, pageSize = 15) {
+    if(pageBookmarkMap[page]==null||pageBookmarkMap[page]==undefined){
+        pageBookmarkMap[page] = currentBookmark; //记录上一次查询的bookmark
     }
-
-    // 实际的Ajax调用
-    fetch(apiUrl)
-        .then(response => response.json())
+    var loadIndex = layer.load(1);
+    queryCTIData(type, pageSize, pageBookmarkMap[page])
         .then(data => {
-            renderTable({
-                data: data.ctiData,
-                currentPage: page,
-                totalCount: data.totalCount
-            });
+            currentPage = page;
+            processCTIResponseData(data);
+            layer.close(loadIndex);
         })
         .catch(error => {
-            console.error('获取数据失败:', error);
-            // 失败时使用mock数据
-            const mockResponse = generateMockData(page,pageSize);
-            renderTable(mockResponse);
+            layer.msg('获取数据失败:' + error);
+            layer.close(loadIndex);
+            console.log('获取数据失败:', error);
+            //使用空数据
+            processCTIResponseData({cti_infos: [], bookmark: ""});
         });
 }
 
@@ -247,6 +266,12 @@ function fetchCTIData(page = 1, type = '', pageSize = 15) {
 function formatDate(dateString) {
     const date = new Date(dateString);
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+}
+//截断函数
+function truncateString(str, maxLength) {
+    if(!str) return '';
+    if(str.length <= maxLength) return str;
+    return str.substring(0, maxLength - 3) + '...' + str.substring(str.length - 3);
 }
 
 // 绑定表格事件
@@ -269,21 +294,21 @@ function bindTableEvents() {
 // 切换页面函数
 function changePage(page) {
     if (page < 1) return;
-    fetchCTIData(page);
-    
+    fetchCTIData(currentType,page,currentPageSize);
 }
 
 // 根据类型筛选数据
 function filterByType(type) {
-    fetchCTIData(1, type);
+    fetchCTIData(type, currentPage,currentPageSize);
 }
 
 //tab切换
-function btnChangeTab(tab){
-    fetchCTIData(1, tab);
+function btnChangeTab(type){
+    currentType = type;
+    fetchCTIData(type, currentPage,currentPageSize);
     //切换label active
     $('.filter-tag[data-type]').removeClass('active');
-    $('.filter-tag[data-type="' + tab + '"]').addClass('active');
+    $('.filter-tag[data-type="' + type + '"]').addClass('active');
 }
 //filter排序
 function btnChangeSort(sort){
@@ -292,7 +317,7 @@ function btnChangeSort(sort){
         //根据sort参数进行排序
         currentCTIData.sort((a, b) => {
             if(sort === 'needs'){
-                return b.price - a.price;
+                return b.value - a.value;
             }else if(sort === 'time'){
                 return new Date(b.createTime) - new Date(a.createTime);
             }
@@ -310,7 +335,7 @@ function btnChangeSort(sort){
 document.addEventListener('DOMContentLoaded', function() {
     fetchCTIData();
 });
-
+//----------------------------------------窗口操作--------------------------------------------------------------------------
 var currentLayerIndex = null; //设置只可打开一个窗口
 function openCtiDetailWindow(url) {
     if (currentLayerIndex !== null) {

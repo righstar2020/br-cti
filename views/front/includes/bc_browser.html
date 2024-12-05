@@ -15,7 +15,7 @@
                             区块高度
                         </div>
                         <div class="summary-item-content">
-                            <span class="value-num">{{.bcSummary.BlockHeight}}</span>
+                            <span class="value-num" id="block_height">0</span>
                             <span class="value-unit"></span>
                         </div>
                     </div>
@@ -30,7 +30,7 @@
                             交易总数
                         </div>
                         <div class="summary-item-content">
-                            <span class="value-num">{{.bcSummary.TransactionTotal}}</span>
+                            <span class="value-num" id="total_transactions">0</span>
                             <span class="value-unit"></span>
                         </div>
                     </div>
@@ -44,7 +44,7 @@
                             节点
                         </div>
                         <div class="summary-item-content">
-                            <span class="value-num">{{.bcSummary.NodeNum}}</span>
+                            <span class="value-num" id="node_count">0</span>
                             <span class="value-unit"></span>
                         </div>
                     </div>
@@ -58,7 +58,7 @@
                             链码
                         </div>
                         <div class="summary-item-content">
-                            <span class="value-num">{{.bcSummary.ChaincodeNum}}</span>
+                            <span class="value-num" id="chaincode_count">0</span>
                             <span class="value-unit"></span>
                         </div>
                     </div>
@@ -72,7 +72,7 @@
                             CTI数量
                         </div>
                         <div class="summary-item-content">
-                            <span class="value-num">{{.bcSummary.CTITotal}}</span>
+                            <span class="value-num" id="cti_count">0</span>
                             <span class="value-unit" ></span>
                         </div>
                     </div>
@@ -203,7 +203,7 @@
         </div>
     </div>
 </div>
-
+<script type="text/javascript" src="/static/client/js/client_request.js"></script>
 <script>
     var $ = layui.jquery;
     var layer = layui.layer;
@@ -211,51 +211,144 @@
     if(bc_server_host == null){
         bc_server_host = "http://127.0.0.1:7777";
     }
-    //---------------------------区块状态----------------------------
+    //----------------------------------------------------初始化-------------------------------------------------
+    $(document).ready(function() {
+        //定时查询数据
+        var loadingIndex = layer.load(1);
+        initializeCarouselTable('cti-upchain-table',new_upchain_cti_data)
+        setInterval(function(){
+            
+            //查询区块数据
+            queryBcSummaryData();
+            //查询CTI交易数据
+            queryCTITransactionData().then(function(data){
+                var ctiTransactionData = JSON.parse(data);
+                processCTIData(ctiTransactionData);
+                layer.close(loadingIndex);
+            }).catch(function(error){
+                console.error("Failed to get CTI transaction data:", error);
+                layer.close(loadingIndex);
+                return;
+            });
+            //轮播table
+            carouselTableLoop('cti-upchain-table',new_upchain_cti_data)
+            // 为 '详情' 按钮绑定点击事件
+            $('.open-cti-detail').click(function() {
+                var ctiId = $(this).data('id');
+                openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
+            });
+        },3000);
+        
+    });
+    //----------------------------------------------------区块状态-------------------------------------------------
     //定时查询区块数据
     function queryBcSummaryData(){
+        
         $.ajax({
             type: "POST",
-            url: bc_server_host+'/blockchain/queryChain',
+            url: bc_server_host+'/dataStat/getSystemOverview',
             contentType: "application/json",
             dataType: "json",
-            success: function (res) {
-                var bcSummary = JSON.parse(res.data);
-                console.log(bcSummary);
+            success: function (response) {
+                var bcSummary = response.result;
+                updateBcSummaryUI(bcSummary);
+                //查询最新区块数据
+                queryLatestBlockData(bcSummary.block_height);
             },
             error: function () {
                 layer.msg("AJAX请求异常");
             }
         });
     }
- 
-    //---------------------------CTI交易数据-----------------------
-    function queryCTISaleData(){
-        $.ajax({
-            type: "POST",
-            url: '/bc-browser/query_cti_sale_data',
-            contentType: "application/json",
-            dataType: "json",
-            success: function (res) {
-                var ctiSaleData = JSON.parse(res.data);
-                console.log(bcSummary);
-            },
-            error: function () {
-                layer.msg("AJAX请求异常");
-            }
-        });
+    //更新UI
+    function updateBcSummaryUI(bcSummary){
+        $("#block_height").text(bcSummary.block_height);
+        $("#total_transactions").text(bcSummary.total_transactions||0);
+        $("#node_count").text(bcSummary.node_count||3);
+        $("#chaincode_count").text(bcSummary.chaincode_count||1);
+        $("#cti_count").text(bcSummary.cti_count);
     }
+    //----------------------------------------------------最新区块信息------------------------------------------------------------
+    //查询最新4个区块信息
+    function queryLatestBlockData(latestBlockHeight=1){
+        var preBlockHeight = (latestBlockHeight-4)<0?0:(latestBlockHeight-4);
+        for(var i=0;i<4;i++){
+            queryBlockInfoByHeight(preBlockHeight+i).then(function(blockInfo){
+                updateLatestBlockUI(i,blockInfo);
+            }).catch(function(error){
+                console.error("Failed to get block info:", error);
+            });
+        }
+    }
+    //处理区块数据
+    function processBlockData(blockInfo){
+        var processedData = {
+            hash: blockInfo.header.data_hash || '',
+            height: blockInfo.header.number || '',
+            timestamp: blockInfo.data.data[0].payload.header.channel_header.timestamp || '',
+            signature: blockInfo.metadata.metadata[0] || ''
+        };
+        return processedData;
+    }
+    //更新UI
+    function updateLatestBlockUI(index,blockInfo){
+        var blockCards = $('.bc-tx-info-card');
+        if(index < blockCards.length){
+            var card = blockCards.eq(index);
+            card.find('.hash-value').text(blockInfo.hash);
+            card.find('.ui.small.blue.label').text('height ' + blockInfo.height);
+            card.find('.info-card-row:eq(1)').text('交易时间:' + blockInfo.timestamp);
+            card.find('.info-card-row:eq(2)').text('交易HASH:' + blockInfo.hash);
+            card.find('.info-card-row:eq(3)').text('签名:' + blockInfo.signature);
+        }
+    }
+    //----------------------------------------------------CTI交易数据----------------------------------------------------------------------------------------------
    
-    //-------------------------轮播table数据------------------------
+    //----------------------------------------------------轮播table数据---------------------------------------------------------------------------------
+    //查询CTI交易数据(最新10条)
+    function queryCTITransactionData(){
+        return new Promise(function(resolve, reject){
+            $.ajax({
+                type: "POST",
+                url: bc_server_host + "/dataStat/queryCTISummaryInfo",
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify({
+                    "limit": 10
+                }),
+                success: function(response){
+                    if(response.result != null && response.result != undefined){
+                        resolve(response.result);
+                    }else{
+                        reject("CTI transaction data is null");
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    reject(errorThrown);
+                }
+            });
+        });
+    }
+    //处理数据
+    function processCTIData(ctiTransactionData){
+        var formattedData = [];
+        if (ctiTransactionData && ctiTransactionData.length > 0) {
+            ctiTransactionData.forEach(function(item, index) {
+                var row = [
+                    item.cti_id,
+                    item.tags.join('; '), 
+                    '0',
+                    item.create_time.split(' ')[0],
+                    item.cti_hash.substring(0,8),
+                    '<a class="open-cti-detail" data-id="' + index + '" >详情</a>'
+                ];
+                formattedData.push(row);
+            });
+        }
+        new_upchain_cti_data = formattedData;
+    }
+    //----------------------------------------------------更新UI--------------------------------------------------------
     var new_upchain_cti_data = [
-        [ '11010000001256', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '12', '2024-05-25', '0xcce26bb', '<a class="open-cti-detail" data-id="1" >详情</a>'],
-        [ '11010000001257', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '123', '2024-05-26', '0xcce26bc', '<a class="open-cti-detail" data-id="2" >详情</a>'],
-        [ '11010000001258', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '123', '2024-05-27', '0xcce26bd', '<a class="open-cti-detail" data-id="3" >详情</a>'],
-        [ '11010000001259', '勒索软件; IOC; HASH; FILE; EMAIL', '213', '2024-05-28', '0xcce26be', '<a class="open-cti-detail" data-id="3">详情</a>'],
-        [ '11010000001250', '物联网; 僵尸网络; 路由器; 俄罗斯; IOC; HASH; IP; URL; FILE', '123', '2024-05-29', '0xcce26bf', '<a class="open-cti-detail" data-id="4">详情</a>'],
-        [ '11010000001251', '勒索软件; IOC; HASH; FILE; EMAIL', '123', '2024-05-30', '0xcce26c0', '<a class="open-cti-detail" data-id="5">详情</a>'],
-        [ '11010000001252', '勒索软件; IOC; HASH; FILE; EMAIL', '123', '2024-05-30', '0xcce26c0', '<a class="open-cti-detail" data-id="6">详情</a>'],
-        [ '11010000001253', '勒索软件; IOC; HASH; FILE; EMAIL', '123', '2024-05-30', '0xcce26c0', '<a class="open-cti-detail" data-id="7">详情</a>']
     ];
     var tableIndexMap = {
         'cti-upchain-table': 0,
@@ -268,6 +361,10 @@
     }
     //初始化轮播表
     function initializeCarouselTable(tableName,tableData) {
+        if(!tableData || tableData.length === 0) {
+            return;
+        }
+        
         var table = $(tableBodyDomNameMap[tableName])
         // 清空表格内容
         table.empty();
@@ -291,8 +388,19 @@
             table.append(row);
         }
     }
+    
     function carouselTableLoop(tableName,tableData) {
-        var table = $(tableBodyDomNameMap[tableName])
+        if(!tableData || tableData.length === 0) {
+            return;
+        }
+        
+        var table = $(tableBodyDomNameMap[tableName]);
+        
+        // 检查当前索引是否有效
+        if(tableIndexMap[tableName] >= tableData.length) {
+            tableIndexMap[tableName] = 0;
+        }
+        
         // 获取最后一行
         var lastRow = table.find('tr:last');
 
@@ -310,29 +418,12 @@
 
         // 获取第一行并淡出
         var firstRow = table.find('tr:first');
-            firstRow.remove(); // 移除第一行
+        firstRow.remove(); // 移除第一行
 
         // 更新索引，确保循环
         tableIndexMap[tableName] = (tableIndexMap[tableName] + 1) % tableData.length;
     }
-    
-    //-------------------------启动函数----------------------------
-    $(document).ready(function() {
-        //定时查询数据
-        setTimeout(() => {
-            queryBcSummaryData()
-        }, 3000);
-        initializeCarouselTable('cti-upchain-table',new_upchain_cti_data)
-
-        setInterval(function(){
-            carouselTableLoop('cti-upchain-table',new_upchain_cti_data)
-        },3000);
-        // 为 '详情' 按钮绑定点击事件
-        $('.open-cti-detail').click(function() {
-            var ctiId = $(this).data('id');
-            openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
-        });
-    });
+    //------------------------------------------窗口操作----------------------------------------------------------------------------------------------
     var currentLayerIndex = null; //设置只可打开一个窗口
     function openCtiDetailWindow(url) {
         if (currentLayerIndex !== null) {

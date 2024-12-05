@@ -192,6 +192,27 @@ func (c *ctiMarketHandler) Detail(ctx *gin.Context) {
 		})
 	 }	
 }
+//CTI详情(空页面)
+func (c *ctiMarketHandler) DetailEmpty(ctx *gin.Context) {
+	response := app.NewResponse(ctx)
+	svc := service.New(ctx.Request.Context())
+	 adminLoginUid := svc.GetAdminLoginUid(ctx)
+	 if adminLoginUid == 0 {
+		 //用户未登录
+		// 渲染模板并绑定数据
+		response.BuildTpl(ctx, "cti_detail.html").WriteTpl(gin.H{
+		})
+	} else {
+		 // 获取用户信息
+		 userInfo, _ := svc.GetAdminUserInfo(svc.GetCtx(), adminLoginUid)
+		 response.BuildTpl(ctx, "cti_detail.html").WriteTpl(gin.H{
+			"userInfo":userInfo,
+		})
+	 }	
+}
+
+
+
 //购买CTI
 func (c *ctiMarketHandler) Buy(ctx *gin.Context) {
 	response := app.NewResponse(ctx)

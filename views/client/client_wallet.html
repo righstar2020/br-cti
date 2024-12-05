@@ -37,8 +37,8 @@
     <div class="client-wallet-box-header" id="drag-handle">
         <div class="wallet-box-header-list">
             <div class="wallet-box-header-item network">
-                <button class="ui  blue circular globe icon button">
-                    <i class="globe  icon"></i>
+                <button class="ui  blue circular globe icon button" onclick="CheckNetworkStatus()">
+                    <i class="globe icon"></i>
                 </button>
             </div>
             <div class="wallet-box-header-item wallet-info">
@@ -57,23 +57,14 @@
                 <div class="blue ui top right pointing   dropdown icon button">
                     <i class="settings icon"></i>
                     <div class="menu">
-                        <div class="item">
+                        <div class="item" onclick="redirectToRegisterWallet()">
                             新建账户
-                            <!-- <i class="dropdown icon"></i>
-                            <span class="text">新建</span>
-                            <div class="menu">
-                            <div class="item">新账户</div>
-                            <div class="item">子账户</div>
-                            </div> -->
                         </div>
-                        <div class="item">
+                        <div class="item" onclick="getUserInfoAndUpdateUI()">
                             刷新账户
                         </div>
-                        <div class="item">
-                            账户资产
-                        </div>
                         <div class="divider"></div>
-                        <div class="item">
+                        <div class="item" onclick="closeParentLayer()">
                             退出
                         </div>
                     </div>
@@ -130,7 +121,7 @@
                 </ul>
                 <div class="layui-tab-content">
                   <div class="wallet-tab-item layui-tab-item layui-show">
-                    <div class="points-income-item">
+                    <div class="points-income-item" id="points-income-item-template" style="display: none;">
                         <div class="points-amount">
                             <span>+100</span>积分
                         </div>
@@ -143,7 +134,7 @@
                   </div>
                   <div class="wallet-tab-item layui-tab-item">
                     <!-- 积分支出项 -->
-                    <div class="points-expense-item">
+                    <div class="points-expense-item" id="points-expense-item-template" style="display: none;">
                         <div class="points-amount">
                             <span>-50</span>积分
                         </div>
@@ -156,7 +147,7 @@
                   </div>
                   <div class="wallet-tab-item layui-tab-item">
                     <!-- 交易记录项 -->
-                    <div class="transaction-record-item">
+                    <div class="transaction-record-item" id="transaction-record-item-template" style="display: none;">
                         <div class="transaction-type">
                             <span class="transaction-icon">↑</span>
                             <span class="transaction-text">转出</span>
@@ -177,6 +168,7 @@
 </div>
 <!-- js部分 -->
 <script type="text/javascript" src="/static/client/js/client_wallet.js"></script>
+<script type="text/javascript" src="/static/client/js/client_request.js"></script>
 <script>
 //检测网络状态
 CheckNetworkStatus()
@@ -243,7 +235,7 @@ function CheckLocalUserWallet(){
             //钱包存在则设置用户钱包信息
             setLocalUserWallet(data.wallet_id)
             layer.msg('查询到钱包<br>'+data.wallet_id.substring(0,6)+'...'+data.wallet_id.substring(data.wallet_id.length-6),{'time':1000})
-            updateWalletAccountInfoUI(data.wallet_id)
+            updateWalletIDUI(data.wallet_id)
             checkLocalWalletOnchain(data.wallet_id)
         }
     }).catch(function(error){
@@ -266,7 +258,9 @@ function checkLocalWalletOnchain(wallet_id){
         if (data.onchain){
             //钱包存在则设置用户钱包信息
             setLocalUserWallet(wallet_id)
-            updateWalletAccountInfoUI(wallet_id)
+            updateWalletIDUI(wallet_id)
+            //同时获取用户信息
+            getUserInfoAndUpdateUI()
         }
     }).catch(function(error){
         console.log(error)
@@ -286,39 +280,43 @@ function redirectToRegisterWallet(){
 function setLocalUserWallet(walletId){
     localStorage.setItem("userWalletId",walletId)
 }
+//-------------------------------------------用户信息查询-------------------------------------------
 
-
-function closeParentLayer(){
-    var index = parent.layer.getFrameIndex(window.name); // 先得到当前 iframe 层的索引
-    parent.layer.close(index); // 再执行关闭
+function getUserInfoAndUpdateUI(){
+    var userId = localStorage.getItem("userWalletId")
+    if (userId==null){
+        layer.msg('用户ID不存在',{'time':1000})
+        return;
+    }
+    getUserInfo(userId).then(function(data){
+        console.log("用户信息:", data);
+        if(data != null){
+            updateUserInfoUI(data)
+            layer.msg('用户信息更新成功!',{'time':1000})
+            //获取交易记录
+            queryUserTransactionRecords(userId)
+        }
+    }).catch(function(error){
+        console.log(error)
+        layer.msg('获取用户信息失败!<br>'+error,{'time':1600})
+    })
 }
 
-var currentLayerIndex = null
-layui.use(['layer'], function(){
-    var layer = layui.layer
-    $ = layui.$;
-    function openParentWindow(url) {
-        var parentLayer = window.parent.layer;
-        if(currentLayerIndex!=null){
-            //默认只打开一个窗口
-            parentLayer.close(currentLayerIndex);
+function queryUserTransactionRecords(userId){
+    getUserTransactionRecords(userId).then(function(data){
+        console.log("交易记录:", data);
+        if (data!=null&&data.length>0){
+            updateUserTransactionRecordsUI(data)
         }
-        //使用父层级打开窗口
-        currentLayerIndex = parentLayer.open({
-                type: 2,
-                title: '详情',
-                area: ['700px', '550px'], // 设置窗口宽度和高度
-                shade: 0, // 设置遮罩透明度
-                content: url,
-                success: function(layero, index){
-                    //关闭当前窗口
-                    // closeParentLayer()
-                }
-        });
-        
-        
-    }
-})
+    }).catch(function(error){
+        console.log(error)
+        layer.msg('获取交易记录失败!<br>'+error,{'time':1600})
+    })
+}
+
+
+
+//-------------------------------------------UI设置------------------------------------------------
 //UI组件初始化
 $(document).ready(function(){
     initUIComponent()
@@ -330,13 +328,163 @@ function initUIComponent(){
         transition: 'drop'
     });
 }
-//UI更新数据
-function updateWalletAccountInfoUI(wallet_id){
-    $('.wallet-account-name').text("Account 1")
+//wallet ID UI更新数据
+function updateWalletIDUI(wallet_id){
     $('.wallet-id').text("0x"+wallet_id.substring(0,6)+'...'+wallet_id.substring(wallet_id.length-6))
 }
+//更新用户信息
+function updateUserInfoUI(user_info){
+    //更新UI显示
+    //ID
+    $('.wallet-id').text("0x"+user_info.user_id.substring(0,6)+'...'+user_info.user_id.substring(user_info.user_id.length-6));
+    //用户名
+    $('.wallet-account-name').text(user_info.user_name);
+    //更新用户积分显示
+    $('.wallet-account-num span').first().text(user_info.value);
+}
+var currentTransactionRecords = []
+var currentTransactionIdList = []
+//更新用户交易记录
+function updateUserTransactionRecordsUI(transaction_records){
+    var newTransactionRecords = checkNewTransactionRecords(transaction_records)
+    //遍历新交易记录
+    for (var i = 0; i < newTransactionRecords.length; i++) {
+        var transaction = newTransactionRecords[i];
+        //根据交易类型创建不同的UI
+        if(transaction.transaction_type == "in"){
+            createPointsIncomeItemUI(transaction);
+        }else if(transaction.transaction_type == "out"){
+            createPointsExpenseItemUI(transaction); 
+        }
+        createTransactionRecordItemUI(transaction);
+    }
+    //每周交易正负
+    calculateTransactionPointsAndUpdateUI(newTransactionRecords)
+}
 
+//检测是否有新交易记录
+function checkNewTransactionRecords(transaction_records){
+    var newTransactionRecords = []
+    for (var i = 0; i < transaction_records.length; i++) {
+        var transaction = transaction_records[i];
+        //暂时使用timestamp判断是否为新交易
+        if (currentTransactionIdList.indexOf(transaction.timestamp) == -1){
+            currentTransactionIdList.push(transaction.timestamp);
+            newTransactionRecords.push(transaction);
+        }
+    }
+    return newTransactionRecords;
+}
+//计算交易积分的正负(7天)
+function calculateTransactionPointsAndUpdateUI(transaction_records){
+    let weeklyPoints = 0
+    let weeklyPointsList = []
+    let weeklyRecordList = []
+    let currentDate = new Date()
+    for (var i = 0; i < transaction_records.length; i++) {
+        var transaction = transaction_records[i];
+        if (transaction.timestamp.split(' ')[0] == currentDate.toISOString().split('T')[0]){
+            weeklyPoints += transaction.transaction_type == "in" ? transaction.points : -transaction.points
+            weeklyPointsList.push(weeklyPoints)
+            weeklyRecordList.push(transaction)
+        }
+    }
 
+    //更新积分正负值
+    $('.wallet-account-num span').last().text(`${weeklyPoints >= 0 ? '+' : ''}${weeklyPoints}`);
+    console.log("每周积分正负:",weeklyPointsList)
+    return weeklyPoints
+}
+//-------------------------------------------UI创建------------------------------------------------
+//积分收入项
+function createPointsIncomeItemUI(transaction){
+    // 克隆模板
+    const template = document.getElementById("points-income-item-template");
+    const item = template.cloneNode(true);
+    
+    // 移除display:none
+    item.style.display = 'flex';
+    item.id = `points-income-${transaction.transaction_id}`;
+    
+    // 设置数据
+    item.querySelector('.points-amount span').innerText = `+${transaction.points}`;
+    item.querySelector('.transfer-account').innerText = `转入账户: ${transaction.other_party}`;
+    item.querySelector('.intel-id').innerText = `情报ID: ${transaction.info_id}`;
+    item.querySelector('.transfer-time').innerText = transaction.timestamp;
+    
+    // 添加到容器
+    document.querySelector('.wallet-tab-item.layui-show').appendChild(item);
+}
+
+//积分支出项 
+function createPointsExpenseItemUI(transaction){
+    // 克隆模板
+    const template = document.getElementById("points-expense-item-template");
+    const item = template.cloneNode(true);
+    
+    // 移除display:none
+    item.style.display = 'flex';
+    item.id = `points-expense-${transaction.transaction_id}`;
+    
+    // 设置数据
+    item.querySelector('.points-amount span').innerText = `-${transaction.points}`;
+    item.querySelector('.transfer-account').innerText = `转出账户: ${transaction.other_party}`;
+    item.querySelector('.intel-id').innerText = `情报ID: ${transaction.info_id}`;
+    item.querySelector('.transfer-time').innerText = transaction.timestamp;
+    
+    // 添加到容器
+    document.querySelector('.wallet-tab-item:nth-child(2)').appendChild(item);
+}
+
+//交易记录项
+function createTransactionRecordItemUI(transaction){
+    // 克隆模板
+    const template = document.getElementById("transaction-record-item-template");
+    const item = template.cloneNode(true);
+    
+    // 移除display:none
+    item.style.display = 'flex';
+    item.id = `transaction-${transaction.transaction_id}`;
+    
+    // 设置交易类型图标和文本
+    const isIncome = transaction.transaction_type === "in";
+    item.querySelector('.transaction-icon').innerText = isIncome ? "↓" : "↑";
+    item.querySelector('.transaction-text').innerText = isIncome ? "转入" : "转出";
+    
+    // 设置其他数据
+    item.querySelector('.transaction-amount span').innerText = 
+        `${isIncome ? "+" : "-"}${transaction.points}`;
+    item.querySelector('.transaction-account').innerText = 
+        `对方账户: ${transaction.other_party}`;
+    item.querySelector('.transaction-hash').innerText = 
+        `交易哈希: ${transaction.transaction_id}`;
+    item.querySelector('.transaction-time').innerText = transaction.timestamp;
+    item.querySelector('.transaction-status').innerText = 
+        transaction.status === "success" ? "已完成" : "失败";
+    
+    // 添加到容器
+    document.querySelector('.wallet-tab-item:nth-child(3)').appendChild(item);
+}
+test()
+function test(){
+    // 示例调用
+    const transaction = {
+        transaction_id: "0x7a250d5630B4cF539739dF2C5dacC4c0ce9381e62",
+        transaction_type: "in", 
+        points: 100,
+        other_party: "0x7a250d5630B4cF539739dF2C5dacC4c0ce9381e62",
+        info_id: "0x9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+        timestamp: "2024-12-05 14:30",
+        status: "success"
+    };
+    let transaction_records = [transaction]
+    updateUserTransactionRecordsUI(transaction_records)
+}
+//-----------------------------------------窗口操作--------------------------------
+function closeParentLayer(){
+    var index = parent.layer.getFrameIndex(window.name); // 先得到当前 iframe 层的索引
+    parent.layer.close(index); // 再执行关闭
+}
 </script>
 </body>
 </html>
