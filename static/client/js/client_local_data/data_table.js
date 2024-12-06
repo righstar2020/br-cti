@@ -1,43 +1,31 @@
 /*样例数据*/
-var exampleAttackTypeList = ['恶意流量','恶意软件','钓鱼地址','僵尸网络','应用层攻击','开源情报'];
+var exampleAttackTypeList = ['恶意流量','蜜罐情报','僵尸网络','应用层攻击','开源情报'];
+var exampleTrafficTypeList = ['非流量','5G','卫星网络','SDN'];
 var exampleTagsList = ['卫星网络','SDN网络','5G网络',
                        '恶意软件','DDoS','钓鱼','僵尸网络','APT','IOT'];//tags表示涉及的攻击技术
-var exampleIOCsList = ['IP','端口','流特征','HASH','URL','CVE'];//iocs表示沦陷指标
+var exampleIOCsList = ['IP','端口','流特征','HASH','URL','payload'];//iocs表示沦陷指标
 var clientDataTableInstance = null;
 var clientStixDataList = [{
-    "id": 1,
-    "status": "处理中",//完成 or 处理中
-    "type": "恶意流量",
-    "tags": "DDoS;卫星网络;",
-    "iocs": "IP;端口;流特征;",
-    "source_hash": "15cbac",
-    "stix_file_hash": "15cbac",
-    "create_time": "2024-11-09",
-    "onchain": "是"
+    "cti_id": "cti_001",
+    "cti_hash": "15cbac", 
+    "cti_name": "测试情报",
+    "cti_type": 1,
+    "cti_traffic_type": 2,
+    "open_source": 0,
+    "creator_user_id": "user123",
+    "tags": ["DDoS","卫星网络"],
+    "iocs": ["IP","端口","流特征"],
+    "stix_data": "{}",
+    "statistic_info": "{}",
+    "description": "测试情报描述",
+    "data_size": 1024,
+    "data_hash": "15cbac",
+    "raw_data_ipfs_hash": "Qm...",
+    "ipfs_hash": "Qm...", 
+    "need": 100,
+    "value": 1000,
+    "compre_value": 1200,
 }];
-/*mock数据*/
-function mockClientStixDataList(dataNum = 100){
-    var clientMockStixDataList = [];
-    //默认随机生成100条数据
-    for (var i = 0; i < dataNum; i++) {
-        var data = {
-            id: i + 1,
-            status: Math.random() < 0.5 ? '处理中' : '完成',
-            type: exampleAttackTypeList[Math.floor(Math.random() * exampleAttackTypeList.length)],
-            tags: exampleTagsList[Math.floor(Math.random() * exampleTagsList.length)],
-            iocs: exampleIOCsList[Math.floor(Math.random() * exampleIOCsList.length)],
-            source_hash: Math.random().toString(36).substring(2, 15),
-            file_hash: Math.random().toString(36).substring(2, 15),
-            create_time: new Date().toLocaleDateString('zh-CN', {year: 'numeric', month: '2-digit', day: '2-digit'}).replace(/\//g, '-'),
-            onchain: '是'
-        }
-        clientMockStixDataList.push(data);
-    }
-    return clientMockStixDataList;
-}
-var clientMockStixDataList = mockClientStixDataList();
-
-
 
 //引入table
 var layuiTable = null;
@@ -46,8 +34,6 @@ layui.use('table', function(){
     console.log('layuiTable is initialized');  
     //渲染表格
     renderClientDataTable([]);
-    //使用mock数据
-    //renderClientDataTable(clientMockStixDataList);
 });
 //更新UI
 function updateClientDataTableUI(clientTableData){
@@ -129,10 +115,17 @@ function refreshDataTable(select_type){
     //查询当前任务列表是
     Object.values(taskFileHashMap).forEach(function(fileHash){
         console.log("query task fileHash:",fileHash);
-        queryLocalStixData(fileHash);
+        queryLocalStixData(fileHash,select_type);
     });
 }
-function queryLocalStixData(fileHash){ 
+//过滤未完成的数据
+function filterStixData(stixDataList){
+    var stix_status_list = ['STIX','情报'];
+    return stixDataList.filter(function(stixInfo){
+        return stix_status_list.includes(getStixStatus(stixInfo));
+    });
+}
+function queryLocalStixData(fileHash,type="all"){ 
     $.ajax({
         url: clientServerHost + '/data/get_local_stix_records',
         type: 'POST',
@@ -143,7 +136,11 @@ function queryLocalStixData(fileHash){
             console.log(response);
             if (response.code == 200){
                 if (response.data!=null){
-                    processLocalStixDataToTableData(fileHash,response.data);
+                    if (type=="all"){
+                        processLocalStixDataToTableData(fileHash,response.data);
+                    }else{
+                        processLocalStixDataToTableData(fileHash,filterStixData(response.data,type));
+                    }
                 }
             }else{
                 if (response.error!=null){
@@ -211,7 +208,7 @@ function processLocalStixDataToTableData(sourceHash,stixDataList){
     });
     allTaskDataTable = newAllTaskDataTable;
 
-    // 更新表格数据
+    //更新表格数据
     renderClientDataTable(allTaskDataTable)
     //更新table UI
     updateClientDataTableUI(allTaskDataTable);

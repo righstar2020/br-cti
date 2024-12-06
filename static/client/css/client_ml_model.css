@@ -394,3 +394,29 @@
     background-color: #05375d !important;
 }
 
+/* 数据源表格特定样式 */
+.client-model-data-source-table .data-source-tab-list {
+    width: 120px;
+    height: 100%;
+}
+
+.client-model-data-source-table .data-source-tab-list a {
+    margin-right: 10px;
+}
+
+.client-model-data-source-table .data-source-text-box {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    text-align: right;
+}
+
+.client-model-data-source-table .data-source-table-box {
+    width: 100%;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px;
+}
+
+.client-model-data-source-table .data-source-table-box table {
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+}
+

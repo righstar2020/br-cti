@@ -340,7 +340,7 @@ function updateUserInfoUI(user_info){
     //用户名
     $('.wallet-account-name').text(user_info.user_name);
     //更新用户积分显示
-    $('.wallet-account-num span').first().text(user_info.value);
+    $('.wallet-account-num span').first().text(user_info.user_value);
 }
 var currentTransactionRecords = []
 var currentTransactionIdList = []
@@ -465,7 +465,6 @@ function createTransactionRecordItemUI(transaction){
     // 添加到容器
     document.querySelector('.wallet-tab-item:nth-child(3)').appendChild(item);
 }
-test()
 function test(){
     // 示例调用
     const transaction = {

@@ -44,7 +44,7 @@ function getUserInfo(userId){
             type: "POST",
             dataType: "json", 
             contentType: "application/json",
-            url: blockchainServerHost + "/user/queryUserInfo",
+            url: blockchainServerHost + "/user/queryUserDetailInfo", //获取详细信息
             data: JSON.stringify({
                 "user_id": userId
             }),
@@ -78,7 +78,7 @@ function getUserTransactionRecords(userId){
             }),
             success: function(response){
                 console.log("user transaction records:", response);
-                if(response.result != null && response.result != undefined&&response.result!=""){
+                if(response.result != null && response.result != undefined){
                     data = JSON.parse(response.result);
                     resolve(data);
                 }else{
@@ -152,6 +152,37 @@ function queryCTIDataByUserId(userId){
         })
     })
 }
+//查询用户拥有的CTI数据
+function queryUserOwnedCTIData(userId){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            type: "POST",
+            dataType: "json", 
+            contentType: "application/json",
+            url: blockchainServerHost + "/user/queryUserOwnCTIInfos",
+            data: JSON.stringify({
+                "user_id": userId
+            }),
+            success: function(response){
+                console.log("User owned CTI data:", response);
+                if(response.result != null && response.result != undefined){
+                    try {
+                        const data = JSON.parse(response.result);
+                        resolve(data);
+                    } catch(e) {
+                        reject("Failed to parse user owned CTI data: " + e.message);
+                    }
+                }else{
+                    reject("User owned CTI data is null");
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                reject(errorThrown);
+            }
+        })
+    })
+}
+
 //查询CTI数据
 function queryCTIData(type=-1,pageSize,bookmark){
     if(type!=-1){
@@ -256,6 +287,33 @@ function purchaseCTI(walletId,password,ctiId){
                     resolve(response.result);
                 }else{
                     reject("Purchase CTI failed: response is null");
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                reject(errorThrown);
+            }
+        });
+    });
+}
+//购买模型
+function purchaseModel(walletId,password,modelId){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json", 
+            url: clientServerHost + "/user/purchaseModelFromBlockchain",
+            data: JSON.stringify({
+                "wallet_id": walletId,
+                "password": password,
+                "model_id": modelId
+            }),
+            success: function(response){
+                console.log("Purchase model response:", response);
+                if(response.result != null && response.result != undefined){
+                    resolve(response.result);
+                }else{
+                    reject("Purchase model failed: response is null");
                 }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){

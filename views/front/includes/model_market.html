@@ -1,5 +1,5 @@
 {{define "content"}}
-<div class="cti-market-box">     
+<div class="model-market-box">     
     <!-- 搜索栏 -->
     <div class="search-box">
         <input type="text" class="search-input" placeholder="请输入关键词搜索">
@@ -10,18 +10,12 @@
     </div>
       
     <!--导航栏---->
-    <div class="cti-market-nav">
-        <!-- 顶部主导航 -->
-        <!-- <div class="main-tabs">
-            <a href="/cti-market?category=general" class="tab-item active">通用情报</a>
-            <a href="/cti-market?category=custom" class="tab-item">定制需求</a>
-        </div>
-         -->
+    <div class="model-market-nav">
         <!-- 筛选条件 -->
         <div class="filter-row">
             <div class="filter-label">分类:</div>
             <div class="filter-tags">
-                <a onclick="btnChangeTab(-1);return false;" data-type="-1" class="filter-tag active">全部</a>
+                <a onclick="btnChangeTab(-1);return false;" data-type="-1" class="filter-tag amodelve">全部</a>
                 <a onclick="btnChangeTab(1);return false;" data-type="1" class="filter-tag">恶意流量</a>
                 <a onclick="btnChangeTab(2);return false;" data-type="2" class="filter-tag">蜜罐情报</a>
                 <a onclick="btnChangeTab(3);return false;" data-type="3" class="filter-tag">僵尸网络</a>
@@ -34,21 +28,22 @@
         <div class="filter-row">
             <div class="filter-label">排序:</div>
             <div class="filter-tags">
-                <a onclick="btnChangeSort('time');return false;" data-sort="time" class="filter-tag active">发布时间</a>
+                <a onclick="btnChangeSort('time');return false;" data-sort="time" class="filter-tag amodelve">发布时间</a>
                 <!-- <a onclick="btnChangeSort('needs');return false;" data-sort="needs" class="filter-tag">按需求量</a> -->
             </div>
-            <div class="result-count">为您找到 <span id="totalCount">0</span>个相关情报</div>
+            <div class="result-count">为您找到 <span id="totalCount">0</span>个相关模型</div>
         </div>
     </div>
 
     <!-- 表格容器 -->
-    <div class="cti-data-table-box">
-        <table class="cti-data-table">
+    <div class="model-data-table-box">
+        <table class="model-data-table">
             <colgroup>
                 <col width="5%">  <!-- 序号 -->
-                <col width="15%"> <!-- CTI编号 -->
-                <col width="12%"> <!-- 情报类型 -->
+                <col width="15%"> <!-- 模型编号 -->
                 <col width="12%"> <!-- 标签 -->
+                <col width="12%"> <!-- 模型类型 -->
+                <col width="12%"> <!-- 训练框架 -->
                 <col width="12%"> <!-- 发布者 -->
                 <col width="15%"> <!-- HASH -->
                 <col width="15%"> <!-- 发布时间 -->
@@ -57,16 +52,17 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>CTI编号</th>
-                    <th>情报类型</th>
+                    <th>模型编号</th>
                     <th>标签</th>
+                    <th>模型类型</th>
+                    <th>训练框架</th>
                     <th>发布者</th>
                     <th>HASH</th>
                     <th>发布时间</th>
                     <th>操作</th>   
                 </tr>
             </thead>
-            <tbody id="ctiTableBody">
+            <tbody id="modelTableBody">
                 <!-- 动态渲染的数据将插入这里 -->
             </tbody>
         </table>
@@ -105,11 +101,11 @@ const CTI_TYPE_NAME = {
 var currentCTIDataList = [];
 //处理数据
 function processCTIResponseData(data){
-    var ctiInfos = [];
-    if (data!=null&&data.cti_infos&&data.cti_infos.length>0){
-        ctiInfos = data.cti_infos.map((item,index) => {
+    var modelInfos = [];
+    if (data!=null&&data.model_infos&&data.model_infos.length>0){
+        modelInfos = data.model_infos.map((item,index) => {
             // 处理情报类型
-            let ctiType = CTI_TYPE_NAME[item.cti_type] || CTI_TYPE_NAME[0];
+            let modelType = CTI_TYPE_NAME[item.model_type] || CTI_TYPE_NAME[0];
             
             // 处理标签
             let tags = "";
@@ -119,9 +115,9 @@ function processCTIResponseData(data){
             
             return {
                 id: index,
-                ctiId: item.cti_id,
-                ctiHash: item.cti_hash,
-                ctiType: ctiType,
+                modelId: item.model_id,
+                modelHash: item.model_hash,
+                modelType: modelType,
                 tags: tags,
                 publisher: item.creator_user_id,
                 createdTime: item.create_time,
@@ -130,7 +126,7 @@ function processCTIResponseData(data){
         });
         
     }
-    currentCTIDataList = ctiInfos;
+    currentCTIDataList = modelInfos;
     if(data.bookmark) {
         currentBookmark = data.bookmark;
     }
@@ -149,7 +145,7 @@ function processCTIResponseData(data){
 
 // 修改渲染表格函数
 function renderTable(response) {
-    const tableBody = document.getElementById('ctiTableBody');
+    const tableBody = document.getElementById('modelTableBody');
     tableBody.innerHTML = '';
     currentCTIData = response.data;
     
@@ -165,15 +161,15 @@ function renderTable(response) {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${item.id}</td>
-            <td>${item.ctiId}</td>
-            <td>${item.ctiType}</td>
+            <td>${item.modelId}</td>
+            <td>${item.modelType}</td>
             <td>${item.tags}</td>
             <td>${truncateString(item.publisher, 10)}</td>
-            <td>${truncateString(item.ctiHash, 10)}</td>
+            <td>${truncateString(item.modelHash, 10)}</td>
             <td>${formatDate(item.createdTime)}</td>
             <td class="operation-btns">
-                <a class="operation-btn cti-detail" data-id="${item.ctiId}">详情</a>
-                <a class="operation-btn cti-detail-buy" data-id="${item.ctiId}">获取</a>
+                <a class="operation-btn model-detail" data-id="${item.modelId}">详情</a>
+                <a class="operation-btn model-detail-buy" data-id="${item.modelId}">获取</a>
             </td>
         `;
         tableBody.appendChild(row);
@@ -215,7 +211,7 @@ function renderPagination(currentPage, totalPages) {
     // 添加中间的页码
     for (let i = startPage; i <= endPage; i++) {
         paginationHtml += `
-            <a data-page="${i}" class="item ${currentPage === i ? 'active' : ''}" onclick="changePage(${i})">${i}</a>
+            <a data-page="${i}" class="item ${currentPage === i ? 'amodelve' : ''}" onclick="changePage(${i})">${i}</a>
         `;
     }
     
@@ -236,9 +232,9 @@ function renderPagination(currentPage, totalPages) {
     
     pagination.innerHTML = paginationHtml;
 
-    //切换label active
-    $('.pagination .item').removeClass('active');
-    $('.pagination .item[data-page="' + currentPage + '"]').addClass('active');
+    //切换label amodelve
+    $('.pagination .item').removeClass('amodelve');
+    $('.pagination .item[data-page="' + currentPage + '"]').addClass('amodelve');
 }
 
 // 修改获取数据函数
@@ -258,7 +254,7 @@ function fetchCTIData(type = -1, page = 1, pageSize = 15) {
             layer.close(loadIndex);
             console.log('获取数据失败:', error);
             //使用空数据
-            processCTIResponseData({cti_infos: [], bookmark: ""});
+            processCTIResponseData({model_infos: [], bookmark: ""});
         });
 }
 
@@ -276,17 +272,17 @@ function truncateString(str, maxLength) {
 
 // 绑定表格事件
 function bindTableEvents() {
-    document.querySelectorAll('.cti-detail').forEach(btn => {
+    document.querySelectorAll('.model-detail').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = this.dataset.id;
-            openCtiDetailWindow('/cti-market/detail?id=' + id);
+            openCtiDetailWindow('/model-market/detail?id=' + id);
         });
     });
 
-    document.querySelectorAll('.cti-detail-buy').forEach(btn => {
+    document.querySelectorAll('.model-detail-buy').forEach(btn => {
         btn.addEventListener('click', function() {
             const id = this.dataset.id;
-            openCtiDetailWindow('/cti-market/detail?id=' + id);
+            openCtiDetailWindow('/model-market/detail?id=' + id);
         });
     });
 }
@@ -306,9 +302,9 @@ function filterByType(type) {
 function btnChangeTab(type){
     currentType = type;
     fetchCTIData(type, currentPage,currentPageSize);
-    //切换label active
-    $('.filter-tag[data-type]').removeClass('active');
-    $('.filter-tag[data-type="' + type + '"]').addClass('active');
+    //切换label amodelve
+    $('.filter-tag[data-type]').removeClass('amodelve');
+    $('.filter-tag[data-type="' + type + '"]').addClass('amodelve');
 }
 //filter排序
 function btnChangeSort(sort){
@@ -327,9 +323,9 @@ function btnChangeSort(sort){
         //重新渲染表格
         renderTable(currentCTIData);
     }
-    //切换label active
-    $('.filter-tag[data-sort]').removeClass('active');
-    $('.filter-tag[data-sort="' + sort + '"]').addClass('active');
+    //切换label amodelve
+    $('.filter-tag[data-sort]').removeClass('amodelve');
+    $('.filter-tag[data-sort="' + sort + '"]').addClass('amodelve');
 }
 // 初始化
 document.addEventListener('DOMContentLoaded', function() {

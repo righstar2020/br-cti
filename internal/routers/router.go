@@ -125,6 +125,10 @@ func createFrontRouter(r *gin.RouterGroup) *gin.RouterGroup {
 		ctiMarket.POST("/uploadCtiFile", frontHandler.CTIMarketHandler.UploadCTIFile)  //CTI文件上传
 		ctiMarket.GET("/own", frontHandler.CTIMarketHandler.UserCTIList)      //已拥有的CTI列表
 	}
+	modelMarket := r.Group("/model-market")
+	{
+		modelMarket.GET("/", frontHandler.ModelMarketHandler.Index)              //模型市场
+	}
 	knowledgePlane := r.Group("/knowledge-plane")
 	{
 		knowledgePlane.GET("/", frontHandler.KnowledgePlaneHandler.Index)

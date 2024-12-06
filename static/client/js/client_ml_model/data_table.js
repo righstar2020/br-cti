@@ -1,41 +1,49 @@
 /*样例数据*/
-var exampleTrafficTypeList = ['卫星网络','SDN网络','5G网络','恶意软件','DDoS','钓鱼','僵尸网络','APT','IOT'];
-var exampleMLTypeList = ['XGBoost','LightGBM','CatBoost','RandomForest','SVM','KNN','DecisionTree','NaiveBayes','GradientBoosting','AdaBoost'];
-var exampleTrafficFeaturesList = ['dst_ip,src_ip,dst_port,src_port,proto,duration,bytes,packets','dst_ip,src_ip,dst_port,src_port,proto,duration,bytes,packets,http_host,http_method,http_uri,http_user_agent,http_referer,http_content_type,http_content_length,http_status,http_content_encoding,http_content_language,http_content_location,http_content_md5,http_content_sha1,http_content_sha256,http_content_sha512'];
-var exampleTrafficModelInfo = {
-    "id": 1,
-    "status": "训练中",
-    "traffic_type": "恶意流量",
-    "features": "dst_ip,src_ip,dst_port,src_port,proto,duration,bytes,packets",
-    "ml_type": "XGBoost",
-    "model_hash": "15cbac",
-    "source_hash": "15cbac",
-    "create_time": "2024-11-09",
-    "onchain": "是"
-}
-/*mock数据*/
-function mockClientModelDataList(dataNum = 100){
-    var clientMockModelDataList = [];
-    //默认随机生成100条数据
-    for (var i = 0; i < dataNum; i++) {
-        var data = {
-            id: i + 1,
-            status: '完成',
-            traffic_type: exampleTrafficTypeList[Math.floor(Math.random() * exampleTrafficTypeList.length)],
-            features: exampleTrafficFeaturesList[Math.floor(Math.random() * exampleTrafficFeaturesList.length)],
-            ml_type: exampleMLTypeList[Math.floor(Math.random() * exampleMLTypeList.length)],
-            model_hash: Math.random().toString(36).substring(2, 15),
-            source_hash: Math.random().toString(36).substring(2, 15),
-            create_time: new Date().toLocaleDateString('zh-CN', {year: 'numeric', month: '2-digit', day: '2-digit'}).replace(/\//g, '-'),
-            onchain: '否'
-        }
-        clientMockModelDataList.push(data);
-    }
-    return clientMockModelDataList;
-}
-var clientMockModelDataList = mockClientModelDataList();
+// 模型标签示例
+var exampleModelTags = ['卫星网络', 'SDN网络', '5G网络', '恶意软件', 'DDoS', '钓鱼', '僵尸网络', 'APT', 'IOT'];
+// 模型训练框架示例
+var exampleModelFrameworks = ['Scikit-learn', 'Pytorch', 'TensorFlow'];
+// 模型算法示例
+var exampleModelAlgorithms = ['XGBoost', 'LightGBM', 'CatBoost', 'RandomForest', 'SVM', 'KNN', 'DecisionTree', 'NaiveBayes', 'GradientBoosting', 'AdaBoost'];
+// 模型特征示例
+var exampleModelFeatures = [
+    ['dst_ip', 'src_ip', 'dst_port', 'src_port', 'proto', 'duration', 'bytes', 'packets'],
+    ['dst_ip', 'src_ip', 'dst_port', 'src_port', 'proto', 'duration', 'bytes', 'packets', 'http_host', 'http_method', 'http_uri', 'http_user_agent', 'http_referer', 'http_content_type', 'http_content_length', 'http_status', 'http_content_encoding', 'http_content_language', 'http_content_location', 'http_content_md5', 'http_content_sha1', 'http_content_sha256', 'http_content_sha512']
+];
+//模型数据源
+var model_data_map = {1:'数据集', 2:'文本'}; // 1:数据集, 2:文本
+//模型类型
+var model_type_map = {1:'分类模型', 2:'回归模型', 3:'聚类模型', 4:'NLP模型'}; // 1:分类模型, 2:回归模型, 3:聚类模型, 4:NLP模型
 
+// 示例模型信息
+var exampleModelInfo = {
+    "model_id": "model_001",
+    "model_hash": "15cbac", 
+    "model_name": "流量分类模型",
+    "creator_user_id": "user_001",
+    "model_data_type": 1,
+    "model_type": 1,
+    "model_algorithm": "XGBoost",
+    "model_train_framework": "Scikit-learn",
+    "model_open_source": 1,
+    "model_features": ["dst_ip", "src_ip", "dst_port", "src_port", "proto", "duration", "bytes", "packets"],
+    "model_tags": ["恶意流量", "DDoS"],
+    "model_description": "用于检测恶意网络流量的分类模型",
+    "model_size": 1024,
+    "model_data_size": 10240,
+    "model_data_ipfs_hash": "Qm...",
+    "model_ipfs_hash": "Qm...",
+    "value": 100,
+    "ref_cti_id": "cti_001", 
+    "create_time": "2024-11-09"
+}
 
+// 添加状态颜色映射
+var modelStatusColorMap = {
+    "训练中": "#9E9E9E",    // 灰色
+    "完成": "#285191",      // 蓝色
+    "训练失败": "#ff4500"   // 红色
+};
 
 //引入table
 var layuiTable = null;
@@ -58,40 +66,33 @@ function renderClientDataTable(clientTableData){
             elem: '#client-model-table',
             cols: [[ //标题栏
                 {field: 'id', title: 'ID', width: 50},
-                {field: 'status', title: '状态', width: 100,align: 'center', sort: true,templet: function (d) {
-                        var div = `<a class="ui small label">未知</a>`;
-                        if (d.status == '训练中') {
-                            div = `<a class="ui small label">训练中</a>`;
-                        }
-                        if (d.status == '完成') {
-                            div = `<a style="background-color: #285191;color: white;" class="ui small custom-blue label">已完成</a>`;
-                        }
-                        if (d.status == '训练失败') {
-                            div = `<a style="background-color: #ff4500;color: white;" class="ui small custom-red label">训练失败</a>`;
-                        }
-                        return div;
+                {field: 'status', title: '状态', width: 100, align: 'center', sort: true, templet: function (d) {
+                    var div = `<a class="ui small label">未知</a>`;
+                    var color = modelStatusColorMap[d.status];
+                    if (color != null) {
+                        div = `<a style="background-color: ${color};color: white;" class="ui small label">${d.status}</a>`;
                     }
-                },
-                {field: 'traffic_type', title: '类型', width: 100},
-                {field: 'features', title: '特征', width: 100},
-                {field: 'ml_type', title: '模型框架', width: 100},
+                    return div;
+                }},
+                {field: 'model_type', title: '模型类型', width: 100},
+                {field: 'model_algorithm', title: '算法', width: 100},
+                {field: 'model_framework', title: '框架', width: 100},
+                {field: 'model_features', title: '特征', width: 200},
+                {field: 'model_tags', title: '标签', width: 150},
                 {field: 'model_hash', title: '模型Hash', width: 100},
                 {field: 'source_hash', title: '文件源', width: 100},
                 {field: 'create_time', title: '创建日期', width: 120, sort: true},
                 {field: 'onchain', title: '上链', width: 80},
                 {fixed: 'right', width: 100, title: '操作', align: 'center', templet: function (d) {
-                    return `<a data-file-hash="${d.file_hash}" data-source-hash="${d.source_hash}" onclick="showModelDetail(this)" class="ui basic small custom-blue label">查看详情</a>`;
+                    return `<a data-model-hash="${d.model_hash}" data-source-hash="${d.source_hash}" onclick="showModelDetail(this)" class="ui basic small custom-blue label">查看详情</a>`;
                 }}
             ]],
             data: clientTableData,
-            //skin: 'line', // 表格风格
-            //even: true,
-            page: true, // 是否显示分页
+            page: true,
             limits: [15],
-            limit: 15 // 每页默认显示的数量
+            limit: 15
         });
-
-    }else{
+    } else {
         console.log('layuiTable is not initialized');
     }
 }
@@ -180,19 +181,21 @@ function processLocalModelDataToTableData(sourceHash,modelDataList){
         return;
     }
     var tableData = []; 
-    // modelDataList是一个对象,需要遍历其属性
     for (var i = 0; i < modelDataList.length; i++) {
         var modelInfo = modelDataList[i];
         var data = {
             id: i+1,
-            status: modelInfo.status == 'train_failed' ? '训练失败' :(modelInfo.status=='training' ? '训练中' : '完成'),
-            type: modelInfo.model_info.model_type == undefined ? '无' : modelInfo.model_info.model_type,
-            tags: modelInfo.model_info.tags || ['无'] ,
-            iocs: modelInfo.model_info.iocs || ['无'] , 
+            status: modelInfo.status == 'train_failed' ? '训练失败' : 
+                    (modelInfo.status == 'training' ? '训练中' : '完成'),
+            model_type: model_type_map[modelInfo.model_info.model_type] || '无',
+            model_algorithm: modelInfo.model_info.model_algorithm || '无',
+            model_framework: modelInfo.model_info.model_train_framework || '无',
+            model_features: (modelInfo.model_info.model_features || []).join(',') || '无',
+            model_tags: (modelInfo.model_info.model_tags || []).join(',') || '无',
+            model_hash: modelInfo.model_info.model_hash || '无',
             source_hash: modelInfo.source_file_hash || '无',
-            file_hash: modelInfo.model_info.model_file_hash || '无',
-            create_time: modelInfo.created_time || '无',
-            onchain: modelInfo.model_info.onchain || '否'
+            create_time: modelInfo.created_time.split(' ')[0] || '无',
+            onchain: modelInfo.model_info.onchain ? '是' : '否'
         };
         tableData.push(data);
     }
@@ -234,10 +237,9 @@ function processLocalModelDataToTableData(sourceHash,modelDataList){
 
 //查看详情
 function showModelDetail(element){
-    var fileHash = $(element).data('file-hash');
+    var modelHash = $(element).data('model-hash');
     var sourceHash = $(element).data('source-hash');
-    console.log("fileHash:",fileHash);
+    console.log("modelHash:",modelHash);
     console.log("sourceHash:",sourceHash);
-    openParentWindow(clientServerHost+'/data/get_model_file_content/'+sourceHash+'/'+fileHash);
+    openParentWindow(clientServerHost+'/ml/get_model_file_content/'+sourceHash+'/'+modelHash);
 }
-

@@ -119,7 +119,7 @@ function updateUserOnchainCtiStatisticsUI(){
             clientHeaderPanelData.ownOnchainCtiDataNum = data.userCTICount;
             $(onchain_data_item_list[0]).find('.data-item-num').text(formatNumString(clientHeaderPanelData.onchainCtiDataNum));
             $(onchain_data_item_list[1]).find('.data-item-num').text(formatNumString(clientHeaderPanelData.ownCtiDataNum));
-            $(onchain_data_item_list[2]).find('.data-item-num').text(formatNumString(clientHeaderPanelData.ownOnchainCtiDataNum));
+            $(onchain_data_item_list[2]).find('.data-item-num').text(formatNumString(clientHeaderPanelData.ownCtiDataNum));
         });
     }
 }
