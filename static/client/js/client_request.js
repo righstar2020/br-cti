@@ -1,5 +1,3 @@
-
-
 var clientServerHost = localStorage.getItem("clientServerHost");
 var blockchainServerHost = localStorage.getItem("blockchainServerHost");
 if (clientServerHost == null) {
@@ -184,14 +182,15 @@ function queryUserOwnedCTIData(userId){
 }
 
 //查询CTI数据
-function queryCTIData(type=-1,pageSize,bookmark){
+function queryCTIData(type=-1, page=1, pageSize=15){
     if(type!=-1){
-        return queryCTIDataByType(type,pageSize,bookmark);
+        return queryCTIDataByType(type, page, pageSize);
     }else{
-        return queryCTIDataByAll(pageSize,bookmark);
+        return queryCTIDataByAll(page, pageSize);
     }
 }
-function queryCTIDataByAll(pageSize,bookmark){
+
+function queryCTIDataByAll(page, pageSize){
     return new Promise(function(resolve, reject){
         $.ajax({
             type: "POST", 
@@ -199,8 +198,8 @@ function queryCTIDataByAll(pageSize,bookmark){
             contentType: "application/json",
             url: blockchainServerHost + "/cti/queryAllCtiInfoWithPagination",
             data: JSON.stringify({
-                "page_size": pageSize,
-                "bookmark": bookmark
+                "page": page,
+                "page_size": pageSize
             }),
             success: function(response){
                 console.log("CTI data:", response);
@@ -210,7 +209,9 @@ function queryCTIDataByAll(pageSize,bookmark){
                         if(data.cti_infos && Array.isArray(data.cti_infos)){
                             resolve({
                                 cti_infos: data.cti_infos,
-                                bookmark: data.bookmark
+                                total: data.total,
+                                page: data.page,
+                                page_size: data.page_size
                             });
                         } else {
                             reject("Invalid CTI data format");
@@ -230,7 +231,7 @@ function queryCTIDataByAll(pageSize,bookmark){
 }
 
 //按类型分页查询CTI数据
-function queryCTIDataByType(type,pageSize,bookmark){
+function queryCTIDataByType(type, page, pageSize){
     return new Promise(function(resolve, reject){
         $.ajax({
             type: "POST",
@@ -239,8 +240,8 @@ function queryCTIDataByType(type,pageSize,bookmark){
             url: blockchainServerHost + "/cti/queryCtiInfoByTypeWithPagination",
             data: JSON.stringify({
                 "cti_type": type,
-                "page_size": pageSize,
-                "bookmark": bookmark
+                "page": page,
+                "page_size": pageSize
             }),
             success: function(response){
                 console.log("CTI data by type:", response);
@@ -250,7 +251,9 @@ function queryCTIDataByType(type,pageSize,bookmark){
                         if(data.cti_infos && Array.isArray(data.cti_infos)){
                             resolve({
                                 cti_infos: data.cti_infos,
-                                bookmark: data.bookmark
+                                total: data.total,
+                                page: data.page,
+                                page_size: data.page_size
                             });
                         } else {
                             reject("CTI data is not found");
@@ -283,10 +286,10 @@ function purchaseCTI(walletId,password,ctiId){
             }),
             success: function(response){
                 console.log("Purchase CTI response:", response);
-                if(response.result != null && response.result != undefined){
-                    resolve(response.result);
+                if(response.code === 200 && response.data){
+                    resolve(response.data);
                 }else{
-                    reject("Purchase CTI failed: response is null");
+                    reject("Purchase CTI failed: " + response.message);
                 }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -295,6 +298,191 @@ function purchaseCTI(walletId,password,ctiId){
         });
     });
 }
+//-------------------------------------------模型数据接口-------------------------------------------
+//根据ID查询模型数据
+function queryModelDataById(modelId){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            url: blockchainServerHost + "/model/queryModelInfo",
+            data: JSON.stringify({
+                "model_id": modelId
+            }),
+            success: function(response){
+                console.log("Model detail data:", response);
+                if(response.result != null && response.result != undefined){
+                    try {
+                        const data = JSON.parse(response.result);
+                        resolve(data);
+                    } catch(e) {
+                        reject("Failed to parse model detail data: " + e.message);
+                    }
+                }else{
+                    reject("Model detail data is null");
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                reject(errorThrown);
+            }
+        })
+    })
+}
+
+//查询所有模型数据(分页)
+function queryModelData(type=-1, page=1, pageSize=15){
+    if(type!=-1){
+        return queryModelDataByType(type, page, pageSize);
+    }else{
+        return queryModelDataByAll(page, pageSize);
+    }
+}
+
+function queryModelDataByAll(page, pageSize){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            url: blockchainServerHost + "/model/queryModelInfoWithPagination",
+            data: JSON.stringify({
+                "page": page,
+                "page_size": pageSize
+            }),
+            success: function(response){
+                console.log("Model data:", response);
+                if(response.result != null && response.result != undefined){
+                    try {
+                        const data = JSON.parse(response.result);
+                        if(data.model_infos && Array.isArray(data.model_infos)){
+                            resolve({
+                                model_infos: data.model_infos,
+                                total: data.total,
+                                page: data.page,
+                                page_size: data.page_size
+                            });
+                        } else {
+                            reject("Invalid model data format");
+                        }
+                    } catch(e) {
+                        reject("Failed to parse model data: " + e.message);
+                    }
+                }else{
+                    reject("Model data is null");
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                reject(errorThrown);
+            }
+        })
+    })
+}
+
+//按类型分页查询模型数据
+function queryModelDataByType(type, page, pageSize){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            url: blockchainServerHost + "/model/queryModelsByTypeWithPagination",
+            data: JSON.stringify({
+                "model_type": type,
+                "page": page,
+                "page_size": pageSize
+            }),
+            success: function(response){
+                console.log("Model data by type:", response);
+                if(response.result != null && response.result != undefined){
+                    try {
+                        const data = JSON.parse(response.result);
+                        if(data.model_infos && Array.isArray(data.model_infos)){
+                            resolve({
+                                model_infos: data.model_infos,
+                                total: data.total,
+                                page: data.page,
+                                page_size: data.page_size
+                            });
+                        } else {
+                            reject("Model data is not found");
+                        }
+                    } catch(e) {
+                        reject("Failed to parse model data: " + e.message);
+                    }
+                }else{
+                    reject("Model data is null");
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                reject(errorThrown);
+            }
+        })
+    })
+}
+
+//根据CTI ID查询相关模型
+function queryModelsByRefCTIId(ctiId){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            url: blockchainServerHost + "/model/queryModelsByRefCTIId",
+            data: JSON.stringify({
+                "cti_id": ctiId
+            }),
+            success: function(response){
+                console.log("Models by CTI ID:", response);
+                if(response.result != null && response.result != undefined){
+                    try {
+                        const data = JSON.parse(response.result);
+                        resolve(data);
+                    } catch(e) {
+                        reject("Failed to parse models data: " + e.message);
+                    }
+                }else{
+                    reject("Models data is null");
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                reject(errorThrown);
+            }
+        })
+    })
+}
+
+//根据创建者ID查询模型
+function queryModelsByCreatorId(userId){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            url: blockchainServerHost + "/model/queryModelInfoByCreatorUserID",
+            data: JSON.stringify({
+                "user_id": userId
+            }),
+            success: function(response){
+                console.log("Models by creator:", response);
+                if(response.result != null && response.result != undefined){
+                    try {
+                        const data = JSON.parse(response.result);
+                        resolve(data);
+                    } catch(e) {
+                        reject("Failed to parse models data: " + e.message);
+                    }
+                }else{
+                    reject("Models data is null");
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                reject(errorThrown);
+            }
+        })
+    })
+}
+
 //购买模型
 function purchaseModel(walletId,password,modelId){
     return new Promise(function(resolve, reject){
@@ -310,10 +498,10 @@ function purchaseModel(walletId,password,modelId){
             }),
             success: function(response){
                 console.log("Purchase model response:", response);
-                if(response.result != null && response.result != undefined){
-                    resolve(response.result);
+                if(response.code === 200 && response.data){
+                    resolve(response.data);
                 }else{
-                    reject("Purchase model failed: response is null");
+                    reject("Purchase model failed: " + response.message);
                 }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){

@@ -19,6 +19,27 @@ function getLocalUserWallet(){
         });
     })
 }
+//获取本地钱包列表
+function getLocalWalletList(){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            type: "GET",
+            url: clientServerHost + "/user/getLocalUserAccountMulti", 
+            dataType: "json",
+            success: function(response){
+                if(response != null && response.code == 200){
+                    resolve(response.data.wallet_ids);
+                }else{
+                    reject("获取钱包列表失败:"+response.message);
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                reject("获取钱包列表失败: " + errorThrown);
+            }
+        });
+    })
+}
+
 function checkLocalWalletOnchainStatus(wallet_id){
     return new Promise(function(resolve, reject){
         $.ajax({
@@ -30,6 +51,7 @@ function checkLocalWalletOnchainStatus(wallet_id){
                 "wallet_id": wallet_id
             }),
             success: function(data){
+                
                 resolve(data);
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){

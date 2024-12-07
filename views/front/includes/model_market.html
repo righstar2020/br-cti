@@ -15,12 +15,11 @@
         <div class="filter-row">
             <div class="filter-label">分类:</div>
             <div class="filter-tags">
-                <a onclick="btnChangeTab(-1);return false;" data-type="-1" class="filter-tag amodelve">全部</a>
-                <a onclick="btnChangeTab(1);return false;" data-type="1" class="filter-tag">恶意流量</a>
-                <a onclick="btnChangeTab(2);return false;" data-type="2" class="filter-tag">蜜罐情报</a>
-                <a onclick="btnChangeTab(3);return false;" data-type="3" class="filter-tag">僵尸网络</a>
-                <a onclick="btnChangeTab(4);return false;" data-type="4" class="filter-tag">应用层攻击</a>
-                <a onclick="btnChangeTab(5);return false;" data-type="5" class="filter-tag">开源情报</a>
+                <a onclick="btnChangeTab(-1);return false;" data-type="-1" class="filter-tag active">全部</a>
+                <a onclick="btnChangeTab(1);return false;" data-type="1" class="filter-tag">分类模型</a>
+                <a onclick="btnChangeTab(2);return false;" data-type="2" class="filter-tag">回归模型</a>
+                <a onclick="btnChangeTab(3);return false;" data-type="3" class="filter-tag">聚类模型</a>
+                <a onclick="btnChangeTab(4);return false;" data-type="4" class="filter-tag">NLP模型</a>
                 <a onclick="btnChangeTab(0);return false;" data-type="0" class="filter-tag">其他</a>
             </div>
         </div>
@@ -28,7 +27,7 @@
         <div class="filter-row">
             <div class="filter-label">排序:</div>
             <div class="filter-tags">
-                <a onclick="btnChangeSort('time');return false;" data-sort="time" class="filter-tag amodelve">发布时间</a>
+                <a onclick="btnChangeSort('time');return false;" data-sort="time" class="filter-tag active">发布时间</a>
                 <!-- <a onclick="btnChangeSort('needs');return false;" data-sort="needs" class="filter-tag">按需求量</a> -->
             </div>
             <div class="result-count">为您找到 <span id="totalCount">0</span>个相关模型</div>
@@ -40,13 +39,13 @@
         <table class="model-data-table">
             <colgroup>
                 <col width="5%">  <!-- 序号 -->
-                <col width="15%"> <!-- 模型编号 -->
+                <col width="12%"> <!-- 模型编号 -->
                 <col width="12%"> <!-- 标签 -->
                 <col width="12%"> <!-- 模型类型 -->
                 <col width="12%"> <!-- 训练框架 -->
-                <col width="12%"> <!-- 发布者 -->
-                <col width="15%"> <!-- HASH -->
-                <col width="15%"> <!-- 发布时间 -->
+                <col width="10%"> <!-- 发布者 -->
+                <col width="10%"> <!-- HASH -->
+                <col width="13%"> <!-- 发布时间 -->
                 <col width="14%"> <!-- 操作 -->
             </colgroup>
             <thead>
@@ -83,29 +82,24 @@ var currentSort = 'time';
 var currentPageSize = 15;
 var currentTotalPages = 5;
 var currentTotalCount = 0;
-var currentCTIData = [];
-var currentBookmark = "";
-var pageBookmarkMap = {
-    1: "",
-};
+var currentModelData = [];
+var currentModelDataList = [];
 // 情报类型int到str名称的映射
-const CTI_TYPE_NAME = {
+const Model_TYPE_NAME = {
     0: "其他",
-    1: "恶意流量",
-    2: "蜜罐情报",
-    3: "僵尸网络",
-    4: "应用层攻击",
-    5: "开源情报"
+    1: "分类模型",
+    2: "回归模型", 
+    3: "聚类模型",
+    4: "NLP模型"
 };
 
-var currentCTIDataList = [];
 //处理数据
-function processCTIResponseData(data){
+function processModelResponseData(data){
     var modelInfos = [];
-    if (data!=null&&data.model_infos&&data.model_infos.length>0){
+    if (data!=null && data.model_infos && data.model_infos.length>0){
         modelInfos = data.model_infos.map((item,index) => {
             // 处理情报类型
-            let modelType = CTI_TYPE_NAME[item.model_type] || CTI_TYPE_NAME[0];
+            let modelType = Model_TYPE_NAME[item.model_type] || Model_TYPE_NAME[0];
             
             // 处理标签
             let tags = "";
@@ -124,30 +118,23 @@ function processCTIResponseData(data){
                 value: item.value
             };
         });
-        
     }
-    currentCTIDataList = modelInfos;
-    if(data.bookmark) {
-        currentBookmark = data.bookmark;
-    }
-    currentPageSize = currentCTIDataList.length;
+    currentModelDataList = modelInfos;
+    currentPageSize = data.page_size || currentPageSize;
     var renderData = {
-        data: currentCTIDataList,
+        data: currentModelDataList,
         currentPage: currentPage,
-        totalCount: currentCTIDataList.length*10
+        totalCount: data.total || 0
     };
     console.log("renderData:",renderData);
     renderTable(renderData);
 }
 
-
-
-
 // 修改渲染表格函数
 function renderTable(response) {
     const tableBody = document.getElementById('modelTableBody');
     tableBody.innerHTML = '';
-    currentCTIData = response.data;
+    currentModelData = response.data;
     
     // 更新结果数量显示为总数量
     document.getElementById('totalCount').textContent = response.totalCount;
@@ -155,7 +142,7 @@ function renderTable(response) {
     //更新面板
     currentTotalCount = response.totalCount||0;
     currentTotalPages = Math.ceil(currentTotalCount / currentPageSize)||0;
-    renderPagination(response.currentPage, currentTotalPages);
+    renderPagination(response.currentPage, currentTotalPages,currentTotalCount);
     
     response.data.forEach(item => {
         const row = document.createElement('tr');
@@ -178,12 +165,13 @@ function renderTable(response) {
     // 重新绑定事件
     bindTableEvents();
 }
-
 // 渲染分页函数
-function renderPagination(currentPage, totalPages) {
+function renderPagination(currentPage, totalPages, totalCount) {
     const pagination = document.getElementById('pagination');
     pagination.innerHTML = "";
-    if(totalPages<=1||totalPages==null||totalPages==undefined)return;
+    
+    // 如果没有数据或总页数为0,直接返回
+    if(totalCount <= 0 || totalPages <= 0) return;
 
     let paginationHtml = `
         <a class="item icon ${currentPage == 1 ? 'disabled' : ''}" onclick="${currentPage > 1 ? 'changePage(' + (currentPage - 1) + ')' : 'return false;'}" style="cursor:${currentPage == 1 ? 'not-allowed' : 'pointer'}">
@@ -211,7 +199,7 @@ function renderPagination(currentPage, totalPages) {
     // 添加中间的页码
     for (let i = startPage; i <= endPage; i++) {
         paginationHtml += `
-            <a data-page="${i}" class="item ${currentPage === i ? 'amodelve' : ''}" onclick="changePage(${i})">${i}</a>
+            <a data-page="${i}" class="item ${currentPage === i ? 'active' : ''}" onclick="changePage(${i})">${i}</a>
         `;
     }
     
@@ -229,24 +217,20 @@ function renderPagination(currentPage, totalPages) {
         </a>
     `;
     
-    
     pagination.innerHTML = paginationHtml;
 
-    //切换label amodelve
-    $('.pagination .item').removeClass('amodelve');
-    $('.pagination .item[data-page="' + currentPage + '"]').addClass('amodelve');
+    //切换label active
+    $('.pagination .item').removeClass('active');
+    $('.pagination .item[data-page="' + currentPage + '"]').addClass('active');
 }
 
 // 修改获取数据函数
-function fetchCTIData(type = -1, page = 1, pageSize = 15) {
-    if(pageBookmarkMap[page]==null||pageBookmarkMap[page]==undefined){
-        pageBookmarkMap[page] = currentBookmark; //记录上一次查询的bookmark
-    }
+function fetchModelData(type = -1, page = 1, pageSize = 15) {
     var loadIndex = layer.load(1);
-    queryCTIData(type, pageSize, pageBookmarkMap[page])
+    queryModelData(type, page, pageSize)
         .then(data => {
             currentPage = page;
-            processCTIResponseData(data);
+            processModelResponseData(data);
             layer.close(loadIndex);
         })
         .catch(error => {
@@ -254,7 +238,7 @@ function fetchCTIData(type = -1, page = 1, pageSize = 15) {
             layer.close(loadIndex);
             console.log('获取数据失败:', error);
             //使用空数据
-            processCTIResponseData({model_infos: [], bookmark: ""});
+            processModelResponseData({model_infos: [], total: 0});
         });
 }
 
@@ -290,28 +274,28 @@ function bindTableEvents() {
 // 切换页面函数
 function changePage(page) {
     if (page < 1) return;
-    fetchCTIData(currentType,page,currentPageSize);
+    fetchModelData(currentType,page,currentPageSize);
 }
 
 // 根据类型筛选数据
 function filterByType(type) {
-    fetchCTIData(type, currentPage,currentPageSize);
+    fetchModelData(type, currentPage,currentPageSize);
 }
 
 //tab切换
 function btnChangeTab(type){
     currentType = type;
-    fetchCTIData(type, currentPage,currentPageSize);
-    //切换label amodelve
-    $('.filter-tag[data-type]').removeClass('amodelve');
-    $('.filter-tag[data-type="' + type + '"]').addClass('amodelve');
+    fetchModelData(type, currentPage,currentPageSize);
+    //切换label active
+    $('.filter-tag[data-type]').removeClass('active');
+    $('.filter-tag[data-type="' + type + '"]').addClass('active');
 }
 //filter排序
 function btnChangeSort(sort){
     //排序
-    if(currentCTIData && currentCTIData.length > 0){
+    if(currentModelData && currentModelData.length > 0){
         //根据sort参数进行排序
-        currentCTIData.sort((a, b) => {
+        currentModelData.sort((a, b) => {
             if(sort === 'needs'){
                 return b.value - a.value;
             }else if(sort === 'time'){
@@ -321,15 +305,15 @@ function btnChangeSort(sort){
         });
         
         //重新渲染表格
-        renderTable(currentCTIData);
+        renderTable(currentModelData);
     }
-    //切换label amodelve
-    $('.filter-tag[data-sort]').removeClass('amodelve');
-    $('.filter-tag[data-sort="' + sort + '"]').addClass('amodelve');
+    //切换label active
+    $('.filter-tag[data-sort]').removeClass('active');
+    $('.filter-tag[data-sort="' + sort + '"]').addClass('active');
 }
 // 初始化
 document.addEventListener('DOMContentLoaded', function() {
-    fetchCTIData();
+    fetchModelData();
 });
 //----------------------------------------窗口操作--------------------------------------------------------------------------
 var currentLayerIndex = null; //设置只可打开一个窗口

@@ -115,11 +115,11 @@ function updateUserOnchainCtiStatisticsUI(){
     if(onchain_data_item_list.length > 0){
         getUserOnchainCtiStatistics().then(function(data){  
             clientHeaderPanelData.onchainCtiDataNum = data.totalCTICount;
-            clientHeaderPanelData.ownCtiDataNum = data.userUploadCount;
-            clientHeaderPanelData.ownOnchainCtiDataNum = data.userCTICount;
+            clientHeaderPanelData.ownCtiDataNum = data.userCTICount;
+            clientHeaderPanelData.ownOnchainCtiDataNum = data.userUploadCount;
             $(onchain_data_item_list[0]).find('.data-item-num').text(formatNumString(clientHeaderPanelData.onchainCtiDataNum));
             $(onchain_data_item_list[1]).find('.data-item-num').text(formatNumString(clientHeaderPanelData.ownCtiDataNum));
-            $(onchain_data_item_list[2]).find('.data-item-num').text(formatNumString(clientHeaderPanelData.ownCtiDataNum));
+            $(onchain_data_item_list[2]).find('.data-item-num').text(formatNumString(clientHeaderPanelData.ownOnchainCtiDataNum));
         });
     }
 }
@@ -127,16 +127,14 @@ function updateUserOnchainCtiStatisticsUI(){
 function getUserOnchainCtiStatistics(){
     //获取用户ID
     return new Promise(function(resolve, reject){
-        getLocalUserWallet().then(function(response){
-            var userId = response.data.wallet_id;
-            if(userId == null||userId == undefined){
-                console.error("user id is null");
-                reject("user id is null");
-            }
-            getUserCTIStatistics(userId).then(function(data){
-                console.log("user onchain cti data:",data);
-                resolve(data);
-            });
+        var walletId = localStorage.getItem("userWalletId");
+        if(walletId == null||walletId == undefined){
+            console.error("user wallet id is null");
+            reject("user wallet id is null");
+        }
+        getUserCTIStatistics(walletId).then(function(data){
+            console.log("user onchain cti data:",data);
+            resolve(data);
         });
     });
 }
@@ -197,7 +195,7 @@ function updateNextStepButton(step) {
         nextStepBtn.removeClass('blue');
     }
     //到达最后一步
-    if(step == processStepTitleList.length-1){
+    if(step >= processStepTitleList.length-1){
         nextStepBtn.text("完成");
     }else{
         nextStepBtn.text("下一步");

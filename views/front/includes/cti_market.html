@@ -85,13 +85,10 @@ var currentPage = 1;
 var currentType = -1;
 var currentSort = 'time';
 var currentPageSize = 15;
-var currentTotalPages = 5;
+var currentTotalPages = 0;
 var currentTotalCount = 0;
 var currentCTIData = [];
-var currentBookmark = "";
-var pageBookmarkMap = {
-    1: "",
-};
+var currentCTIDataList = [];
 // 情报类型int到str名称的映射
 const CTI_TYPE_NAME = {
     0: "其他",
@@ -102,12 +99,11 @@ const CTI_TYPE_NAME = {
     5: "开源情报"
 };
 
-var currentCTIDataList = [];
 //处理数据
 function processCTIResponseData(data){
     var ctiInfos = [];
-    if (data!=null&&data.cti_infos&&data.cti_infos.length>0){
-        ctiInfos = data.cti_infos.map((item,index) => {
+    if (data != null && data.cti_infos && data.cti_infos.length > 0){
+        ctiInfos = data.cti_infos.map((item, index) => {
             // 处理情报类型
             let ctiType = CTI_TYPE_NAME[item.cti_type] || CTI_TYPE_NAME[0];
             
@@ -128,19 +124,16 @@ function processCTIResponseData(data){
                 value: item.value
             };
         });
-        
     }
     currentCTIDataList = ctiInfos;
-    if(data.bookmark) {
-        currentBookmark = data.bookmark;
-    }
-    currentPageSize = currentCTIDataList.length;
+    currentTotalCount = data.total || 0;
+    currentPageSize = data.page_size || 15;
     var renderData = {
         data: currentCTIDataList,
-        currentPage: currentPage,
-        totalCount: currentCTIDataList.length*10
+        currentPage: data.page || 1,
+        totalCount: currentTotalCount
     };
-    console.log("renderData:",renderData);
+    console.log("renderData:", renderData);
     renderTable(renderData);
 }
 
@@ -159,7 +152,7 @@ function renderTable(response) {
     //更新面板
     currentTotalCount = response.totalCount||0;
     currentTotalPages = Math.ceil(currentTotalCount / currentPageSize)||0;
-    renderPagination(response.currentPage, currentTotalPages);
+    renderPagination(response.currentPage, currentTotalPages,currentTotalCount);
     
     response.data.forEach(item => {
         const row = document.createElement('tr');
@@ -184,10 +177,12 @@ function renderTable(response) {
 }
 
 // 渲染分页函数
-function renderPagination(currentPage, totalPages) {
+function renderPagination(currentPage, totalPages,totalCount) {
     const pagination = document.getElementById('pagination');
     pagination.innerHTML = "";
-    if(totalPages<=1||totalPages==null||totalPages==undefined)return;
+    
+    // 如果没有数据或总页数为0,直接返回
+    if(totalCount <= 0 || totalPages <= 0) return;
 
     let paginationHtml = `
         <a class="item icon ${currentPage == 1 ? 'disabled' : ''}" onclick="${currentPage > 1 ? 'changePage(' + (currentPage - 1) + ')' : 'return false;'}" style="cursor:${currentPage == 1 ? 'not-allowed' : 'pointer'}">
@@ -233,7 +228,6 @@ function renderPagination(currentPage, totalPages) {
         </a>
     `;
     
-    
     pagination.innerHTML = paginationHtml;
 
     //切换label active
@@ -243,13 +237,9 @@ function renderPagination(currentPage, totalPages) {
 
 // 修改获取数据函数
 function fetchCTIData(type = -1, page = 1, pageSize = 15) {
-    if(pageBookmarkMap[page]==null||pageBookmarkMap[page]==undefined){
-        pageBookmarkMap[page] = currentBookmark; //记录上一次查询的bookmark
-    }
     var loadIndex = layer.load(1);
-    queryCTIData(type, pageSize, pageBookmarkMap[page])
+    queryCTIData(type, page, pageSize)  // 注意：需要修改 client_request.js 中的 queryCTIData 函数
         .then(data => {
-            currentPage = page;
             processCTIResponseData(data);
             layer.close(loadIndex);
         })
@@ -257,8 +247,12 @@ function fetchCTIData(type = -1, page = 1, pageSize = 15) {
             layer.msg('获取数据失败:' + error);
             layer.close(loadIndex);
             console.log('获取数据失败:', error);
-            //使用空数据
-            processCTIResponseData({cti_infos: [], bookmark: ""});
+            processCTIResponseData({
+                cti_infos: [], 
+                total: 0,
+                page: 1,
+                page_size: pageSize
+            });
         });
 }
 

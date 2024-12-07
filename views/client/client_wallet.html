@@ -64,6 +64,9 @@
                             刷新账户
                         </div>
                         <div class="divider"></div>
+                        <div class="item" onclick="changeWalletAccount()">
+                            切换账户
+                        </div>
                         <div class="item" onclick="closeParentLayer()">
                             退出
                         </div>
@@ -170,6 +173,8 @@
 <script type="text/javascript" src="/static/client/js/client_wallet.js"></script>
 <script type="text/javascript" src="/static/client/js/client_request.js"></script>
 <script>
+var layer = layui.layer
+$ = layui.$;
 //检测网络状态
 CheckNetworkStatus()
 function CheckNetworkStatus(){
@@ -219,46 +224,58 @@ function CheckNetworkStatus(){
         })
     });
 }
-
+//检查是否存在钱包
 function CheckLocalUserWallet(){
-    getLocalUserWallet().then(function(response){
-        console.log(response)
-        var data = response.data
+    var walletId = localStorage.getItem("userWalletId");
+    if(walletId==null||walletId==undefined){
+        CheckLocalUserWalletMultiple()
+    }
+    checkLocalWalletOnchain(walletId)
+}
+//检查本地钱包(多个则选择)
+function CheckLocalUserWalletMultiple(){
+    getLocalWalletList().then(function(wallet_ids){
+        var data = wallet_ids
 
-        if (data==null||data.wallet_id==null||response.status==400){
+        if (data==null||data==undefined||data.length==0){
             layer.msg('未查询到本地钱包',{'time':1000},function(){
                 redirectToRegisterWallet()
             })
             return;
         }
-        if (data.wallet_id!=null){
-            //钱包存在则设置用户钱包信息
-            setLocalUserWallet(data.wallet_id)
-            layer.msg('查询到钱包<br>'+data.wallet_id.substring(0,6)+'...'+data.wallet_id.substring(data.wallet_id.length-6),{'time':1000})
-            updateWalletIDUI(data.wallet_id)
-            checkLocalWalletOnchain(data.wallet_id)
-        }
+
+        openWalletSelectWindow(data)
+        
     }).catch(function(error){
         console.log(error)
         layer.msg('网络异常!<br>'+error,{'time':1600})
     })
+}
+//切换账户
+function changeWalletAccount(){
+    CheckLocalUserWalletMultiple()
 }
 //检查本地钱包链上状态
 function checkLocalWalletOnchain(wallet_id){
     checkLocalWalletOnchainStatus(wallet_id).then(function(response){
         console.log(response)
         var data = response.data
-
+        console.log("checkLocalWalletOnchainStatus",data)
         if (data==null||data.onchain==false||response.status==400){
-            layer.msg('钱包未上链',{'time':1000},function(){
+            layer.confirm('钱包未上链，是否前往注册？', {
+                btn: ['注册','刷新'] 
+            }, function(){
+                // 点击注册按钮
                 redirectToRegisterWallet()
-            })
+            }, function(){
+                // 点击刷新按钮
+                CheckLocalUserWalletMultiple()
+            });
             return;
         }
         if (data.onchain){
             //钱包存在则设置用户钱包信息
             setLocalUserWallet(wallet_id)
-            updateWalletIDUI(wallet_id)
             //同时获取用户信息
             getUserInfoAndUpdateUI()
         }
@@ -279,31 +296,39 @@ function redirectToRegisterWallet(){
 //钱包存在则设置用户钱包信息
 function setLocalUserWallet(walletId){
     localStorage.setItem("userWalletId",walletId)
+    updateWalletIDUI(walletId)
 }
 //-------------------------------------------用户信息查询-------------------------------------------
 
 function getUserInfoAndUpdateUI(){
-    var userId = localStorage.getItem("userWalletId")
-    if (userId==null){
+    var walletId = localStorage.getItem("userWalletId")
+    if (walletId==null){
         layer.msg('用户ID不存在',{'time':1000})
         return;
     }
-    getUserInfo(userId).then(function(data){
+    var loadIndex = layer.load(2);
+    getUserInfo(walletId).then(function(data){
+        layer.close(loadIndex);
         console.log("用户信息:", data);
         if(data != null){
             updateUserInfoUI(data)
             layer.msg('用户信息更新成功!',{'time':1000})
+            //移除所有交易记录
+            removeAllTransactionRecords()
             //获取交易记录
-            queryUserTransactionRecords(userId)
+            queryUserTransactionRecords(walletId)
+            //更新钱包ID
+            updateWalletIDUI(walletId)
         }
     }).catch(function(error){
+        layer.close(loadIndex);
         console.log(error)
         layer.msg('获取用户信息失败!<br>'+error,{'time':1600})
     })
 }
 
-function queryUserTransactionRecords(userId){
-    getUserTransactionRecords(userId).then(function(data){
+function queryUserTransactionRecords(walletId){
+    getUserTransactionRecords(walletId).then(function(data){
         console.log("交易记录:", data);
         if (data!=null&&data.length>0){
             updateUserTransactionRecordsUI(data)
@@ -342,11 +367,11 @@ function updateUserInfoUI(user_info){
     //更新用户积分显示
     $('.wallet-account-num span').first().text(user_info.user_value);
 }
-var currentTransactionRecords = []
-var currentTransactionIdList = []
 //更新用户交易记录
 function updateUserTransactionRecordsUI(transaction_records){
-    var newTransactionRecords = checkNewTransactionRecords(transaction_records)
+    
+    //检查是否有新交易记录
+    var newTransactionRecords = transaction_records
     //遍历新交易记录
     for (var i = 0; i < newTransactionRecords.length; i++) {
         var transaction = newTransactionRecords[i];
@@ -384,7 +409,7 @@ function calculateTransactionPointsAndUpdateUI(transaction_records){
     for (var i = 0; i < transaction_records.length; i++) {
         var transaction = transaction_records[i];
         if (transaction.timestamp.split(' ')[0] == currentDate.toISOString().split('T')[0]){
-            weeklyPoints += transaction.transaction_type == "in" ? transaction.points : -transaction.points
+            weeklyPoints += transaction.points //记录自带正负
             weeklyPointsList.push(weeklyPoints)
             weeklyRecordList.push(transaction)
         }
@@ -427,7 +452,7 @@ function createPointsExpenseItemUI(transaction){
     item.id = `points-expense-${transaction.transaction_id}`;
     
     // 设置数据
-    item.querySelector('.points-amount span').innerText = `-${transaction.points}`;
+    item.querySelector('.points-amount span').innerText = `${transaction.points}`;
     item.querySelector('.transfer-account').innerText = `转出账户: ${transaction.other_party}`;
     item.querySelector('.intel-id').innerText = `情报ID: ${transaction.info_id}`;
     item.querySelector('.transfer-time').innerText = transaction.timestamp;
@@ -453,7 +478,7 @@ function createTransactionRecordItemUI(transaction){
     
     // 设置其他数据
     item.querySelector('.transaction-amount span').innerText = 
-        `${isIncome ? "+" : "-"}${transaction.points}`;
+        `${isIncome ? "+" : ""}${transaction.points}`;
     item.querySelector('.transaction-account').innerText = 
         `对方账户: ${transaction.other_party}`;
     item.querySelector('.transaction-hash').innerText = 
@@ -465,6 +490,14 @@ function createTransactionRecordItemUI(transaction){
     // 添加到容器
     document.querySelector('.wallet-tab-item:nth-child(3)').appendChild(item);
 }
+//移出所有交易信息
+function removeAllTransactionRecords(){
+    // 删除所有交易记录,但保留模板
+    $('#points-income-item-template').siblings().not('#points-income-item-template').remove();
+    $('#points-expense-item-template').siblings().not('#points-expense-item-template').remove();
+    $('#transaction-record-item-template').siblings().not('#transaction-record-item-template').remove();
+}
+
 function test(){
     // 示例调用
     const transaction = {
@@ -484,6 +517,42 @@ function closeParentLayer(){
     var index = parent.layer.getFrameIndex(window.name); // 先得到当前 iframe 层的索引
     parent.layer.close(index); // 再执行关闭
 }
+var currentLayerIndex = null
+function openWalletSelectWindow(wallet_ids) {
+    var parentLayer = window.parent.layer;
+    if(currentLayerIndex!=null){
+        //默认只打开一个窗口
+        parentLayer.close(currentLayerIndex);
+    }
+    var content = [
+        '<div style="padding: 20px;">',
+        '<select id="walletSelect" style="width:100%; padding:5px;">',
+        wallet_ids.map(function(walletId) {
+            return '<option value="' + walletId + '">' + walletId.substring(0,6)+'...'+walletId.substring(walletId.length-6) + '</option>';
+        }).join(''),
+        '</select>',
+        '</div>'
+    ].join('');
+    //使用父层级打开窗口
+    currentLayerIndex = parentLayer.open({
+        type: 1,
+        title: '请选择钱包',
+        area: ['300px', 'auto'],
+        content: content,
+        btn: ['确定', '取消'],
+        shade: 0,
+        yes: function(index, layero){
+            var selectedWallet = layero.find('#walletSelect').val();
+            if(selectedWallet) {
+                checkLocalWalletOnchain(selectedWallet);
+                parentLayer.close(index);
+            } else {
+                parentLayer.msg('请选择一个钱包');
+            }
+        }
+    });
+}
+
 </script>
 </body>
 </html>

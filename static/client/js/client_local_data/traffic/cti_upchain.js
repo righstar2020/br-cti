@@ -136,27 +136,14 @@ function getIpfsAddress(button){
 function getUpchainAccount(button){
     var processId = $(button).attr('data-process-id');
     var file_hash = taskFileHashMap[processId];
-    $.ajax({
-        type: "GET", 
-        url: clientServerHost + "/user/checkLocalUserWallet",
-        dataType: "json",
-        success: function(response){
-            console.log(response);
-            if(response.code == 200){
-                console.log(response);
-                const data = response.data;
-                const upchainAccount = data.wallet_id;
-                const form = $(`.cti-upchain-data-config-form[data-process-id="${processId}"]`);
-                form.find('input[name="upchain_account"]').val(upchainAccount);
-            }else{
-                layer.msg(response.error,{'time':1200}); 
-            }
-        },
-        error: function(response){
-            console.log(response);
-            layer.msg(response.error,{'time':1200});
-        }
-    });
+    
+    const walletId = localStorage.getItem("userWalletId");
+    if(walletId){
+        const form = $(`.cti-upchain-data-config-form[data-process-id="${processId}"]`);
+        form.find('input[name="upchain_account"]').val(walletId);
+    }else{
+        layer.msg('未找到钱包账户，请先登录钱包!',{'time':1200});
+    }
 }
 //绑定检查钱包密码事件
 function checkUpchainAccountPassword(button){
@@ -348,7 +335,7 @@ function getCtiUpchainProgress(processId){
                 //处理完成
                 if(progress == 100){
                     $(`.cti-upchain-data-item[data-process-id="${processId}"] .cti-upchain-data-item-status`).
-                    text(`处理完成${progress}%(${current_step}/${total_step})`);
+                    text(`已完成${progress}%(${current_step}/${total_step})`);
                     //设置完成状态
                     setCtiUpchainFinishItemUI(processId);
                     //更新任务状态
@@ -410,7 +397,7 @@ function setCtiUpchainFinishItemUI(processId){
     //设置完成状态
     item.attr('data-finish','true');
     //设置下一步按钮
-    item.find('.cti-upchain-data-item-start-btn').text('下一步');
+    item.find('.cti-upchain-data-item-start-btn').text('完成');
     item.find('.cti-upchain-data-item-start-btn').on('click',function(){
         nextStep();
     });

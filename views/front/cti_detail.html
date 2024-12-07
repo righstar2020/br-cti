@@ -188,24 +188,25 @@ function updateCTIDetailUI(ctiData){
     // 定义要显示的字段和对应的中文标签
     var fields = [
         {key: 'cti_id', label: 'CTI编号'},
-        {key: 'cti_hash', label: '情报哈希'}, 
+        {key: 'cti_hash', label: '情报哈希'},
         {key: 'cti_name', label: '情报名称'},
         {key: 'cti_type', label: '情报类型'},
-        {key: 'cti_traffic_type', label: '流量类型'},
+        {key: 'cti_traffic_type', label: '流量类型'}, 
         {key: 'open_source', label: '是否开源'},
         {key: 'creator_user_id', label: '发布者'},
         {key: 'tags', label: '标签'},
         {key: 'iocs', label: 'IOC类型'},
         {key: 'stix_data', label: 'STIX数据'},
+        {key: 'stix_ipfs_hash', label: 'STIX地址'},
         {key: 'statistic_info', label: '统计信息'},
         {key: 'description', label: '描述'},
         {key: 'data_size', label: '数据大小'},
-        {key: 'data_hash', label: '数据哈希'},
-        {key: 'ipfs_hash', label: 'IPFS哈希'},
+        {key: 'data_source_hash', label: '数据源哈希'},
+        {key: 'data_source_ipfs_hash', label: '数据源IPFS'},
         {key: 'need', label: '需求量'},
         {key: 'value', label: '价值'},
         {key: 'compre_value', label: '综合价值'},
-        {key: 'create_time', label: '创建时间'}
+        {key: 'create_time', label: '创建时间'},
     ];
 
     // 遍历字段生成表格内容
@@ -241,14 +242,15 @@ function updateCTIDetailUI(ctiData){
     //更新购买按钮
     var buyButton = $('.cti-detail-toolbar button');
     buyButton.data('value',ctiData.value);
-    buyButton.data('id',ctiData.id);
+    buyButton.data('id',ctiData.cti_id);
     //显示头部信息面板
     showHeaderInfoPanel(true);
 }
 //更新用户积分信息
 function updateUserInfoUI(userInfo){
+    console.log("用户积分信息:", userInfo);
     var userValueSpan = $('.cti-user-value span');
-    userValueSpan.text(userInfo.value);
+    userValueSpan.text(userInfo.user_value);
     //显示头部信息面板
     showHeaderInfoPanel(true);
 }
@@ -272,13 +274,20 @@ function closeParentLayer(){
 }
 $('.cti-detail-toolbar button[data-id]').on('click', function(event) {
     var ctiId = $(this).data('id'); // 获取data-id属性的值
+    var walletId = localStorage.getItem("userWalletId"); // 修改：使用正确的钱包ID key
+    
+    if (!walletId) {
+        layer.msg('请先登录钱包');
+        return;
+    }
+    
     layer.prompt({
         title: '请输入钱包密码',
         formType: 1 // 密码输入框
     }, function(password, index){
         layer.close(index);
-        // 调用purchaseCTI函数
-        purchaseCTI(localStorage.getItem('walletId'), password, ctiId)
+        // 修改：使用正确的参数调用purchaseCTI函数
+        purchaseCTI(walletId, password, ctiId)
             .then(function(result){
                 layer.msg('购买成功');
                 setTimeout(function(){

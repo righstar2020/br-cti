@@ -62,9 +62,8 @@ function renderClientDataTable(clientTableData){
                 },
                 {field: 'type', title: '类型', width: 100},
                 {field: 'tags', title: 'Tags', width: 100},
-                {field: 'iocs', title: 'IOCs', width: 100},
-                {field: 'file_hash', title: '文件Hash', width: 100},
-                {field: 'source_hash', title: '文件源', width: 100},
+                {field: 'ipfs_hash', title: 'IPFS', width: 100},
+                {field: 'source_file_hash', title: '文件Hash', width: 100},
                 {field: 'create_time', title: '创建日期', width: 120, sort: true},
                 {field: 'onchain', title: '上链', width: 80},
                 {fixed: 'right', width: 100, title: '操作', align: 'center', templet: function (d) {
@@ -125,12 +124,12 @@ function filterDataSourceData(dataSourceDataList,type="all"){
 }
 
 function queryLocalDataSourceData(type="all"){
-    var userId = localStorage.getItem('userWalletId');
-    if (userId==null){
-        layer.msg('用户ID不存在,请先登录钱包!',{'time':1000});
+    var walletId = localStorage.getItem('userWalletId');
+    if (walletId==null){
+        layer.msg('用户钱包ID不存在,请先登录钱包!',{'time':1000});
         return;
     }
-    queryUserOwnedCTIData(userId).then(function(data){
+    queryUserOwnedCTIData(walletId).then(function(data){
         console.log("User owned CTI data:", data);
         processLocalDataSourceDataToTableData(filterDataSourceData(data,type));
         
@@ -173,9 +172,8 @@ function processLocalDataSourceDataToTableData(dataSourceDataList){
             status: getDataSourceStatus(dataSourceInfo),
             type: dataSourceInfo.cti_name,
             tags: dataSourceInfo.tags,
-            iocs: dataSourceInfo.iocs,
-            source_hash: dataSourceInfo.ipfs_hash,
-            file_hash: dataSourceInfo.cti_hash,
+            ipfs_hash: dataSourceInfo.data_source_ipfs_hash,
+            source_file_hash: dataSourceInfo.data_source_hash,
             create_time: dataSourceInfo.create_time.split(' ')[0],
             onchain: dataSourceInfo.open_source ? '是' : '否'
         };
