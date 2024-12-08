@@ -5,7 +5,7 @@ var exampleTagsList = ['卫星网络','SDN网络','5G网络',
                        '恶意软件','DDoS','钓鱼','僵尸网络','APT','IOT'];//tags表示涉及的攻击技术
 var exampleIOCsList = ['IP','端口','流特征','HASH','URL','payload'];//iocs表示沦陷指标
 var exampleTrainDataSourceTypeList = ['数据集','文本'];
-var clientDataTableInstance = null;
+var clientDataSourceTableInstance = null;
 var clientDataSourceDataList = [{
     "cti_id": "cti_001",
     "cti_hash": "15cbac", 
@@ -27,6 +27,16 @@ var clientDataSourceDataList = [{
     "value": 1000,
     "compre_value": 1200,
 }];
+//是否显示table
+function showDataSourceTable(show=true){
+    console.log("showDataSourceTable:",show);
+    if (show){
+        $('#client-model-data-source-table-box').show();
+    }else{
+        $('#client-model-data-source-table-box').hide();
+    }
+}
+
 
 //引入table
 var layuiTable = null;
@@ -34,7 +44,7 @@ layui.use('table', function(){
     layuiTable = layui.table;    
     console.log('layuiTable is initialized');  
     //渲染表格
-    renderClientDataTable([]);
+    renderClientDataSourceTable([]);
 });
 
 //更新UI
@@ -45,10 +55,10 @@ function updateClientDataSourceTableUI(clientTableData){
 }
 
 //渲染表格
-function renderClientDataTable(clientTableData){
+function renderClientDataSourceTable(clientTableData){
     if (layuiTable != null){
-        clientDataTableInstance = layuiTable.render({
-            elem: '#client-data-source-table',
+        clientDataSourceTableInstance = layuiTable.render({
+            elem: '#client-model-data-source-table',
             cols: [[ //标题栏
                 {field: 'id', title: 'ID', width: 50},
                 {field: 'status', title: '状态', width: 100,align: 'center', sort: true,templet: function (d) {
@@ -62,12 +72,15 @@ function renderClientDataTable(clientTableData){
                 },
                 {field: 'type', title: '类型', width: 100},
                 {field: 'tags', title: 'Tags', width: 100},
-                {field: 'ipfs_hash', title: 'IPFS', width: 100},
-                {field: 'source_file_hash', title: '文件Hash', width: 100},
+                {field: 'source_file_hash', title: 'Hash', width: 100},
+                {field: 'file_size', title: '文件大小', width: 100},
+                {field: 'ipfs_hash', title: 'IPFS地址', width: 100},
                 {field: 'create_time', title: '创建日期', width: 120, sort: true},
                 {field: 'onchain', title: '上链', width: 80},
-                {fixed: 'right', width: 100, title: '操作', align: 'center', templet: function (d) {
-                    return `<a data-file-hash="${d.file_hash}" data-source-hash="${d.source_hash}" onclick="trainModel(this)" class="ui small custom-blue label">开始训练</a>`;
+                {fixed: 'right', width: 160, title: '操作', align: 'center', templet: function (d) {
+                    var div = `<a data-ipfs-hash="${d.ipfs_hash}" data-source-hash="${d.source_file_hash}" onclick="selectTrainDataSource(this)" class="ui small custom-blue label">开始训练</a>`;
+                    div+=`<a data-ipfs-hash="${d.ipfs_hash}" data-source-hash="${d.source_file_hash}" onclick="showDataSourceDetail(this)" class="ui small custom-blue label">查看文件</a>`;
+                    return div;
                 }}
             ]],
             data: clientTableData,
@@ -91,7 +104,7 @@ function setIntervalQueryClientDataSourceData(){
         clearInterval(queryTableDataClock);
     }
     queryTableDataClock = setInterval(function(){    
-        queryLocalDataSourceData(fileHash);
+        queryLocalDataSourceData();
 
     }, 100000); //100秒查询一次(默认不自动触发更新)
 }
@@ -174,6 +187,7 @@ function processLocalDataSourceDataToTableData(dataSourceDataList){
             tags: dataSourceInfo.tags,
             ipfs_hash: dataSourceInfo.data_source_ipfs_hash,
             source_file_hash: dataSourceInfo.data_source_hash,
+            file_size: formatSize(dataSourceInfo.data_size), //string
             create_time: dataSourceInfo.create_time.split(' ')[0],
             onchain: dataSourceInfo.open_source ? '是' : '否'
         };
@@ -182,7 +196,7 @@ function processLocalDataSourceDataToTableData(dataSourceDataList){
     allTaskDataTable = tableData
 
     //更新表格数据
-    renderClientDataTable(allTaskDataTable)
+    renderClientDataSourceTable(allTaskDataTable)
     //更新table UI
     updateClientDataSourceTableUI(allTaskDataTable);
     return tableData;
@@ -211,5 +225,69 @@ function showDataSourceDetail(element){
     var sourceHash = $(element).data('source-hash');
     console.log("fileHash:",fileHash);
     console.log("sourceHash:",sourceHash);
-    openParentWindow(clientServerHost+'/data/get_dataSource_file_content/'+sourceHash+'/'+fileHash);
+}
+
+//开始训练(选择数据源)
+function selectTrainDataSource(element){
+    var ipfsHash = $(element).data('ipfs-hash');
+    var sourceFileHash = $(element).data('source-hash');
+    console.log("sourceFileHash:",sourceFileHash);
+    console.log("ipfsHash:",ipfsHash);
+    downloadDatasetFromIPFS(sourceFileHash,ipfsHash).then(function(data){
+        console.log("下载数据集响应:", data);
+        if(data.file_info!=null) {
+            const fileInfo = data.file_info;
+            var fileId = createDownloadProgressUI(sourceFileHash,fileInfo.file_name,fileInfo.file_size);
+            taskFileHashMap[fileId] = sourceFileHash;
+            pollingDownloadProgress(fileId,sourceFileHash,ipfsHash);
+        }
+    }).catch(function(error){
+        layer.msg('下载数据集失败!',{'time':1000});
+    });
+}
+var IntervalIdMap = {};
+//轮询下载进度
+function pollingDownloadProgress(fileId,dataSourceHash,ipfsHash){
+    if (IntervalIdMap[fileId]!=null){
+        clearInterval(IntervalIdMap[fileId]);
+    }
+    IntervalIdMap[fileId] = setInterval(function(){
+        getDownloadProgress(dataSourceHash,ipfsHash).then(function(data){
+            console.log("获取下载进度响应:", data);
+            updateDownloadProgressUI(fileId,dataSourceHash,data.progress);
+        }).catch(function(error){
+            console.error("获取下载进度失败:", error);
+        });
+
+    },1000);
+}
+//创建UI
+function createDownloadProgressUI(dataSourceHash,fileName,fileSize){
+    layer.msg('开始下载训练数据...',{'time':1000});
+    var downloadFileInfo = {
+        name: fileName,
+        size: fileSize,
+        hash: dataSourceHash
+    }
+    var fileId = addFileUploadItem(downloadFileInfo);
+    return fileId;
+}
+//更新UI
+function updateDownloadProgressUI(fileId,dataSourceHash,progress){
+    if(progress >= 100){
+        //下载完成,清除定时器
+        clearInterval(IntervalIdMap[fileId]);
+        //更新任务状态
+        updateTaskFinishStepStatus(dataSourceHash,"0",true);
+        //提示下载完成
+        layer.msg('训练数据下载完成!',{'time':1000});
+    }
+    updateProgress(fileId, progress);
+}
+//-----------------------------------------------窗口操作-----------------------------------------------
+//查看详情
+function showDataSourceDetail(element){
+    var ipfsHash = $(element).data('ipfs-hash');
+    console.log("ipfsHash:",ipfsHash);
+    window.open(ipfsServerHost+'/ipfs/'+ipfsHash, '_blank');
 }

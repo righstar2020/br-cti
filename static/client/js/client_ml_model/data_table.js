@@ -13,7 +13,7 @@ var exampleModelFeatures = [
 //模型数据源
 var model_data_map = {1:'数据集', 2:'文本'}; // 1:数据集, 2:文本
 //模型类型
-var model_type_map = {1:'分类模型', 2:'回归模型', 3:'聚类模型', 4:'NLP模型'}; // 1:分类模型, 2:回归模型, 3:聚类模型, 4:NLP模型
+var model_type_map = {0:'未知', 1:'分类模型', 2:'回归模型', 3:'聚类模型', 4:'NLP模型'}; // 1:分类模型, 2:回归模型, 3:聚类模型, 4:NLP模型
 
 // 示例模型信息
 var exampleModelInfo = {
@@ -44,7 +44,14 @@ var modelStatusColorMap = {
     "完成": "#285191",      // 蓝色
     "训练失败": "#ff4500"   // 红色
 };
-
+//是否显示table
+function showModelDataTable(show=true){
+    if (show){
+        $('#client-model-data-table-box').show();
+    }else{
+        $('#client-model-data-table-box').hide();
+    }
+}
 //引入table
 var layuiTable = null;
 layui.use('table', function(){
@@ -63,7 +70,7 @@ function updateClientDataTableUI(clientTableData){
 function renderClientDataTable(clientTableData){
     if (layuiTable != null){
         clientDataTableInstance = layuiTable.render({
-            elem: '#client-model-table',
+            elem: '#client-model-data-table',
             cols: [[ //标题栏
                 {field: 'id', title: 'ID', width: 50},
                 {field: 'status', title: '状态', width: 100, align: 'center', sort: true, templet: function (d) {
@@ -129,33 +136,15 @@ function switchDataTableTab(element){
 function refreshDataTable(select_type){
     //查询当前任务列表是
     Object.values(taskFileHashMap).forEach(function(fileHash){
-        console.log("query task fileHash:",fileHash);
-        queryLocalModelData(fileHash);
+        queryLocalModelRecords(fileHash);
     });
 }
-function queryLocalModelData(fileHash){ 
-    $.ajax({
-        url: clientServerHost + '/ml/get_model_records_by_hash',
-        type: 'POST',
-        dataType: 'json',
-        contentType: 'application/json',
-        data: JSON.stringify({file_hash: fileHash}),
-        success: function(response){
-            console.log(response);
-            if (response.code == 200){
-                if (response.data!=null){
-                    processLocalModelDataToTableData(fileHash,response.data);
-                }
-            }else{
-                if (response.error!=null){
-                    console.log("queryLocalModelData:",response.error);
-                }
-            }
-        },
-        error:function(response){
-            console.log("queryLocalModelData error:",response);
-        }
-    });
+function queryLocalModelRecords(fileHash){ 
+   getModelRecordsByHash(fileHash).then(function(data){
+        processLocalModelDataToTableData(fileHash,data);
+   }).catch(function(error){
+        layer.msg(error,{'time':1200});
+   });
 }
 //历史数据map(用于对比数据是否变化)
 var historyModelDataMap = {};
@@ -188,14 +177,16 @@ function processLocalModelDataToTableData(sourceHash,modelDataList){
             status: modelInfo.status == 'train_failed' ? '训练失败' : 
                     (modelInfo.status == 'training' ? '训练中' : '完成'),
             model_type: model_type_map[modelInfo.model_info.model_type] || '无',
-            model_algorithm: modelInfo.model_info.model_algorithm || '无',
-            model_framework: modelInfo.model_info.model_train_framework || '无',
-            model_features: (modelInfo.model_info.model_features || []).join(',') || '无',
-            model_tags: (modelInfo.model_info.model_tags || []).join(',') || '无',
+            model_algorithm: modelInfo.model_info.model_algorithm || '无', 
+            model_framework: modelInfo.model_info.model_framework || '无',
+            model_features: (modelInfo.model_info.features || []).join(',') || '无',
+            model_name: modelInfo.model_info.model_name || '无',
+            test_size: modelInfo.model_info.test_size || '无',
+            training_time: modelInfo.model_info.training_time || '无',
             model_hash: modelInfo.model_info.model_hash || '无',
             source_hash: modelInfo.source_file_hash || '无',
-            create_time: modelInfo.created_time.split(' ')[0] || '无',
-            onchain: modelInfo.model_info.onchain ? '是' : '否'
+            create_time: modelInfo.created_time || '无',
+            onchain: modelInfo.onchain ? '是' : '否'
         };
         tableData.push(data);
     }

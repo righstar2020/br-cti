@@ -1,7 +1,6 @@
 /*------------------Step 1文件上传------------------------*/
 function updateProgress(fileId, progress ,fail=false) {
     let progressBar = $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-progress`);
-    let taskFileHash = taskFileHashMap[fileId];
     if (progressBar) {
         //semantic进度组件更新
         progressBar.progress({
@@ -23,6 +22,7 @@ function updateProgress(fileId, progress ,fail=false) {
 }
 
 function addFileUploadItem(file) {
+    console.log("file:",file);
     // 克隆模板
     const uploadFileItem = document.getElementById("upload-file-template").cloneNode(true);
     // 移除模板的 display: none 样式
@@ -35,8 +35,8 @@ function addFileUploadItem(file) {
     uploadFileItem.querySelector('.upload-data-item-delete-btn').setAttribute('data-file-id', fileId);
 
     // 修改内容
-    uploadFileItem.querySelector('.upload-data-item-name').innerText = file.name;
-    uploadFileItem.querySelector('.upload-data-item-hash').innerText = ''; // 初始为空，稍后更新
+    uploadFileItem.querySelector('.upload-data-item-name').innerText = truncateText(file.name,15);
+    uploadFileItem.querySelector('.upload-data-item-hash').innerText = file.hash==undefined?'':file.hash;
     uploadFileItem.querySelector('.upload-data-item-size').innerText = formatSize(file.size);
 
     // 添加到目标元素
@@ -44,6 +44,8 @@ function addFileUploadItem(file) {
     uploadDataList.append(uploadFileItem);
     //触发步骤数据更新
     stepInitStatusList[1] = 0;
+    //添加到taskFileIds
+    taskFileIds.push(fileId);
     return fileId;
 }
 
@@ -77,7 +79,6 @@ function uploadFiles(files) {
     for (let i = 0; i < files.length; i++) {
         //添加文件上传item
         var fileId = addFileUploadItem(files[i]);
-        taskFileIds.push(fileId);
         // 上传单个文件
         uploadSingleFile(fileId,files[i]);
     }

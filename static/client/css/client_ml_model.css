@@ -120,7 +120,7 @@
     position: relative;
 }
 .client-model-process-step-toolbar .client-model-process-step-prev{
-    width: 100px;
+    width: 200px;
     cursor: pointer;
 }
 .client-model-process-prev .client-model-process-step-prev-title{
@@ -316,8 +316,53 @@
     padding-bottom: 12px;
 }
 
+/* step2: 模型信息处理配置 */
+.model-info-data-list-box .model-info-data-item {
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px;
+    margin-bottom: 10px;
+}
 
+.model-info-data-item .model-info-data-item-body {
+    padding: 20px 10px;
+}
 
+.model-info-data-item .upload-data-item-icon {
+    margin: 0;
+    margin-right: 0px;
+}
+
+.model-info-data-item .upload-data-item-name {
+    max-width: 25%;
+    min-width: 20%;
+}
+
+.model-info-data-item .upload-data-item-hash {
+    width: 26%;
+}
+
+.model-info-data-item .upload-data-item-size {
+    width: 13%;
+}
+
+.model-info-data-item .model-info-data-item-status {
+    width: 22%;
+}
+
+.model-info-data-config {
+    width: 100%;
+}
+
+.model-info-data-config-title {
+    padding: 10px;
+    width: 100%;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.model-info-data-config-box {
+    padding: 5px 12px;
+    padding-bottom: 12px;
+}
 
 /* 底部box */
 .client-model-bottom-box{

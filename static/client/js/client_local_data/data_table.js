@@ -5,6 +5,7 @@ var exampleTagsList = ['卫星网络','SDN网络','5G网络',
                        '恶意软件','DDoS','钓鱼','僵尸网络','APT','IOT'];//tags表示涉及的攻击技术
 var exampleIOCsList = ['IP','端口','流特征','HASH','URL','payload'];//iocs表示沦陷指标
 var clientDataTableInstance = null;
+var clientDataSourceTableInstance = null;
 var clientStixDataList = [{
     "cti_id": "cti_001",
     "cti_hash": "15cbac", 

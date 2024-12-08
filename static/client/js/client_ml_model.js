@@ -1,6 +1,14 @@
 var clientServerHost = localStorage.getItem("clientServerHost");
+var blockchainServerHost = localStorage.getItem("blockchainServerHost");
+var ipfsServerHost = localStorage.getItem("ipfsServerHost");
 if (clientServerHost == null) {
 	clientServerHost = "http://127.0.0.1:5000";
+}
+if (blockchainServerHost == null) {
+	blockchainServerHost = "http://127.0.0.1:7777";
+}
+if (ipfsServerHost == null) {
+	ipfsServerHost = "http://127.0.0.1:8080";
 }
 /*-------------------全局变量------------------------*/
 var taskFileIds = []; //上传文件id列表
@@ -106,8 +114,8 @@ function updateHeaderPanelUI(taskId,total_model_num,processed_model_num,processi
 /*-------------------面板UI更新 end------------------------*/
 /*------------------step步骤函数------------------------*/
 var currentStep = 0;
-var stepInitStatusList = [0, 0, 0]; // 保持与步骤对应
-var processStepTitleList = ["数据集上传", "模型训练", "模型上链"];
+var stepInitStatusList = [0, 0, 0, 0]; // 保持与步骤对应
+var processStepTitleList = ["数据集上传", "模型训练", "模型信息配置","模型上链"];
 //上一步
 function prevStep(){
     if(currentStep <= 0){
@@ -143,16 +151,29 @@ function updateStep(step) {
         $(`.client-model-process-step-toolbar .client-model-process-step-prev i`).removeClass('left arrow icon');
         $(`.client-model-process-step-toolbar .client-model-process-step-prev i`).addClass('bars icon');
     }
-
+    if(step == 0){
+        showDataSourceTable(true);
+        showModelDataTable(false);
+    }
+    else{
+        showDataSourceTable(false);
+        showModelDataTable(true);
+    }
     // 修正步骤初始化逻辑
     if (step == 1 && stepInitStatusList[1] == 0) {
+        
         initStepTrainModel();
         stepInitStatusList[1] = 1;
     }
-    if (step == 2 && stepInitStatusList[2] == 0) {
-        initStepUpchainModel();
+    if(step == 2 && stepInitStatusList[2] == 0){
+        initStepProcessModelInfo();
         stepInitStatusList[2] = 1;
     }
+    if (step == 3 && stepInitStatusList[3] == 0) {
+        initStepUpchainModel();
+        stepInitStatusList[3] = 1;
+    }
+    
 }
 //任务状态更新
 function updateTaskFinishStepStatus(taskFileHash,step="0",status=false){

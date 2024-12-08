@@ -1,4 +1,4 @@
-{{define "tab_traffic_model_content"}}
+{{define "tab_model_content"}}
 <div class="client-model-traffic-box">
     <div class="client-model-process-step-toolbar">
         <div onclick="prevStep()" class="client-model-process-step-prev" >
@@ -70,15 +70,15 @@
                                 <label>模型类型</label>
                                 <div class="ui selection dropdown train-type">
                                     <i class="dropdown icon"></i>
-                                    <div class="default text">恶意流量</div>
+                                    <div class="default text">自动识别</div>
                                     <input class="small" type="hidden" name="train_type">
                                 </div>
                             </div>
                             <div class="field">
-                                <label>流量特征字段</label>
+                                <label>特征字段</label>
                                 <div class="ui action input">
-                                    <input type="text" name="traffic_feature_field" value="">
-                                    <div data-process-id="" onclick="getTrafficFeatureField(this)" class="get-traffic-feature-field-btn ui blue left icon button">
+                                    <input type="text" name="feature_field" value="">
+                                    <div data-process-id="" onclick="queryFeatureField(this)" class="get-traffic-feature-field-btn ui blue left icon button">
                                       <i class="check icon"></i>
                                     </div>
                                 </div>
@@ -86,7 +86,7 @@
                             <div class="field">
                                 <label>分类标签</label>
                                 <select  class="ui dropdown tiny" name="train_label">
-                                  <option value="">选择划分情报的标签字段</option>
+                                  <option value="">选择训练标签列</option>
                                 </select>
                             </div>
                             <div class="field">
@@ -112,10 +112,94 @@
                         
                     </div>
                 </div>
+                <div id="train-process-monitor-0" class="train-process-monitor" style="display: none;">
+                    <div class="train-process-monitor-title">
+                        模型训练监控
+                    </div>
+                    <div class="train-process-monitor-box">
+                        <div class="train-process-monitor-item monitor-train-step" style="display: none;">
+
+                        </div>
+                        <div class="train-process-monitor-item monitor-evaluate-step" style="display: none;">
+
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <!--模型信息处理-->
     <div data-step="2" class="client-model-process-step-box" style="display: none;">
+        <div class="model-info-data-list-box">
+            <div data-finish="false" data-process-id="" id="model-info-data-item-template" style="display: none;" class="model-info-data-item upload-data-item">
+                <div class="model-info-data-item-progress ui blue active top attached progress">
+                    <div class="bar"></div>
+                </div>
+                <div class="model-info-data-item-body upload-data-item-body">
+                    <div class="upload-data-item-icon">
+                        <i class="file icon"></i>
+                    </div>
+                    <div class="upload-data-item-name">mock.csv</div>
+                    <div class="upload-data-item-hash">a1bc52</div>
+                    <div class="upload-data-item-size">1.2MB</div>
+                    <div class="model-info-data-item-status">配置中</div>
+                    <div class="upload-data-item-tools">
+                        <button data-process-id="" onclick="startModelInfoProcess(this)" class="ui blue button mini model-info-data-item-start-btn">
+                            开始处理
+                        </button>
+                    </div>
+                </div>
+                <div class="model-info-data-config">
+                    <div class="model-info-data-config-title">
+                        模型信息配置
+                    </div>
+                    <div class="model-info-data-config-box">
+                        <form data-process-id="" class="model-info-data-config-form ui form small">
+                            <div class="field">
+                                <label>模型名称</label>
+                                <input type="text" name="model_name" placeholder="请输入模型名称">
+                            </div>
+                            <div class="field">
+                                <label>模型描述</label>
+                                <textarea name="description" rows="2" placeholder="请输入模型描述"></textarea>
+                            </div>
+                            <div class="field">
+                                <label>模型标签</label>
+                                <select multiple="" class="ui dropdown model-tags">
+                                    <option value="">选择模型标签</option>
+                                    <option value="ddos">DDoS</option>
+                                    <option value="5g">5G</option>
+                                    <option value="sdn">SDN</option>
+                                    <option value="satellite">卫星网络</option>
+                                    <option value="iot">物联网</option>
+                                    <option value="other">其他</option>
+                                </select>
+                                <input type="hidden" name="tags">
+                            </div>
+                            <div class="field">
+                                <label>开源设置</label>
+                                <div class="ui selection dropdown open-source">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">选择是否开源</div>
+                                    <input type="hidden" name="open_source">
+                                    <div class="menu">
+                                        <div class="item" data-value="1">开源</div>
+                                        <div class="item" data-value="0">不开源</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>模型价值</label>
+                                <input type="number" name="value" placeholder="请输入模型价值">
+                            </div>
+                            <button onclick="event.preventDefault(); deleteModelInfoDataItem(this)" class="ui red mini button model-info-data-item-delete-btn">删除</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div data-step="3" class="client-model-process-step-box" style="display: none;">
         <div class="model-upchain-data-list-box">
             <div data-finish="false" data-process-id="" id="model-upchain-data-item-template" style="display: none;"  class="model-upchain-data-item upload-data-item" >
                 <div class="model-upchain-data-item-progress ui blue active top attached progress">

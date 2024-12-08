@@ -287,14 +287,17 @@ $('.cti-detail-toolbar button[data-id]').on('click', function(event) {
     }, function(password, index){
         layer.close(index);
         // 修改：使用正确的参数调用purchaseCTI函数
+        var loadIndex = layer.load(2);
         purchaseCTI(walletId, password, ctiId)
             .then(function(result){
+                layer.close(loadIndex);
                 layer.msg('购买成功');
                 setTimeout(function(){
                     closeParentLayer()
                 }, 1000);
             })
             .catch(function(error){
+                layer.close(loadIndex);
                 layer.msg('购买失败: ' + error);
             });
     });

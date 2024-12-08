@@ -210,7 +210,9 @@ function createOnchainAccount(){
         layer.msg('账户名称不能为空!',{'time':1600})
         return
     }
+    var loadIndex = layer.load(2);
     registerOnchainAccount(walletId, accountName).then(function(response){
+        layer.close(loadIndex);
         console.log(response)
         if(response.code == 200){
             layer.msg('链上账户创建成功!',{'time':1600},function(){
@@ -220,6 +222,7 @@ function createOnchainAccount(){
             layer.msg('链上账户创建失败!<br>'+response.message,{'time':1600})
         }
     }).catch(function(error){
+        layer.close(loadIndex);
         console.log(error)
         layer.msg('网络异常!<br>'+error,{'time':1600})
     })
