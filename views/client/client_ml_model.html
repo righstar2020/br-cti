@@ -15,6 +15,7 @@
     <script type="text/javascript" src="/static/assets/js/common.js?v=318"></script>
     <link rel="stylesheet" href="/static/custom/layui_custom.css"/>
     <link rel="stylesheet" href="/static/client/css/client_ml_model.css"/>
+    <link rel="stylesheet" href="/static/client/css/client_ml_monitor.css"/>
     <link rel="stylesheet" href="/static/custom/semantic_custom.css"/>
     <!---semantic引入--->
     <link rel="stylesheet" type="text/css" href="/static/assets/libs/semantic/semantic.min.css">
@@ -154,15 +155,16 @@
 <script type="text/javascript" src="/static/client/js/client_ml_request.js"></script>
 <script type="text/javascript" src="/static/client/js/client_ml_model.js"></script>
 <script type="text/javascript" src="/static/client/js/client_ml_model/file_upload.js"></script>
+<script type="text/javascript" src="/static/client/js/client_ml_model/train_monitor.js"></script>
 <script type="text/javascript" src="/static/client/js/client_ml_model/train_process.js"></script>
 <script type="text/javascript" src="/static/client/js/client_ml_model/info_process.js"></script>
 <script type="text/javascript" src="/static/client/js/client_ml_model/upchain_process.js"></script>
-<script type="text/javascript" src="/static/client/js/client_ml_model/evaluation_process.js"></script>
 <script type="text/javascript" src="/static/client/js/client_ml_model/data_source_table.js"></script>
 <script type="text/javascript" src="/static/client/js/client_ml_model/data_table.js"></script>
-
-
 <script>
+var layer = layui.layer;
+var $ = layui.$;
+
 //检测网络状态
 CheckNetworkStatus()
 function CheckNetworkStatus(){
@@ -203,10 +205,7 @@ function closeParentLayer(){
     parent.layer.close(index); // 再执行关闭
 }
 var currentLayerIndex = null
-layui.use(['layer'], function(){
-    var layer = layui.layer
-    $ = layui.$;
-})
+
 
 function openParentWindow(url) {
     var parentLayer = window.parent.layer;

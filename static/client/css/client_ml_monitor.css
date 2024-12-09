@@ -1,0 +1,165 @@
+.train-process-monitor {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 15px 0;
+    padding: 15px;
+}
+
+.train-process-monitor-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.monitor-header-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    min-width: 200px;
+    flex: 1;
+}
+
+.monitor-header-item .label {
+    color: #666;
+    font-size: 14px;
+}
+
+.monitor-header-item .value {
+    color: #333;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.train-process-monitor-box {
+    display: grid;
+    grid-template-columns: 250px 1fr 1fr;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+.monitor-item {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 15px;
+}
+
+.monitor-item-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+}
+
+.monitor-item-content {
+    overflow-y: auto;
+}
+
+/* 模型详情样式 */
+.model-details .detail-row {
+    display: flex;
+    padding: 8px;
+    border-bottom: 1px dashed #eee;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.model-details .detail-row .value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 70%;
+}
+
+.model-details .detail-row:last-child {
+    border-bottom: none;
+}
+
+.model-details .label {
+    color: #666;
+    font-size: 14px;
+}
+
+.model-details .value {
+    color: #333;
+    font-weight: 500;
+}
+
+/* 图表容器样式 */
+.chart-container {
+    width: 100%;
+    height: 100%;
+    min-height: 250px;
+}
+
+/* 响应式布局 */
+@media screen and (max-width: 1200px) {
+    .train-process-monitor-box {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+}
+
+/* 修改模型详情布局 */
+.model-details-content {
+    display: grid;
+    /* 三列自适应布局 */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.detail-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.detail-row .label {
+    color: #666;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.detail-row .value {
+    color: #333;
+    font-weight: 500;
+    text-align: left;
+}
+
+/* 响应式布局调整 */
+@media screen and (max-width: 1200px) {
+    .model-details-content {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .model-details-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 模型训练过程图表样式 */
+
+.model-train-step-chart {
+    width: 100%;
+    height: 100%;
+}
+/* 模型评估结果图表样式 */
+.model-evaluate-step-chart {
+    width: 100%;
+    height: 100%;
+}

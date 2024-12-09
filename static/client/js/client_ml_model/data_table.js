@@ -40,9 +40,10 @@ var exampleModelInfo = {
 
 // 添加状态颜色映射
 var modelStatusColorMap = {
-    "训练中": "#9E9E9E",    // 灰色
     "完成": "#285191",      // 蓝色
-    "训练失败": "#ff4500"   // 红色
+    "训练完成": "#87CEEB",    // 浅蓝
+    "评估失败": "#6c757d",  // 蓝灰色
+    "训练失败": "#6c757d"   // 蓝灰色
 };
 //是否显示table
 function showModelDataTable(show=true){
@@ -81,14 +82,19 @@ function renderClientDataTable(clientTableData){
                     }
                     return div;
                 }},
+                {field: 'request_id', title: '请求ID', width: 100},
+                {field: 'create_time', title: '创建日期', width: 180, sort: true},
                 {field: 'model_type', title: '模型类型', width: 100},
-                {field: 'model_algorithm', title: '算法', width: 100},
+                {field: 'model_algorithm', title: '算法', width: 100}, 
                 {field: 'model_framework', title: '框架', width: 100},
-                {field: 'model_features', title: '特征', width: 200},
-                {field: 'model_tags', title: '标签', width: 150},
+                {field: 'model_name', title: '模型名称', width: 100},
+                {field: 'test_size', title: '测试集比例', width: 100},
+                {field: 'training_time', title: '训练时间', width: 100},
                 {field: 'model_hash', title: '模型Hash', width: 100},
                 {field: 'source_hash', title: '文件源', width: 100},
-                {field: 'create_time', title: '创建日期', width: 120, sort: true},
+                {field: 'feature_count', title: '特征数', width: 100},
+                {field: 'rows_count', title: '样本数', width: 100},
+                {field: 'model_size', title: '模型大小', width: 100},
                 {field: 'onchain', title: '上链', width: 80},
                 {fixed: 'right', width: 100, title: '操作', align: 'center', templet: function (d) {
                     return `<a data-model-hash="${d.model_hash}" data-source-hash="${d.source_hash}" onclick="showModelDetail(this)" class="ui basic small custom-blue label">查看详情</a>`;
@@ -115,7 +121,7 @@ function setIntervalQueryClientModelData(){
         //查询当前任务列表是
         Object.values(taskFileHashMap).forEach(function(fileHash){
             console.log("query task fileHash:",fileHash);
-            queryLocalModelData(fileHash);
+            queryLocalModelRecords(fileHash);
         });
 
     }, 100000); //100秒查询一次(默认不自动触发更新)
@@ -130,17 +136,17 @@ function switchDataTableTab(element){
     //设置选中状态
     $(element).addClass('custom-blue');
     //刷新数据
-    refreshDataTable(select_type);
+    refreshModelRecordDataTable(select_type);
 }
 //数据table刷新
-function refreshDataTable(select_type){
+function refreshModelRecordDataTable(select_type){
     //查询当前任务列表是
     Object.values(taskFileHashMap).forEach(function(fileHash){
         queryLocalModelRecords(fileHash);
     });
 }
 function queryLocalModelRecords(fileHash){ 
-   getModelRecordsByHash(fileHash).then(function(data){
+   getModelRecordListByHash(fileHash).then(function(data){
         processLocalModelDataToTableData(fileHash,data);
    }).catch(function(error){
         layer.msg(error,{'time':1200});
@@ -175,10 +181,12 @@ function processLocalModelDataToTableData(sourceHash,modelDataList){
         var data = {
             id: i+1,
             status: modelInfo.status == 'train_failed' ? '训练失败' : 
-                    (modelInfo.status == 'training' ? '训练中' : '完成'),
+                    modelInfo.status == 'train_success' ? '训练完成' :
+                    modelInfo.status == 'evaluate_failed' ? '评估失败' : '完成',
+            request_id: modelInfo.request_id || '无',
             model_type: model_type_map[modelInfo.model_info.model_type] || '无',
-            model_algorithm: modelInfo.model_info.model_algorithm || '无', 
-            model_framework: modelInfo.model_info.model_framework || '无',
+            model_algorithm: modelInfo.model_info.model_algorithm || '无',
+            model_framework: modelInfo.model_info.model_framework || '无', 
             model_features: (modelInfo.model_info.features || []).join(',') || '无',
             model_name: modelInfo.model_info.model_name || '无',
             test_size: modelInfo.model_info.test_size || '无',
@@ -186,7 +194,11 @@ function processLocalModelDataToTableData(sourceHash,modelDataList){
             model_hash: modelInfo.model_info.model_hash || '无',
             source_hash: modelInfo.source_file_hash || '无',
             create_time: modelInfo.created_time || '无',
-            onchain: modelInfo.onchain ? '是' : '否'
+            onchain: modelInfo.onchain ? '是' : '否',
+            request_id: modelInfo.request_id || '无',
+            feature_count: modelInfo.model_info.feature_count || '无',
+            rows_count: modelInfo.model_info.rows_count || '无',
+            model_size: formatSize(modelInfo.model_info.model_size) || '无'
         };
         tableData.push(data);
     }
@@ -194,7 +206,8 @@ function processLocalModelDataToTableData(sourceHash,modelDataList){
     if (taskDataTableMap[sourceHash]==null||taskDataTableMap[sourceHash]==undefined){
         taskDataTableMap[sourceHash] = [];
     }
-
+    //反序
+    tableData.reverse();
     //更新taskDataTableMap
     taskDataTableMap[sourceHash] = tableData;
     //更新allTaskDataTable

@@ -60,12 +60,20 @@ function updateModelUpchainDataListHtml(){
         //设置模型类型下拉框
         $(`#model-upchain-data-${processId} .ui.dropdown.upchain-type`).dropdown({
             values: [{
-                name: '流量模型',
-                value: 'traffic_model',
-                selected: true
+                name: '分类模型',
+                value: 1,
+                selected: false
             },{
-                name: '应用层模型', 
-                value: 'app_model',
+                name: '回归模型',
+                value: 2,
+                selected: false
+            },{
+                name: '聚类模型',
+                value: 3, 
+                selected: false
+            },{
+                name: 'NLP模型',
+                value: 4,
                 selected: false
             }]
         });

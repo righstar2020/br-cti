@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Model详情</title>
+    <link rel="stylesheet" href="/static/assets/libs/layui/css/layui.css"/>
+   <!-- js部分 -->
+    <script type="text/javascript" src="/static/assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/layui/layui.js"></script>
+    <script type="text/javascript" src="/static/assets/js/common.js?v=318"></script>
+    <script type="text/javascript" src="/static/client/js/client_request.js"></script>
+    <style>
+        html{
+            overflow: auto; /* 或者使用 overflow-y: scroll; 来允许垂直滚动 */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE 和 Edge */
+        }
+
+        /* 隐藏Webkit核心浏览器（如Chrome, Safari等）中的滚动条 */
+        html::-webkit-scrollbar {
+            display: none;
+        }
+        /** 应用快捷块样式 */
+        .model-detail-box{
+            width: 100%;
+            min-height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            margin-top: 80px;
+        }
+        /*工具栏*/
+        .model-detail-toolbar{
+            position: fixed;
+            top:0;
+            height: 75px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+            padding: 10px 0;
+            background-color: white;
+            border-bottom: 1px solid gainsboro;
+        }
+        .model-detail-toolbar .model-info{
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+        }
+        .model-info span{
+            margin-right: 10px;
+        }
+        .model-info span a{
+            color: blue;
+        }
+        .model-detail-toolbar button{
+            margin-left: 10px;
+        }
+        /*Model详细表格*/
+        .model-detail-title{
+            width: 100%;
+            margin-left: 10px;
+            padding: 10px;
+            line-height: 30px;
+            font-size: 18px;
+            font-weight: 800;
+            border-left: #285191 3px solid ;
+        }
+        .model-detail-table{
+            width: 100%;
+            margin: 10px 0;
+            min-height: 300px;
+        }
+        .model-detail-table .model-detail-item{
+            width: 94%;
+            margin: 10px auto;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+        }
+        .model-detail-item .model-detail-label{
+            display: inline-block;
+            width: 80px;
+            text-align: right;
+            font-weight: bold;
+            padding: 10px;
+            overflow: hidden;
+        }
+        .model-detail-item .model-detail-content{
+            display: inline-block;
+            width: 80%;
+            text-align: left;
+            background-color: #ebebe4;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="model-detail-box">
+    <div class="model-detail-toolbar" style="display: none;">
+        
+        <div class="model-info">
+            <span class="model-info-value">
+                当前情报所需积分:
+                <span>0</span>
+            </span>
+            <span class="model-user-value">
+                我的积分:
+                <span>0</span>
+            </span>
+            
+        </div>
+        <button data-value="0" data-id="0" style="background-color: #285191;" class="layui-btn layui-btn-sm">获取授权</button>
+    </div>
+    <div class="model-detail-table">
+    </div>
+    
+     
+</div>
+
+<script>
+//layui
+var $ = layui.jquery;
+var layer = layui.layer;
+//----------------------------------信息初始化------------------------------------------------
+document.addEventListener('DOMContentLoaded', function() {
+    initModelDetailPage();
+});
+function initModelDetailPage(){
+    queryUserInfo();
+    queryModelDetailData();
+}
+// 获取路径中的id
+function getUrlParam(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return decodeURI(r[2]); 
+    return null;
+}
+
+function queryUserInfo(){
+    var userId = localStorage.getItem("userWalletId")
+    if (userId==null){
+        layer.msg('用户ID不存在,请登录钱包',{'time':1000})
+        return;
+    }
+    getUserInfo(userId).then(function(data){
+        console.log("用户信息:", data);
+        if(data != null){
+            updateUserInfoUI(data)
+        }
+    }).catch(function(error){
+        console.log(error)
+        layer.msg('获取用户信息失败!<br>'+error,{'time':1600})
+    })
+}
+function queryModelDetailData(){
+    var model_id = getUrlParam('id');
+    if(model_id!=undefined&&model_id!=null&&model_id!=''){
+        var loadIndex = layer.load(1);
+        queryModelDataById(model_id).then(function(data){
+            console.log("Model detail data:", data);
+            updateModelDetailUI(data);
+            layer.close(loadIndex);
+        }).catch(function(error){
+            layer.close(loadIndex);
+            console.error("Failed to get Model detail data:", error);
+        });
+    }else{
+        layer.msg('Model编号不存在');
+    }
+}
+//-------------------------------更新UI-----------------------------------------------------
+
+//更新Model详情UI
+function updateModelDetailUI(modelData){
+    var detailTable = $('.model-detail-table');
+    detailTable.empty();
+    
+    // 定义要显示的字段和对应的中文标签
+    var fields = [
+        {key: 'model_id', label: '模型编号'},
+        {key: 'model_hash', label: '模型哈希'},
+        {key: 'model_name', label: '模型名称'}, 
+        {key: 'model_creator_user_id', label: '创建者ID'},
+        {key: 'model_data_type', label: '数据类型', formatter: function(val) {
+            return val == 1 ? '流量(数据集)' : '情报(文本)';
+        }},
+        {key: 'model_type', label: '模型类型', formatter: function(val) {
+            var types = {1: '分类模型', 2: '回归模型', 3: '聚类模型', 4: 'NLP模型'};
+            return types[val] || val;
+        }},
+        {key: 'model_algorithm', label: '模型算法'},
+        {key: 'model_train_framework', label: '训练框架'},
+        {key: 'model_open_source', label: '是否开源', formatter: function(val) {
+            return val == 1 ? '是' : '否';
+        }},
+        {key: 'model_features', label: '模型特征'},
+        {key: 'model_tags', label: '标签'},
+        {key: 'model_description', label: '描述'},
+        {key: 'model_size', label: '模型大小'},
+        {key: 'model_data_size', label: '训练数据大小'},
+        {key: 'model_data_ipfs_hash', label: '训练数据IPFS地址'},
+        {key: 'model_value', label: '模型价值'},
+        {key: 'model_ipfs_hash', label: '模型IPFS地址'},
+        {key: 'ref_cti_id', label: '关联情报ID'}
+    ];
+
+    // 遍历字段生成表格内容
+    fields.forEach(function(field) {
+        var value = modelData[field.key];
+        
+        // 处理数组类型的值
+        if(Array.isArray(value)) {
+            value = value.join(', ');
+        }
+        
+        // 处理数据大小,转换为KB
+        if(field.key === 'data_size') {
+            value = (value/1024).toFixed(2) + ' KB';
+        }
+
+        var itemHtml = `
+            <div class="model-detail-item">
+                <div class="model-detail-label">
+                    ${field.label}:
+                </div>
+                <div class="model-detail-content">
+                    ${field.formatter ? field.formatter(value) : value || '暂无数据'}
+                </div>
+            </div>
+        `;
+        
+        detailTable.append(itemHtml);
+    });
+    //更新情报积分
+    var modelValueSpan = $('.model-info-value span');
+    modelValueSpan.text(modelData.value);
+    //更新购买按钮
+    var buyButton = $('.model-detail-toolbar button');
+    buyButton.data('value',modelData.value);
+    buyButton.data('id',modelData.model_id);
+    //显示头部信息面板
+    showHeaderInfoPanel(true);
+}
+//更新用户积分信息
+function updateUserInfoUI(userInfo){
+    var userValueSpan = $('.model-user-value span');
+    userValueSpan.text(userInfo.user_value);
+    //显示头部信息面板
+    showHeaderInfoPanel(true);
+}
+//显示头部信息面板
+function showHeaderInfoPanel(show){
+    var headerInfoPanel = $('.model-detail-toolbar');
+    if(show){
+        headerInfoPanel.show();
+    }else{
+        headerInfoPanel.hide();
+    }
+}
+//-------------------------------其他窗口函数------------------------------------------------
+function getWindowLayerIndex(){
+    var layerIndex = parent.layer.getFrameIndex(window.name); 
+    return layerIndex;
+}
+function closeParentLayer(){
+    var index = parent.layer.getFrameIndex(window.name); // 先得到当前 iframe 层的索引
+    parent.layer.close(index); // 再执行关闭
+}
+$('.model-detail-toolbar button[data-id]').on('click', function(event) {
+    var modelId = $(this).data('id'); // 获取data-id属性的值
+    layer.prompt({
+        title: '请输入钱包密码',
+        formType: 1 // 密码输入框
+    }, function(password, index){
+        layer.close(index);
+        // 调用purchaseModel函数
+        purchaseModel(localStorage.getItem('walletId'), password, modelId)
+            .then(function(result){
+                layer.msg('购买成功');
+                setTimeout(function(){
+                    closeParentLayer()
+                }, 1000);
+            })
+            .catch(function(error){
+                layer.msg('购买失败: ' + error);
+            });
+    });
+});
+
+</script>
+</body>
+</html>

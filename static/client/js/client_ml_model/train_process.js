@@ -41,6 +41,7 @@ function updateTrainProcessDataListHtml(){
         // 添加:更新训练监控div的id
         const monitorDiv = trainProcessDataItem.querySelector('.train-process-monitor');
         monitorDiv.id = `train-process-monitor-${processId}`;
+        monitorDiv.setAttribute('data-process-id', processId);
         //设置文件名
         trainProcessDataItem.querySelector('.upload-data-item-name').innerText = $(item).find('.upload-data-item-name').text();
         //设置hash
@@ -214,9 +215,23 @@ function startTrainProcessData(button){
     if(trainProcessingStatusMap[processId] == 'finish'){
         return;
     }
-    //保存配置并开始训练
-    startTrainProcessDataWithConfig(processId);
+    if(isRestartTrainProcessData(processId)){
+        setTrainProcessRestartItemUI(processId);
+        delete modelTrainRequestIdMap[processId];
+    }else{
+        //保存配置并开始训练
+        startTrainProcessDataWithConfig(processId);
+    }
 }
+
+//判断是否重新训练
+function isRestartTrainProcessData(processId){
+    if(modelTrainRequestIdMap[processId] != null && modelTrainRequestIdMap[processId] != undefined){
+        return true;
+    }
+    return false;
+}
+
 var modelTrainRequestIdMap = {};
 //保存配置并开始训练
 function startTrainProcessDataWithConfig(processId){
@@ -233,6 +248,23 @@ function startTrainProcessDataWithConfig(processId){
     
     //开始训练
     setTrainProcessProcessingItemUI(processId);
+    //更新模型头部信息
+    updateModelHeaderInfo(processId,{
+        "modelId": "未知",
+        "modelType": "未知",
+        "createTime": new Date().toLocaleString()
+    });
+    //更新模型详细信息
+    updateModelDetailsInfo(processId,{
+        "source_file_hash": taskFileHashMap[processId],
+        "model_hash": "未知",
+        "target_column": trainProcessDataConfig["label_column"],
+        "train_ratio":1 - trainProcessDataConfig["test_ratio"], 
+        "test_ratio": trainProcessDataConfig["test_ratio"],
+        "feature_count": "未知",
+        "rows_count": "未知",
+    });
+    //创建模型训练任务
     createModelTrainTask(taskFileHashMap[processId],trainProcessDataConfig).then(function(data){
         console.log("创建模型训练任务响应:", data);
         const requestId = data.request_id;
@@ -243,6 +275,10 @@ function startTrainProcessDataWithConfig(processId){
             $(`.train-process-data-item[data-process-id="${processId}"] .train-process-data-item-status`).
             text(`${current_step}/${total_step}`);
         }
+        //更新模型头部信息
+        updateModelHeaderInfo(processId,{
+            "modelId": requestId,
+        });
         //轮询训练进度
         pollingTrainProcessProgress(processId);
 
@@ -278,12 +314,19 @@ function getTrainProcessProgress(processId){
         
         // 添加: 根据stage更新监控显示
         updateMonitorByStage(processId, stage);
-        
+        //更新模型状态
+        updateModelHeaderInfo(processId,{
+            "status": stage+` (${current_step}/${total_step})`
+        });
         layer.msg(message,{'time':1200});
         const progressBar = $(`.train-process-data-item[data-process-id="${processId}"] .train-process-data-item-progress`);
         if(progressBar && progress != null){
             progressBar.progress({
                 percent: progress
+            });
+        }else{
+            progressBar.progress({
+                percent: Math.round(100*current_step/total_step)
             });
         }
         
@@ -302,7 +345,7 @@ function getTrainProcessProgress(processId){
         // 处理完成状态
         if(progress == 100){
             $(`.train-process-data-item[data-process-id="${processId}"] .train-process-data-item-status`)
-                .text(`训练完成 (${total_step}/${total_step})`);
+                .text(`完成 (${total_step}/${total_step})`);
             setTrainProcessFinishItemUI(processId);
             updateTaskFinishStepStatus(taskFileHashMap[processId], "2", true);
         }
@@ -312,8 +355,7 @@ function getTrainProcessProgress(processId){
         }
     }).catch(function(error) {
         console.log(error);
-
-        setTrainProcessFailedItemUI(processId,error);
+        setTrainProcessFailedItemUI(processId,"请求失败");
     });
 }
 
@@ -331,11 +373,16 @@ const PROCESS_STEPS = {
 // 添加: 根据阶段更新监控显示的函数
 function updateMonitorByStage(processId, stage) {
     switch(stage) {
-        case PROCESS_STEPS.MODEL_TRAINING:
-            showTrainMonitorStep(processId);
+        
+        case PROCESS_STEPS.MODEL_TRAINING: //训练阶段
+            showModelHeaderInfo(processId);
+            showModelDetailsInfo(processId);
+            showTrainResultMonitor(processId);
             break;
-        case PROCESS_STEPS.MODEL_EVALUATION:
+        case PROCESS_STEPS.MODEL_EVALUATION: //最后一个阶段
+            showTrainResultMonitor(processId);
             showEvaluateMonitorStep(processId);
+            queryAndRefreshModelDetailsInfo(processId);
             break;
         default:
             console.warn(`当前阶段 ${stage} 无需显示监控界面`);
@@ -355,7 +402,7 @@ function hideAllMonitors(processId) {
     }
 }
 
-//训练开始设置itemUI
+//训练前设置itemUI
 function setTrainProcessStartItemUI(processId){
     const item = $(`.train-process-data-item[data-process-id="${processId}"]`);
     item.find('.train-process-data-item-start-btn').text('开始训练');
@@ -364,7 +411,24 @@ function setTrainProcessStartItemUI(processId){
     });
 }
 
-//训练中设置itemUI
+//重新配置设置itemUI
+function setTrainProcessRestartItemUI(processId){
+    const item = $(`.train-process-data-item[data-process-id="${processId}"]`);
+    item.find('.train-process-data-item-start-btn').text('开始训练');
+    item.attr('data-finish','false');
+    item.find('.train-process-data-config').show();
+    //进度条
+    const progressBar = $(`.train-process-data-item[data-process-id="${processId}"] .train-process-data-item-progress`);
+    progressBar.progress({
+        percent: 0
+    });
+    // 隐藏训练监控区域
+    item.find('.train-process-monitor').hide();
+    item.find('.train-process-data-config').show();
+}
+
+
+//训练开始设置itemUI
 function setTrainProcessProcessingItemUI(processId){
     const item = $(`.train-process-data-item[data-process-id="${processId}"]`);
     trainProcessingStatusMap[processId] = 'processing';
@@ -373,6 +437,12 @@ function setTrainProcessProcessingItemUI(processId){
     item.find('.train-process-data-config').hide();
     // 显示训练监控区域
     item.find('.train-process-monitor').show();
+    //重新设置进度条
+    const progressBar = $(`.train-process-data-item[data-process-id="${processId}"] .train-process-data-item-progress`);
+    progressBar.progress({
+        percent: 0
+    });
+   
 }
 
 //训练失败设置itemUI
@@ -383,12 +453,14 @@ function setTrainProcessFailedItemUI(processId,error=""){
     item.find('.train-process-data-item-start-btn').text('重新训练');
     clearInterval(processPollingIntervalMap[processId]);
     delete processPollingIntervalMap[processId];
-    item.find('.train-process-data-config').show();
-    // 隐藏训练监控区域
-    item.find('.train-process-monitor').hide();
     layer.msg(error,{'time':2000});
-    item.find('.train-process-data-config').show();
+    // item.find('.train-process-data-config').show();
+    // // 隐藏训练监控区域
+    // item.find('.train-process-monitor').hide();
+    // item.find('.train-process-data-config').show();
 }
+
+
 
 //训练完成设置itemUI
 function setTrainProcessFinishItemUI(processId){
@@ -401,6 +473,7 @@ function setTrainProcessFinishItemUI(processId){
     item.find('.train-process-data-item-start-btn').on('click',function(){
         nextStep();
     });
-    queryLocalModelData(taskFileHashMap[processId]);
+    queryLocalModelRecords(taskFileHashMap[processId]);
+    
 }
 /*------------------Setp 2 MODEL数据转换 end------------------------*/

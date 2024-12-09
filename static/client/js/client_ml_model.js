@@ -158,6 +158,8 @@ function updateStep(step) {
     else{
         showDataSourceTable(false);
         showModelDataTable(true);
+        //刷新数据
+        refreshModelRecordDataTable("all");
     }
     // 修正步骤初始化逻辑
     if (step == 1 && stepInitStatusList[1] == 0) {
@@ -168,6 +170,7 @@ function updateStep(step) {
     if(step == 2 && stepInitStatusList[2] == 0){
         initStepProcessModelInfo();
         stepInitStatusList[2] = 1;
+        
     }
     if (step == 3 && stepInitStatusList[3] == 0) {
         initStepUpchainModel();

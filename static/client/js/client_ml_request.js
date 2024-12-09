@@ -85,14 +85,14 @@ function getFeatureField(fileHash){
         });
     });
 }
-//查询模型记录
-function getModelRecordsByHash(fileHash){
+//查询模型训练记录列表
+function getModelRecordListByHash(fileHash){
     return new Promise(function(resolve, reject){
         $.ajax({
             type: "POST",
             dataType: "json",
             contentType: "application/json",
-            url: clientServerHost + "/ml/get_model_records_by_hash", 
+            url: clientServerHost + "/ml/get_model_record_list_by_hash", 
             data: JSON.stringify({
                 "file_hash": fileHash
             }),
@@ -154,6 +154,32 @@ function queryTrainProcessProgress(requestId){
                     resolve(response.data);
                 }else{
                     reject("获取训练进度失败: " + response.error);
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                reject(errorThrown);
+            }
+        });
+    });
+}
+
+//获取模型训练记录
+function getModelTrainRecordByRequestId(requestId){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            type: "POST",
+            dataType: "json", 
+            contentType: "application/json",
+            url: clientServerHost + "/ml/get_model_record_by_request_id",
+            data: JSON.stringify({
+                "request_id": requestId
+            }),
+            success: function(response){
+                console.log("获取模型训练结果响应:", response);
+                if(response.code === 200){
+                    resolve(response.data);
+                }else{
+                    reject("获取模型训练结果失败: " + response.error);
                 }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){

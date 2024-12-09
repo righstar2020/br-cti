@@ -112,16 +112,56 @@
                         
                     </div>
                 </div>
-                <div id="train-process-monitor-0" class="train-process-monitor" style="display: none;">
-                    <div class="train-process-monitor-title">
-                        模型训练监控
+                <div data-process-id="" id="train-process-monitor-0" class="train-process-monitor" style="display: none;">
+                    <div class="train-process-monitor-header model-info-header">
+                        <div class="monitor-header-item">
+                            <span class="label">模型ID:</span>
+                            <span class="value">ML-2024001</span>
+                        </div>
+                        <div class="monitor-header-item">
+                            <span class="label">模型类型:</span>
+                            <span class="value">自动选择</span>
+                        </div>
+                        <div class="monitor-header-item">
+                            <span class="label">模型状态:</span>
+                            <span class="value">training</span>
+                        </div>
+                        <div class="monitor-header-item">
+                            <span class="label">创建时间:</span>
+                            <span class="value">2024-01-01 12:00:00</span>
+                        </div>
+                        <div class="monitor-header-item" style="display: none;">
+                            <span class="label">训练用时:</span>
+                            <span class="value">0s</span>
+                        </div>
                     </div>
                     <div class="train-process-monitor-box">
-                        <div class="train-process-monitor-item monitor-train-step" style="display: none;">
-
+                        <div class="monitor-item model-details" style="display: none;">
+                            <div class="monitor-item-title">模型详情</div>
+                            <div class="monitor-item-content model-details-content" >
+                                <div class="detail-row" style="display: none;">
+                                    <span class="label">example:</span>
+                                    <span class="value">12</span>
+                                </div>
+                            
+                                <!-- 模型详细信息将在这里通过JS动态插入 -->
+                            </div>
                         </div>
-                        <div class="train-process-monitor-item monitor-evaluate-step" style="display: none;">
-
+                        <div class="monitor-item model-training" style="display: none;">
+                            <div class="monitor-item-title">训练详情</div>
+                            <div class="monitor-item-content">
+                                <div class="chart-container model-train-step-chart">
+                                    <!-- 训练过程图表将在这里通过JS动态插入 -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="monitor-item model-evaluation" style="display: none;">
+                            <div class="monitor-item-title">模型评估</div>
+                            <div class="monitor-item-content">
+                                <div class="chart-container model-evaluate-step-chart">
+                                    <!-- 评估结果图表将在这里通过JS动态插入 -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
