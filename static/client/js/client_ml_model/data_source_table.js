@@ -43,8 +43,8 @@ var layuiTable = null;
 layui.use('table', function(){
     layuiTable = layui.table;    
     console.log('layuiTable is initialized');  
-    //渲染表格
-    renderClientDataSourceTable([]);
+    // //渲染表格
+    // renderClientDataSourceTable([]);
 });
 
 //更新UI
@@ -72,6 +72,7 @@ function renderClientDataSourceTable(clientTableData){
                 },
                 {field: 'type', title: '类型', width: 100},
                 {field: 'tags', title: 'Tags', width: 100},
+                {field: 'creator', title: '创建者', width: 100},
                 {field: 'source_file_hash', title: 'Hash', width: 100},
                 {field: 'file_size', title: '文件大小', width: 100},
                 {field: 'ipfs_hash', title: 'IPFS地址', width: 100},
@@ -142,12 +143,17 @@ function queryLocalDataSourceData(type="all"){
         layer.msg('用户钱包ID不存在,请先登录钱包!',{'time':1000});
         return;
     }
+    //数据查询中
+    showDataSourceLoading(true);
     queryUserOwnedCTIData(walletId).then(function(data){
         console.log("User owned CTI data:", data);
         processLocalDataSourceDataToTableData(filterDataSourceData(data,type));
-        
+        //数据查询完成
+        showDataSourceLoading(false);
     }).catch(function(error){
         console.error("Failed to query user owned CTI data:", error);
+        //数据查询失败
+        showDataSourceLoading(false);
     });
 }
 
@@ -185,6 +191,7 @@ function processLocalDataSourceDataToTableData(dataSourceDataList){
             status: getDataSourceStatus(dataSourceInfo),
             type: dataSourceInfo.cti_name,
             tags: dataSourceInfo.tags,
+            creator: dataSourceInfo.creator_user_id,
             ipfs_hash: dataSourceInfo.data_source_ipfs_hash,
             source_file_hash: dataSourceInfo.data_source_hash,
             file_size: formatSize(dataSourceInfo.data_size), //string
@@ -203,8 +210,8 @@ function processLocalDataSourceDataToTableData(dataSourceDataList){
 }
 var dataSourceStatusList = ["已上链", "已购买"];
 var dataSourceStatusColorMap = {
-    "已上链": "#285191", // 中蓝
-    "已购买": "#05375d" // 深蓝色
+    "已上链": "#05375d", // 深蓝
+    "已购买": "#409bd3" // 中蓝
 };
 
 function getDataSourceStatus(dataSourceInfo){
@@ -284,6 +291,20 @@ function updateDownloadProgressUI(fileId,dataSourceHash,progress){
     }
     updateProgress(fileId, progress);
 }
+//数据查询中
+function showDataSourceLoading(show=true){
+    console.log("showDataSourceLoading:",show);
+    if (show){
+        $('#client-model-data-source-table').hide();
+        $('.data-source-loading').show();
+       $('[lay-id="client-model-data-source-table"]').hide();
+    }else{
+        $('.data-source-loading').hide();
+        $('#client-model-data-source-table').show();
+        $('[lay-id="client-model-data-source-table"]').show();
+    }
+}
+
 //-----------------------------------------------窗口操作-----------------------------------------------
 //查看详情
 function showDataSourceDetail(element){

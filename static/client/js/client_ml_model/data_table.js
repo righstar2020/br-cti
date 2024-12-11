@@ -73,8 +73,8 @@ function renderClientDataTable(clientTableData){
         clientDataTableInstance = layuiTable.render({
             elem: '#client-model-data-table',
             cols: [[ //标题栏
-                {field: 'id', title: 'ID', width: 50},
-                {field: 'status', title: '状态', width: 100, align: 'center', sort: true, templet: function (d) {
+                {field: 'id', title: 'ID', width: 70},
+                {field: 'status', title: '状态', width: 80, align: 'center', sort: true, templet: function (d) {
                     var div = `<a class="ui small label">未知</a>`;
                     var color = modelStatusColorMap[d.status];
                     if (color != null) {
@@ -88,7 +88,7 @@ function renderClientDataTable(clientTableData){
                 {field: 'model_algorithm', title: '算法', width: 100}, 
                 {field: 'model_framework', title: '框架', width: 100},
                 {field: 'model_name', title: '模型名称', width: 100},
-                {field: 'test_size', title: '测试集比例', width: 100},
+                {field: 'test_size', title: '测试集比例', width: 50},
                 {field: 'training_time', title: '训练时间', width: 100},
                 {field: 'model_hash', title: '模型Hash', width: 100},
                 {field: 'source_hash', title: '文件源', width: 100},
@@ -97,7 +97,7 @@ function renderClientDataTable(clientTableData){
                 {field: 'model_size', title: '模型大小', width: 100},
                 {field: 'onchain', title: '上链', width: 80},
                 {fixed: 'right', width: 100, title: '操作', align: 'center', templet: function (d) {
-                    return `<a data-model-hash="${d.model_hash}" data-source-hash="${d.source_hash}" onclick="showModelDetail(this)" class="ui basic small custom-blue label">查看详情</a>`;
+                    return `<a data-model-hash="${d.model_hash}" data-source-hash="${d.source_hash}" onclick="createModelInfoTask(this)" class="ui basic small custom-blue label">模型上链</a>`;
                 }}
             ]],
             data: clientTableData,
@@ -145,11 +145,13 @@ function refreshModelRecordDataTable(select_type){
         queryLocalModelRecords(fileHash);
     });
 }
+//保存数据
+var modelInfoRecordMap = {};
 function queryLocalModelRecords(fileHash){ 
    getModelRecordListByHash(fileHash).then(function(data){
         processLocalModelDataToTableData(fileHash,data);
    }).catch(function(error){
-        layer.msg(error,{'time':1200});
+        //layer.msg(error,{'time':1200});
    });
 }
 //历史数据map(用于对比数据是否变化)
@@ -201,6 +203,10 @@ function processLocalModelDataToTableData(sourceHash,modelDataList){
             model_size: formatSize(modelInfo.model_info.model_size) || '无'
         };
         tableData.push(data);
+        //保存数据
+        if(data["model_hash"]!=null&&data["model_hash"]!=undefined){
+            modelInfoRecordMap[data["model_hash"]] = data;
+        }
     }
     //初始化
     if (taskDataTableMap[sourceHash]==null||taskDataTableMap[sourceHash]==undefined){
@@ -247,3 +253,28 @@ function showModelDetail(element){
     console.log("sourceHash:",sourceHash);
     openParentWindow(clientServerHost+'/ml/get_model_file_content/'+sourceHash+'/'+modelHash);
 }
+
+//创建上链任务(模型信息)
+function createModelInfoTask(button){
+    var processId = Date.now(); // 使用时间戳作为任务ID
+    var modelHash = $(button).data('model-hash');
+    var sourceFileHash = $(button).data('source-hash');
+    if(modelHash==""||modelHash==undefined||sourceFileHash==""||sourceFileHash==undefined){
+        layer.msg('信息缺失',{'time':1200});
+        return;
+    }
+    if(modelDetailsInfoMap[processId]!=null&&modelDetailsInfoMap[processId]!=undefined){
+        layer.msg('任务已存在',{'time':1200});
+        return;
+    }
+    if(modelInfoRecordMap[modelHash]==null||modelInfoRecordMap[modelHash]==undefined){
+        layer.msg('模型不存在',{'time':1200});
+        return;
+    }
+    //加入任务列表
+    modelDetailsInfoMap[processId]=modelInfoRecordMap[modelHash];
+    taskFileHashMap[processId]=sourceFileHash;
+    //创建模型信息
+    createModelInfoDataHtml(processId,sourceFileHash,modelHash,modelInfoRecordMap[modelHash]);
+}
+

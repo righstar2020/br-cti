@@ -7,6 +7,7 @@ import (
 )
 
 type modelMarketHandler struct {
+	svc service.Service
 }
 
 //IndexHandler Public管理对象

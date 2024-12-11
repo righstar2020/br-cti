@@ -399,7 +399,8 @@ function setCtiUpchainFinishItemUI(processId){
     //设置下一步按钮
     item.find('.cti-upchain-data-item-start-btn').text('完成');
     item.find('.cti-upchain-data-item-start-btn').on('click',function(){
-        nextStep();
+        //关闭父层
+        closeParentLayer();
     });
     //查询本地upchain数据(一次)
     queryLocalUpchainData(taskFileHashMap[processId]);

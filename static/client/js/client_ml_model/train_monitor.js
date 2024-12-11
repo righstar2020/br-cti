@@ -12,6 +12,22 @@ function showTrainMonitor(fileId,show=true){
 }
 
 //-----------------------------------------------分步骤监控-----------------------------------------------
+//------------------------------------------------0.显示阶段提示信息-----------------------------------------------
+var stageInfoMap = {};
+//显示阶段提示信息
+function showStageInfo(processId,stage,stageInfo){
+    let monitorElem = document.getElementById('train-process-monitor-' + processId);
+    let stageInfoElem = monitorElem.querySelector('.stage-info');
+    if(stageInfoElem){
+        if(stageInfoMap[processId]==undefined){
+            stageInfoMap[processId] = {};
+        }
+        if(isKeyNull(stageInfoMap[processId],stage)||stageInfoMap[processId][stage]!=stageInfo){
+            stageInfoMap[processId][stage] = stageInfo;
+            layer.msg(stageInfo, {'time': 2000});
+        }
+    }
+}
 //-----------------------------------------------1.模型头部信息-----------------------------------------------
 //显示模型头部信息
 function showModelHeaderInfo(processId){
@@ -37,6 +53,12 @@ function queryModelHeaderInfo(processId){
         return null;       
     });
 }
+var modelTypeMap = {
+    1:"分类模型",
+    2:"回归模型",
+    3:"聚类模型",
+    4:"NLP模型",
+};
 //更新模型头部信息
 function updateModelHeaderInfo(processId,modelHeaderInfo){
     let monitorElem = document.getElementById('train-process-monitor-' + processId);
@@ -128,13 +150,20 @@ function updateModelDetailsInfo(processId,modelDetailsInfo){
         if(!isKeyNull(modelDetailsInfo,"training_time")){
             modelDetailsInfo.training_time = modelDetailsInfo.training_time + "s";
         }
-        //动态添加模型详细信息
-        addModelDetailsInfo(processId,modelDetailsInfo);
+         //动态添加模型详细信息
+         addModelDetailsInfo(processId,modelDetailsInfo);
+
+        //更新头部信息
+        var modelType = modelTypeMap[modelDetailsInfo.model_type];
+        updateModelHeaderInfo(processId,{
+            "modelType":modelType==undefined?"未知":modelType,
+        });
+       
     }
 }
 //动态添加模型详细信息
 var modelDetailsInfoNameMap = {
-    "model_name": "模型名称",
+    // "model_name": "模型名称",
     "model_algorithm": "模型算法",
     "model_framework": "模型框架", 
     "created_time": "创建时间",
@@ -143,18 +172,21 @@ var modelDetailsInfoNameMap = {
     "rows_count": "样本数", 
     "target_column": "标签列",  
     "model_size": "模型大小",
-    "train_ratio": "训练集比例",
+    // "train_ratio": "训练集比例",
     "test_ratio": "测试集比例",
     "source_file_hash": "源文件哈希",
     "model_hash": "模型哈希",
     "status": "训练状态",
-    "onchain": "上链状态"    
+    // "onchain": "上链状态"    
 };
+//保存模型信息
+var modelDetailsInfoMap = {};
 function addModelDetailsInfo(processId,modelDetailsInfo){
     let monitorElem = document.getElementById('train-process-monitor-' + processId);
     let modelDetailsElem = monitorElem.querySelector('.model-details-content');
     var oldDetailRowList = modelDetailsElem.querySelectorAll('.detail-row');
     var oldDetailsInfo = {};
+    console.log("modelDetailsInfo---------->:",modelDetailsInfo);
     if(modelDetailsElem && modelDetailsInfo){
         //添加旧的信息
         oldDetailRowList.forEach(oldDetailRow => {
@@ -180,6 +212,8 @@ function addModelDetailsInfo(processId,modelDetailsInfo){
                 modelDetailsElem.appendChild(newDetailRow);
             }
         });
+        //保存模型信息
+        modelDetailsInfoMap[processId] = modelDetailsInfo;
     }
 }
 //-----------------------------------------------3.模型训练结果监控-----------------------------------------------
@@ -197,16 +231,41 @@ function showTrainResultMonitor(processId){
         console.error("未找到元素:trainResultElem",processId);
     }
 }
-
+//刷新模型监控
+function refreshTrainMonitor(button){
+    let processId = button.getAttribute('data-process-id');
+    if(processId){
+        updateTrainResultMonitor(processId);
+    }else{
+        console.error("未找到processId");
+    }
+}
+//显示模型训练loading
+function showTrainLoading(processId,show=true){
+    let monitorElem = document.getElementById('train-process-monitor-' + processId);
+    let trainResultElem = monitorElem.querySelector('.model-train-loading');
+    if(trainResultElem){
+        let currentDisplay = trainResultElem.style.display;
+        if(show&&currentDisplay == 'none'){
+            trainResultElem.style.display = 'block';
+        }
+        if(!show&&currentDisplay == 'block'){
+            trainResultElem.style.display = 'none';
+        }
+    }
+}
+var trainMonitorLoopTimer = {};
 //更新模型训练结果监控
 function updateTrainResultMonitor(processId){
     const requestId = modelTrainRequestIdMap[processId];
     if(!requestId) {
         console.error("未找到训练任务ID");
-        layer.msg("未找到训练任务ID",{'time':2000});
         return;
     }
-    
+    if(trainMonitorLoopTimer[processId]!=null){
+        return;
+    }
+    showTrainLoading(processId,true);
     getTrainProcessImage(requestId).then(function(data){
         let monitorElem = document.getElementById('train-process-monitor-' + processId);
         let trainResultElem = monitorElem.querySelector('.model-train-step-chart');
@@ -214,11 +273,16 @@ function updateTrainResultMonitor(processId){
             trainResultElem.innerHTML = `
                 <img src="data:image/${data.image_type};base64,${data.image_base64}" style="width:100%;">
             `;
+            //提示
+            layer.msg("训练结果获取成功",{'time':2000});
+            showTrainLoading(processId,false);
         }
+        trainMonitorLoopTimer[processId] = null;
     }).catch(function(error){
         console.error("获取训练过程图像失败:", error);
         //间隔轮询
-        setTimeout(function(){
+        trainMonitorLoopTimer[processId] = setTimeout(function(){
+            trainMonitorLoopTimer[processId]=null;
             updateTrainResultMonitor(processId);
         },1000);
     });
@@ -241,7 +305,30 @@ function showEvaluateMonitorStep(processId){
         console.error("未找到元素:evaluateStepElem",processId);
     }
 }
-
+//刷新模型评估过程监控
+function refreshEvaluationMonitor(button){
+    let processId = button.getAttribute('data-process-id');
+    if(processId){
+        updateEvaluateMonitorStep(processId);
+    }else{
+        console.error("未找到processId");
+    }
+}
+//显示模型评估loading
+function showEvaluateLoading(processId,show=true){
+    let monitorElem = document.getElementById('train-process-monitor-' + processId);
+    let evaluateStepElem = monitorElem.querySelector('.model-evaluate-loading');
+    if(evaluateStepElem){
+        let currentDisplay = evaluateStepElem.style.display;
+        if(show&&currentDisplay == 'none'){
+            evaluateStepElem.style.display = 'block';
+        }
+        if(!show&&currentDisplay == 'block'){
+            evaluateStepElem.style.display = 'none';
+        }
+    }
+}
+var evaluateMonitorLoopTimer = {};
 //更新模型评估过程监控
 function updateEvaluateMonitorStep(processId){
     const requestId = modelTrainRequestIdMap[processId];
@@ -250,7 +337,10 @@ function updateEvaluateMonitorStep(processId){
         layer.msg("未找到训练任务ID",{'time':2000});
         return;
     }
-    
+    if(evaluateMonitorLoopTimer[processId]!=null){
+        return;
+    }
+    showEvaluateLoading(processId,true);
     getModelEvaluateImage(requestId).then(function(data){
         let monitorElem = document.getElementById('train-process-monitor-' + processId);
         let evaluateStepElem = monitorElem.querySelector('.model-evaluate-step-chart');
@@ -258,11 +348,16 @@ function updateEvaluateMonitorStep(processId){
             evaluateStepElem.innerHTML = `
                 <img src="data:image/${data.image_type};base64,${data.image_base64}" style="width:100%;">
             `;
-        }
+            //提示
+            layer.msg("评估结果获取成功",{'time':2000});
+            showEvaluateLoading(processId,false);
+        }        
+        evaluateMonitorLoopTimer[processId] = null;        
     }).catch(function(error){
         console.error("获取模型评估图像失败:", error);
         //间隔轮询
-        setTimeout(function(){
+        evaluateMonitorLoopTimer[processId]  = setTimeout(function(){
+            evaluateMonitorLoopTimer[processId]=null;
             updateEvaluateMonitorStep(processId);
         },1000);
     });

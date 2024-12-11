@@ -38,26 +38,26 @@
     <div class="model-data-table-box">
         <table class="model-data-table">
             <colgroup>
-                <col width="5%">  <!-- 序号 -->
-                <col width="12%"> <!-- 模型编号 -->
-                <col width="12%"> <!-- 标签 -->
-                <col width="12%"> <!-- 模型类型 -->
-                <col width="12%"> <!-- 训练框架 -->
-                <col width="10%"> <!-- 发布者 -->
-                <col width="10%"> <!-- HASH -->
-                <col width="13%"> <!-- 发布时间 -->
-                <col width="14%"> <!-- 操作 -->
+                <col width="6%">  <!-- 序号列 -->
+                <col width="12%"> <!-- 模型编号列 -->
+                <col width="12%"> <!-- 模型类型列 -->
+                <col width="12%"> <!-- 模型算法列 -->
+                <col width="10%"> <!-- 发布者列 -->
+                <col width="10%"> <!-- 模型HASH列 -->
+                <col width="16%"> <!-- 发布时间列 -->
+                <col width="10%"> <!-- 模型标签列 -->
+                <col width="10%"> <!-- 操作按钮列 -->
             </colgroup>
             <thead>
                 <tr>
                     <th>#</th>
                     <th>模型编号</th>
-                    <th>标签</th>
                     <th>模型类型</th>
-                    <th>训练框架</th>
+                    <th>模型算法</th>
                     <th>发布者</th>
                     <th>HASH</th>
                     <th>发布时间</th>
+                    <th>标签</th>
                     <th>操作</th>   
                 </tr>
             </thead>
@@ -103,8 +103,8 @@ function processModelResponseData(data){
             
             // 处理标签
             let tags = "";
-            if(item.tags && item.tags.length > 0) {
-                tags = item.tags.join(","); 
+            if(item.model_tags && item.model_tags.length > 0) {
+                tags = item.model_tags.join(","); 
             }
             
             return {
@@ -112,7 +112,9 @@ function processModelResponseData(data){
                 modelId: item.model_id,
                 modelHash: item.model_hash,
                 modelType: modelType,
-                tags: tags,
+                modelTags: tags,
+                modelAlgorithm: item.model_algorithm,
+                modelFramework: item.model_train_framework,
                 publisher: item.creator_user_id,
                 createdTime: item.create_time,
                 value: item.value
@@ -150,10 +152,12 @@ function renderTable(response) {
             <td>${item.id}</td>
             <td>${item.modelId}</td>
             <td>${item.modelType}</td>
-            <td>${item.tags}</td>
-            <td>${truncateString(item.publisher, 10)}</td>
-            <td>${truncateString(item.modelHash, 10)}</td>
+            <td>${item.modelAlgorithm}</td>
+            
+            <td>${truncateString(item.publisher, 5)}</td>
+            <td>${truncateString(item.modelHash, 5)}</td>
             <td>${formatDate(item.createdTime)}</td>
+            <td>${item.modelTags}</td>
             <td class="operation-btns">
                 <a class="operation-btn model-detail" data-id="${item.modelId}">详情</a>
                 <a class="operation-btn model-detail-buy" data-id="${item.modelId}">获取</a>

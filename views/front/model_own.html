@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>工作台</title>
+    <link rel="stylesheet" href="/static/assets/libs/layui/css/layui.css"/>
+    <!-- js部分 -->
+    <script type="text/javascript" src="/static/assets/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/layui/layui.js"></script>
+    <script type="text/javascript" src="/static/assets/js/common.js?v=318"></script>
+    <script type="text/javascript" src="/static/client/js/client_request.js"></script>
+    <style>
+        html{
+            overflow: auto; /* 或者使用 overflow-y: scroll; 来允许垂直滚动 */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE 和 Edge */
+        }
+
+        /* 隐藏Webkit核心浏览器（如Chrome, Safari等）中的滚动条 */
+        html::-webkit-scrollbar {
+            display: none;
+        }
+        /** 应用快捷块样式 */
+        .cti-own-box{
+            width: 100%;
+            min-height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+        }
+        /*工具栏*/
+        .cti-own-toolbar{
+            width: 100%;
+        }
+        .cti-own-toolbar .cti-info{
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .cti-info a{
+            color: #64aed9;
+        }
+        .cti-info .cti-info-item,.user-info-item{
+            display: block;
+            width: auto;
+            text-align: left;
+            padding:20px 15px;
+        }
+        /*表格*/
+        .cti-own-table-box{
+            width: 100%;
+            padding: 0 10px;
+            min-height: 500px;
+        }
+        .cti-own-table-box .cti-own-table{
+            width: 100%;
+            overflow: hidden;
+            border: 1px solid gainsboro; 
+            cursor:default;
+        }
+
+        .cti-own-table th,
+        .cti-own-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid gainsboro; 
+        }
+
+        .cti-own-table th {
+            font-weight: bold;
+        }
+
+        .cti-own-table tr {
+            overflow: hidden; /* 防止内容溢出 */
+        }
+
+        .cti-own-table tr:nth-child(even) {
+            background-color: #f7f8fa; 
+        }
+
+        .cti-own-table tr:nth-child(odd) {
+            background-color: #ffffff; 
+        }
+        .cti-own-table a{
+            color: #64aed9;
+            cursor: pointer;
+        }
+        .cti-own-table tr td:last-child a{
+            padding: 1px;
+            
+        }
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="cti-own-box">
+    <div class="cti-own-toolbar">
+        <div class="cti-info">
+            <span class="cti-info-item">
+                我的模型数量:
+                <span id="ctiCount">0</span>
+                <a href="/cti-market" target="_blank">获取模型</a>
+            </span>
+            <span class="user-info-item">
+                我的积分:
+                <span id="userValue">0</span>
+                <a href="/cti-market" target="_blank">获取积分</a>
+            </span>
+        </div>
+    </div>
+    <div class="cti-own-table-box">
+        <table class="cti-own-table">
+            <colgroup>
+                <col width="13%"> <!-- CTI编号 -->
+                <col width="10%"> <!-- 模型类型 -->
+                <col width="12%"> <!-- Tags -->
+                <col width="15%"> <!-- HASH -->
+                <col width="18%"> <!-- 发布时间 -->
+                <col width="10%"> <!-- 操作 -->
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>CTI编号</th>
+                    <th>模型类型</th>
+                    <th>Tags</th>
+                    <th>HASH</th>
+                    <th>发布时间</th>
+                    <th>操作</th>   
+                </tr>
+            </thead>
+            <tbody id="ctiTableBody">
+                <!-- 动态渲染的数据将插入这里 -->
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+var layer = layui.layer
+$ = layui.$;
+//--------------------------------------------信息初始化--------------------------------------------
+document.addEventListener('DOMContentLoaded', function() {
+    initUserCTIPage();
+});
+function initUserCTIPage(){
+    queryUserInfo();
+    getCTIDataByUserId();
+}
+
+function queryUserInfo(){
+    var userId = localStorage.getItem("userWalletId")
+    if (userId==null){
+        layer.msg('用户ID不存在,请登录钱包',{'time':1000})
+        return;
+    }
+    getUserInfo(userId).then(function(data){
+        console.log("用户信息:", data);
+        if(data != null){
+            updateUserInfoUI(data)
+        }
+    }).catch(function(error){
+        console.log(error)
+        layer.msg('获取用户信息失败!<br>'+error,{'time':1600})
+    })
+}
+function getCTIDataByUserId(){
+    var userId = localStorage.getItem("userWalletId")
+    if (userId==null){
+        layer.msg('用户ID不存在,请登录钱包',{'time':1000})
+        return;
+    }
+    let loadIndex = layer.load(1);
+    queryCTIDataByUserId(userId).then(function(data){
+        console.log("CTI数据:", data);
+        if(data != null){
+            processCTIResponseData(data)
+        }
+        layer.close(loadIndex);
+    }).catch(function(error){
+        console.log(error)
+        layer.msg('获取CTI数据失败!<br>'+error,{'time':1600})
+        layer.close(loadIndex);
+    })
+}
+//--------------------------------------------UI更新--------------------------------------------
+
+//更新用户积分信息
+function updateUserInfoUI(userInfo){
+    var userValueSpan = $('.user-info-item span');
+    userValueSpan.text(userInfo.value);
+}
+
+//更新CTI数据
+function updateCTIDataUI(ctiData){
+    var ctiCountSpan = $('.cti-info-item span');
+    ctiCountSpan.text(ctiData.length);
+}
+
+// 模型类型int到str名称的映射
+const CTI_TYPE_NAME = {
+    0: "其他",
+    1: "恶意流量",
+    2: "蜜罐模型",
+    3: "僵尸网络",
+    4: "应用层攻击",
+    5: "开源模型"
+};
+
+var currentCTIDataList = [];
+var currentTotalCount = 0;
+var currentPage = 1;
+var currentPageSize = 10;
+//处理数据
+function processCTIResponseData(data){
+    var ctiInfos = [];
+    if (data!=null&&data.length>0){
+        ctiInfos = data.map((item,index) => {
+            // 处理模型类型
+            let ctiType = CTI_TYPE_NAME[item.cti_traffic_type] || CTI_TYPE_NAME[0];
+            
+            // 处理标签
+            let tags = "";
+            if(item.tags && item.tags.length > 0) {
+                //每三个标签换一次行
+                tags = item.tags.reduce((acc, tag, index) => {
+                    if(index > 0 && index % 3 === 0) {
+                        return acc + "</br>" + tag;
+                    }
+                    return acc + (index === 0 ? "" : ",") + tag;
+                }, "");
+            }
+            
+            return {
+                id: index,
+                ctiId: item.cti_id,
+                ctiHash: item.cti_hash,
+                ctiType: ctiType,
+                tags: tags,
+                publisher: item.creator_user_id,
+                createdTime: item.create_time,
+                ipfsHash: item.stix_ipfs_hash,
+                value: item.value
+            };
+        });
+        
+    }
+    currentCTIDataList = ctiInfos;
+    currentPageSize = currentCTIDataList.length;
+    var renderData = {
+        data: currentCTIDataList,
+        currentPage: currentPage,
+        totalCount: currentCTIDataList.length
+    };
+    console.log("renderData:",renderData);
+    renderTable(renderData);
+}
+
+
+
+
+// 修改渲染表格函数
+function renderTable(response) {
+    const tableBody = document.getElementById('ctiTableBody');
+    tableBody.innerHTML = '';
+    currentCTIDataList = response.data;
+    //更新面板
+    currentTotalCount = response.totalCount||0;
+    currentTotalPages = Math.ceil(currentTotalCount / currentPageSize)||0;
+    //renderPagination(response.currentPage, currentTotalPages);
+    //更新模型数量
+    $('.cti-info-item span').text(currentTotalCount);
+
+    response.data.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${item.ctiId}</td>
+            <td>${item.ctiType}</td>
+            <td>${item.tags}</td>
+            <td>${truncateString(item.ctiHash, 10)}</td>
+            <td>${formatDate(item.createdTime)}</td>
+            <td class="operation-btns">
+                <a class="operation-btn cti-detail" data-id="${item.ctiId}">详情</a>
+                <a class="operation-btn cti-detail-download" data-hash="${item.ipfsHash}">下载</a>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+    // 重新绑定事件
+    bindTableEvents();
+}
+//-------------------------------------------辅助函数-------------------------------------------
+// 日期格式化函数
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+}
+//截断函数
+function truncateString(str, maxLength) {
+    if(!str) return '';
+    if(str.length <= maxLength) return str;
+    return str.substring(0, maxLength - 3) + '...' + str.substring(str.length - 3);
+}
+
+// 绑定表格事件
+function bindTableEvents() {
+    document.querySelectorAll('.cti-detail').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            openCtiDetailWindow('/cti-market/detail?id=' + id);
+        });
+    });
+
+    document.querySelectorAll('.cti-detail-download').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const hash = this.dataset.hash;
+            getIPFSFileUrl(hash).then(function(url){
+                window.open(url, '_blank');
+            }).catch(function(error){
+                layer.msg('获取IPFS文件URL失败!<br>'+error,{'time':1600})
+            })
+        });
+    });
+}
+//--------------------------------------------窗口操作--------------------------------------------
+function getWindowLayerIndex(){
+    var layerIndex = parent.layer.getFrameIndex(window.name); 
+    return layerIndex;
+}
+
+function closeParentLayer(){
+    var index = parent.layer.getFrameIndex(window.name); // 先得到当前 iframe 层的索引
+    parent.layer.close(index); // 再执行关闭
+}
+
+var currentLayerIndex = null    
+//为 '详情' 按钮绑定点击事件
+$('.cti-detail').click(function() {
+    var ctiId = $(this).data('id');
+    console.log(ctiId)
+    openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
+});
+
+// 为 '获取' 按钮绑定点击事件
+$('.cti-detail-download').click(function() {
+    var ctiId = $(this).data('id');
+    openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
+});
+
+function openCtiDetailWindow(url) {
+    var parentLayer = window.parent.layer;
+    if(currentLayerIndex!=null){
+        //默认只打开一个窗口
+        parentLayer.close(currentLayerIndex);
+    }
+    //使用父层级打开窗口
+    currentLayerIndex = parentLayer.open({
+            type: 2,
+            title: '详情',
+            area: ['700px', '550px'], // 设置窗口宽度和高度
+            shade: 0, // 设置遮罩透明度
+            content: url,
+            success: function(layero, index){
+                //关闭当前窗口
+                // closeParentLayer()
+            }
+    });
+    
+    
+}
+
+
+</script>
+</body>
+</html>

@@ -298,3 +298,10 @@ function createModelUpchainInfo(fileHash, modelHash, modelInfoConfig){
         });
     });
 }
+
+//模型上链
+function modelUpchain(modelHash,modelInfoConfig){
+    return new Promise(function(resolve, reject){
+        
+    });
+}

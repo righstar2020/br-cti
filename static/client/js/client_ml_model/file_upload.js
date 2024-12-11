@@ -117,7 +117,7 @@ function uploadSingleFile(fileId, file) {
                 //更新任务状态
                 updateTaskFinishStepStatus(data.file_hash,"0",true);
                 //查询本地MODEL数据(一次)
-                queryLocalModelData(data.file_hash);
+                queryLocalModelRecords(data.file_hash);
             } else {
                 $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-hash`).text('上传失败');
                 $(`.upload-data-item[data-file-id="${fileId}"] .upload-data-item-size`).text("0 Bytes");

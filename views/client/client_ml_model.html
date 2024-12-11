@@ -32,7 +32,17 @@
         html::-webkit-scrollbar {
             display: none!important;
         }
-        
+        .data-source-loading{
+            display: none;
+            height: 100px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .data-source-loading i{
+            font-size: 30px;
+        }
     </style>
 </head>
 <body>
@@ -130,7 +140,11 @@
             </div>
         </div>
         <div class="client-model-table-box data-source-table-box">
-            <table class="layui-hide" id="client-model-data-source-table"></table>
+            <div class="data-source-loading">
+                <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i>
+            </div>
+            <table class="layui-hide" id="client-model-data-source-table">
+            </table>
         </div>
     </div>
     <!-- 模型数据表格 -->

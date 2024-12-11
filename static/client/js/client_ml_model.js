@@ -13,6 +13,7 @@ if (ipfsServerHost == null) {
 /*-------------------全局变量------------------------*/
 var taskFileIds = []; //上传文件id列表
 var taskFileHashMap = {}; //上传文件hash映射表
+var taskModelHashMap = {}; //模型hash映射表(训练完成)
 //任务完成状态映射表(key:source_file_hash)
 var taskFinishStepStatusMap = {
     "bc566bc":{

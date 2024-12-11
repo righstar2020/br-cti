@@ -547,7 +547,8 @@ function queryBlockInfoByHeight(blockHeight){
             url: bc_server_host + "/blockchain/queryBlock/" + blockHeight,
             success: function(response){
                 if(response.data != null && response.data != undefined){
-                    resolve(response.data);
+                    var data = JSON.parse(response.data);
+                    resolve(data);
                 }else{
                     reject("查询区块数据失败: 响应为空");
                 }

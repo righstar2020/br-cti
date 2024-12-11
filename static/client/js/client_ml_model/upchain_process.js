@@ -1,87 +1,89 @@
 /*------------------Setp 3 CTI数据转换(数据上链)------------------------*/
 function initStepUpchainModel(){
-    updateModelUpchainDataListHtml();
+    createModelUpchainDataListHtml();
 }
-function updateModelUpchainDataListHtml(){
-    //从前一step获取数据填充本step的模板
-    const uploadDataList = $(`.upload-data-list .upload-data-item`);
-    const modelUpchainDataList = $(`.model-upchain-data-list-box`); // 修正选择器
-    console.log("uploadDataList:",uploadDataList);
-    console.log("modelUpchainDataList:",modelUpchainDataList);
-    //遍历上传文件列表
-    uploadDataList.each(function(index, item) {
-        if($(item).attr('id') == 'upload-file-template'){
+function createModelUpchainDataListHtml(){
+    const modelInfoDataList = $(`.model-info-data-list-box .model-info-data-item`);
+    //遍历模型信息列表
+    modelInfoDataList.each(function(index, item) {
+        const processId = $(item).attr('data-process-id');
+        const modelHash = $(item).attr('data-model-hash');
+        const sourceFileHash = $(item).attr('data-source-file-hash');
+        if($(item).attr('id') == 'model-info-data-item-template'){
             return;
         }
-        //如果是未完成的任务(不处理)
-        var processId = $(item).attr('data-file-id');
-        var taskFileHash = taskFileHashMap[processId];
-        if (taskFileHash == null || taskFileHash == undefined) {
-            return;
-        }
-        // //模型训练未处理完成
-        // if(taskFinishStepStatusMap[taskFileHash]["1"]==undefined||taskFinishStepStatusMap[taskFileHash]["1"]==false){
-        //     return;
-        // }
-        //如果是已经存在的任务，则不处理
-        if(modelUpchainDataList.find(`[data-process-id="${processId}"]`).length > 0){
-            return;
-        }
-        //克隆模板
-        const modelUpchainDataItem = document.getElementById("model-upchain-data-item-template").cloneNode(true);
-        //移除模板的display:none样式
-        modelUpchainDataItem.style.display = 'block';
-        //设置process id
-        modelUpchainDataItem.id = `model-upchain-data-${processId}`;
-        modelUpchainDataItem.setAttribute('data-process-id', processId);
-        //设置form的process-id
-        modelUpchainDataItem.querySelector('.model-upchain-data-config-form').setAttribute('data-process-id', processId);
-        //设置按钮的process-id
-        modelUpchainDataItem.querySelector('.model-process-data-item-start-btn').setAttribute('data-process-id', processId);
-        //设置获取账户按钮的process-id
-        modelUpchainDataItem.querySelector('.get-upchain-account-btn').setAttribute('data-process-id', processId);
-        //设置检查密码按钮的process-id
-        modelUpchainDataItem.querySelector('.check-upchain-account-password-btn').setAttribute('data-process-id', processId);
-        //设置删除按钮的process-id
-        modelUpchainDataItem.querySelector('.model-process-data-item-delete-btn').setAttribute('data-process-id', processId);
-        //设置文件名
-        modelUpchainDataItem.querySelector('.upload-data-item-name').innerText = $(item).find('.upload-data-item-name').text();
-        //设置hash
-        modelUpchainDataItem.querySelector('.upload-data-item-hash').innerText = $(item).find('.upload-data-item-hash').text();
-        //设置大小
-        modelUpchainDataItem.querySelector('.upload-data-item-size').innerText = $(item).find('.upload-data-item-size').text();
-        //添加到目标元素，如果ID已存在则不处理
-        if(document.getElementById(`model-upchain-data-${processId}`)){
-            return;
-        }
-        modelUpchainDataList.append(modelUpchainDataItem);
-        //初始化下拉框
-        $(`#model-upchain-data-${processId} .ui.dropdown`).dropdown();
-        //设置模型类型下拉框
-        $(`#model-upchain-data-${processId} .ui.dropdown.upchain-type`).dropdown({
-            values: [{
-                name: '分类模型',
-                value: 1,
-                selected: false
-            },{
-                name: '回归模型',
-                value: 2,
-                selected: false
-            },{
-                name: '聚类模型',
-                value: 3, 
-                selected: false
-            },{
-                name: 'NLP模型',
-                value: 4,
-                selected: false
-            }]
-        });
-
-        //绑定form事件
-        bindModelUpchainDataFormEvent(processId);
+        console.log("createModelUpchainDataListHtml item:",item);
+        createModelUpchainDataHtml(item,processId,modelHash,sourceFileHash);
     });
 }
+function createModelUpchainDataHtml(item,processId,modelHash,sourceFileHash){
+    const modelUpchainDataList = $(`.model-upchain-data-list-box`); // 修正选择器
+    //克隆模板
+    const modelUpchainDataItem = document.getElementById("model-upchain-data-item-template").cloneNode(true);
+    //移除模板的display:none样式
+    modelUpchainDataItem.style.display = 'block';
+    //设置process id
+    modelUpchainDataItem.id = `model-upchain-data-${processId}`;
+    modelUpchainDataItem.setAttribute('data-process-id', processId);
+    //设置model-hash
+    modelUpchainDataItem.setAttribute('data-model-hash',modelHash);
+    //设置source-file-hash
+    modelUpchainDataItem.setAttribute('data-source-file-hash',sourceFileHash);
+    //设置form的process-id
+    modelUpchainDataItem.querySelector('.model-upchain-data-config-form').setAttribute('data-process-id', processId);
+    //设置按钮的process-id
+    modelUpchainDataItem.querySelector('.model-process-data-item-start-btn').setAttribute('data-process-id', processId);
+    //设置获取账户按钮的process-id
+    modelUpchainDataItem.querySelector('.get-upchain-account-btn').setAttribute('data-process-id', processId);
+    //设置检查密码按钮的process-id
+    modelUpchainDataItem.querySelector('.check-upchain-account-password-btn').setAttribute('data-process-id', processId);
+    //设置所有按钮的process-id
+    modelUpchainDataItem.querySelectorAll('.button').forEach(function(button){
+        button.setAttribute('data-process-id', processId);
+    });
+    modelUpchainDataItem.querySelectorAll('button').forEach(function(button){
+        button.setAttribute('data-process-id', processId);
+    });
+    //设置文件名
+    modelUpchainDataItem.querySelector('.upload-data-item-name').innerText = $(item).find('.upload-data-item-name').text();
+    //设置hash
+    modelUpchainDataItem.querySelector('.upload-data-item-hash').innerText = $(item).find('.upload-data-item-hash').text();
+    //设置大小
+    modelUpchainDataItem.querySelector('.upload-data-item-size').innerText = $(item).find('.upload-data-item-size').text();
+    //添加到目标元素，如果ID已存在则不处理
+    if(document.getElementById(`model-upchain-data-${processId}`)){
+        return;
+    }
+    //model_hash
+    
+    modelUpchainDataList.append(modelUpchainDataItem);
+    //初始化下拉框
+    $(`#model-upchain-data-${processId} .ui.dropdown`).dropdown();
+    //设置模型类型下拉框
+    $(`#model-upchain-data-${processId} .ui.dropdown.upchain-type`).dropdown({
+        values: [{
+            name: '分类模型',
+            value: 1,
+            selected: false
+        },{
+            name: '回归模型',
+            value: 2,
+            selected: false
+        },{
+            name: '聚类模型',
+            value: 3, 
+            selected: false
+        },{
+            name: 'NLP模型',
+            value: 4,
+            selected: false
+        }]
+    });
+
+    //绑定form事件
+    bindModelUpchainDataFormEvent(processId);
+}
+
 //绑定form事件
 function bindModelUpchainDataFormEvent(processId){
     const form = $(`.model-upchain-data-config-form[data-process-id="${processId}"]`);
@@ -116,24 +118,13 @@ function bindModelUpchainDataFormEvent(processId){
 }
 
 
-function deleteModelUpchainDataItem(button){
-    const processId = $(button).attr('data-process-id');
-    if(processId == null){
-        return;
-    }
-    layer.confirm('确定删除该文件吗？', {
-        btn: ['确定', '取消'] //按钮
-    }, function(index){
-        const item = $(`.model-process-data-item[data-process-id="${processId}"]`);
-        item.remove();
-        layer.close(index);
-    });
-}
 
 var modelUpchainingStatusMap = {}; //保存正在处理的任务状态
 //开始上链
 function startModelUpchain(button){
     const processId = $(button).attr('data-process-id');
+    const sourceFileHash = $(button).attr('data-source-file-hash');
+    const modelHash = $(button).attr('data-model-hash');
     if(processId == null){
         return;
     }
@@ -146,23 +137,25 @@ function startModelUpchain(button){
         return;
     }
     //保存配置并开始上链
-    startModelUpchainWithConfig(processId);
+    startModelUpchainWithConfig(processId,sourceFileHash,modelHash);
 }
 
 //保存配置并开始上链
-function startModelUpchainWithConfig(processId){
+function startModelUpchainWithConfig(processId,source_file_hash=null,model_hash=null){
     const form = $(`.model-upchain-data-config-form[data-process-id="${processId}"]`);
     var modelUpchainConfig = {
         "process_id": processId,
-        "file_hash": taskFileHashMap[processId],
+        "file_hash": source_file_hash||taskFileHashMap[processId],
+        "model_hash": model_hash||modelDetailsInfoMap[processId].model_hash,
         "model_type": form.find('input[name="model_type"]').val(),
+        "ipfs_address": form.find('input[name="ipfs_address"]').val(),
         "upchain_account": form.find('input[name="upchain_account"]').val(),
         "upchain_account_password": form.find('input[name="upchain_account_password"]').val()
     };
     //开始上链
     setModelUpchainProcessingItemUI(processId);
     $.ajax({
-        url: clientServerHost + '/model/upchain',
+        url: clientServerHost + '/blockchain/upload_model_to_bc_by_model_hash',
         type: 'POST',
         dataType: "json",
         contentType: 'application/json',
@@ -195,7 +188,7 @@ function startModelUpchainWithConfig(processId){
     
 }
 
-//100ms轮询
+//1000ms轮询
 var processPollingIntervalMap = {};
 function pollingModelUpchainProgress(processId){
     if(processPollingIntervalMap[processId]){
@@ -203,12 +196,12 @@ function pollingModelUpchainProgress(processId){
     }
     processPollingIntervalMap[processId] = setInterval(function(){
         getModelUpchainProgress(processId);
-    },100);
+    },1000);
 }
 
 function getModelUpchainProgress(processId){
     $.ajax({
-        url: clientServerHost + '/model/upchain/progress',
+        url: clientServerHost + '/blockchain/get_model_upchain_progress',
         type: 'POST',
         dataType: "json",
         contentType: 'application/json',
@@ -255,9 +248,6 @@ function setModelUpchainStartItemUI(processId){
     const item = $(`.model-upchain-data-item[data-process-id="${processId}"]`);
     //设置开始按钮
     item.find('.model-upchain-data-item-start-btn').text('开始上链');
-    item.find('.model-upchain-data-item-start-btn').on('click',function(){
-        startModelUpchain(this);
-    });
 }
 
 //上链处理中设置itemUI
@@ -305,5 +295,89 @@ function setModelUpchainFinishItemUI(processId){
     item.find('.model-upchain-data-item-start-btn').text('下一步');
     item.find('.model-upchain-data-item-start-btn').on('click',function(){
         nextStep();
+    });
+}
+//-------------------------------------------------查询函数-------------------------------------------------
+//获取IPFS地址
+function getIpfsAddress(button){
+    var processId = $(button).attr('data-process-id');
+    $.ajax({
+        type: "POST",
+        url: clientServerHost + "/upchain/getIPFSAddress",
+        dataType: "json",
+        success: function(response){
+            console.log(response);
+            if(response.code == 200){
+                const data = response.data;
+                const ipfsAddress = data.ipfs_address;
+                const form = $(`.model-upchain-data-config-form[data-process-id="${processId}"]`);
+                form.find('input[name="ipfs_address"]').val(ipfsAddress);
+            }else{
+                layer.msg('获取IPFS地址失败',{'time':1200});
+            }
+        },
+        error: function(response){
+            console.log(response);
+            layer.msg('获取IPFS地址失败',{'time':1200});
+        }
+    });
+}
+//获取本地钱包账户
+function getUpchainAccount(button){
+    var processId = $(button).attr('data-process-id');
+    
+    const walletId = localStorage.getItem("userWalletId");
+    if(walletId){
+        const form = $(`.model-upchain-data-config-form[data-process-id="${processId}"]`);
+        form.find('input[name="upchain_account"]').val(walletId);
+    }else{
+        layer.msg('未找到钱包账户，请先登录钱包!',{'time':1200});
+    }
+}
+//绑定检查钱包密码事件
+function checkUpchainAccountPassword(button){
+    var processId = $(button).attr('data-process-id');
+    checkWalletPassword(processId);
+}
+//检查钱包密码
+function checkWalletPassword(processId) {
+    //检查配置是否输入正确
+    const form = $(`.model-upchain-data-config-form[data-process-id="${processId}"]`);
+    const upchainAccount = form.find('input[name="upchain_account"]').val();
+    const upchainAccountPassword = form.find('input[name="upchain_account_password"]').val();
+    if(upchainAccount == null || upchainAccount == '' || upchainAccountPassword == null || upchainAccountPassword == ''){
+        layer.msg('账户或钱包密码不能为空',{'time':1200});
+        return;
+    }
+    $.ajax({
+        type: "POST",
+        url: clientServerHost + "/user/checkWalletPassword", 
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify({
+            wallet_id: upchainAccount,
+            password: upchainAccountPassword
+        }),
+        success: function(response) {
+            console.log(response);
+            if(response.code == 200) {
+                const verifyResult = response.data;
+                if(verifyResult){
+                    layer.msg('钱包密码正确',{'time':1200});
+                    return true;
+                }else{
+                    layer.msg('钱包密码错误',{'time':1200});
+                    return false;
+                }
+            } else {
+                layer.msg(response.error, {'time':1200});
+                return false;
+            }
+        },
+        error: function(response) {
+            console.log(response);
+            layer.msg(response.error, {'time':1200});
+            return false
+        }
     });
 }

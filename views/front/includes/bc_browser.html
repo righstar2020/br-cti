@@ -178,7 +178,7 @@
                     <colgroup>
                         <col style="width: 30px;">
                         <col style="width: 140px;">
-                        <col style="width: 230px;">
+                        <col style="width: 130px;">
                         <col style="width: 120px;">
                         <col style="width: 100px;">
                         <col style="width: 100px;">
@@ -222,22 +222,29 @@
             queryBcSummaryData();
             //查询CTI交易数据
             queryCTITransactionData().then(function(data){
-                var ctiTransactionData = JSON.parse(data);
-                processCTIData(ctiTransactionData);
+                var ctiDataList = data.cti_infos
+                if(ctiDataList!=undefined && ctiDataList.length>0){
+                    var ctiTransactionData = ctiDataList
+                    processAndUpdateCTIData(ctiTransactionData);
+                }
                 layer.close(loadingIndex);
             }).catch(function(error){
                 console.error("Failed to get CTI transaction data:", error);
                 layer.close(loadingIndex);
                 return;
             });
+            
+        },6000);
+        setInterval(function(){
             //轮播table
-            carouselTableLoop('cti-upchain-table',new_upchain_cti_data)
+            carouselTableLoop('cti-upchain-table')
             // 为 '详情' 按钮绑定点击事件
             $('.open-cti-detail').click(function() {
                 var ctiId = $(this).data('id');
                 openCtiDetailWindow('/cti-market/detail?id=' + ctiId);
             });
         },3000);
+            
         
     });
     //----------------------------------------------------区块状态-------------------------------------------------
@@ -252,6 +259,7 @@
             success: function (response) {
                 var bcSummary = response.result;
                 updateBcSummaryUI(bcSummary);
+                console.log("bcSummary:",bcSummary);
                 //查询最新区块数据
                 queryLatestBlockData(bcSummary.block_height);
             },
@@ -270,14 +278,18 @@
     }
     //----------------------------------------------------最新区块信息------------------------------------------------------------
     //查询最新4个区块信息
-    function queryLatestBlockData(latestBlockHeight=1){
-        var preBlockHeight = (latestBlockHeight-4)<0?0:(latestBlockHeight-4);
-        for(var i=0;i<4;i++){
-            queryBlockInfoByHeight(preBlockHeight+i).then(function(blockInfo){
+    function queryLatestBlockData(latestBlockHeight){
+        latestBlockHeight = latestBlockHeight - 1 //最新高度要减去1
+        console.log("latestBlockHeight:",latestBlockHeight);
+        for(let i=0;i<4;i++){
+            if(latestBlockHeight-i>0){
+                queryBlockInfoByHeight(latestBlockHeight-i).then(function(rawblockInfo){
+                var blockInfo = processBlockData(rawblockInfo);
                 updateLatestBlockUI(i,blockInfo);
-            }).catch(function(error){
-                console.error("Failed to get block info:", error);
-            });
+                }).catch(function(error){
+                    console.error("Failed to get block info:", error);
+                });
+            }           
         }
     }
     //处理区块数据
@@ -288,18 +300,32 @@
             timestamp: blockInfo.data.data[0].payload.header.channel_header.timestamp || '',
             signature: blockInfo.metadata.metadata[0] || ''
         };
+        //字符串转bytes再转16进制字符
+        processedData.hash = Array.from(new TextEncoder().encode(processedData.hash))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+        processedData.signature = Array.from(new TextEncoder().encode(processedData.signature))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+        processedData.hash='0x'+processedData.hash;
+        processedData.signature='0x'+processedData.signature;
+        //处理时间
+        if (processedData.timestamp) {
+            processedData.timestamp = processedData.timestamp.replace('T', ' ').split('.')[0];
+        }
         return processedData;
     }
     //更新UI
-    function updateLatestBlockUI(index,blockInfo){
-        var blockCards = $('.bc-tx-info-card');
-        if(index < blockCards.length){
-            var card = blockCards.eq(index);
-            card.find('.hash-value').text(blockInfo.hash);
-            card.find('.ui.small.blue.label').text('height ' + blockInfo.height);
-            card.find('.info-card-row:eq(1)').text('交易时间:' + blockInfo.timestamp);
-            card.find('.info-card-row:eq(2)').text('交易HASH:' + blockInfo.hash);
-            card.find('.info-card-row:eq(3)').text('签名:' + blockInfo.signature);
+    function updateLatestBlockUI(index=0,blockInfo){
+        var blockCards = document.querySelectorAll('.bc-tx-info-card');
+        if(blockInfo){
+            let card = blockCards[index];
+            card.querySelector('.hash-value').textContent = blockInfo.hash.substring(0,7);
+            card.querySelector('.ui.small.blue.label').textContent = 'height ' + blockInfo.height;
+            let infoCardRows = card.querySelectorAll('.info-card-row');
+            infoCardRows[1].textContent = '交易时间:' + blockInfo.timestamp;
+            infoCardRows[2].textContent = '交易HASH:' + truncateText(blockInfo.hash,8,3);
+            infoCardRows[3].textContent = '签名:' + truncateText(blockInfo.signature,8,3);
         }
     }
     //----------------------------------------------------CTI交易数据----------------------------------------------------------------------------------------------
@@ -307,45 +333,33 @@
     //----------------------------------------------------轮播table数据---------------------------------------------------------------------------------
     //查询CTI交易数据(最新10条)
     function queryCTITransactionData(){
-        return new Promise(function(resolve, reject){
-            $.ajax({
-                type: "POST",
-                url: bc_server_host + "/dataStat/queryCTISummaryInfo",
-                contentType: "application/json",
-                dataType: "json",
-                data: JSON.stringify({
-                    "limit": 10
-                }),
-                success: function(response){
-                    if(response.result != null && response.result != undefined){
-                        resolve(response.result);
-                    }else{
-                        reject("CTI transaction data is null");
-                    }
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown){
-                    reject(errorThrown);
-                }
-            });
-        });
+        //查询最新10个cti数据
+        return queryCTIData(-1, 1, 10)
     }
     //处理数据
-    function processCTIData(ctiTransactionData){
+    function processAndUpdateCTIData(ctiTransactionData){
         var formattedData = [];
+        console.log("ctiTransactionData:",ctiTransactionData);
         if (ctiTransactionData && ctiTransactionData.length > 0) {
             ctiTransactionData.forEach(function(item, index) {
                 var row = [
                     item.cti_id,
                     item.tags.join('; '), 
-                    '0',
-                    item.create_time.split(' ')[0],
+                    item.creator_user_id.substring(0,12),
+                    item.create_time,
                     item.cti_hash.substring(0,8),
-                    '<a class="open-cti-detail" data-id="' + index + '" >详情</a>'
+                    '<a class="open-cti-detail" data-id="' + item.cti_id + '" >详情</a>'
                 ];
                 formattedData.push(row);
             });
         }
+        
+
+        if(new_upchain_cti_data.length==0){
+            initializeCarouselTable('cti-upchain-table',formattedData)
+        }
         new_upchain_cti_data = formattedData;
+        carouselTableLoop('cti-upchain-table')
     }
     //----------------------------------------------------更新UI--------------------------------------------------------
     var new_upchain_cti_data = [
@@ -354,7 +368,7 @@
         'cti-upchain-table': 0,
     }
     var fixedRowsMap={
-        'cti-upchain-table': 8,
+        'cti-upchain-table': 9,
     }
     tableBodyDomNameMap = {
         'cti-upchain-table': '.cti-upchain-table tbody',
@@ -379,7 +393,7 @@
             // 循环添加每一列数据
             for (var j = 0; j < tableData[i].length+1; j++) {
                 if (j === 0) {
-                    row.append('<td>' + i+ '</td>');
+                    row.append('<td>' + (i+1) + '</td>');
                 } else {
                     // 其他列直接使用数组中的值
                     row.append('<td>' + tableData[i][j-1] + '</td>');
@@ -389,16 +403,17 @@
         }
     }
     
-    function carouselTableLoop(tableName,tableData) {
+    function carouselTableLoop(tableName) {
+        var tableData = new_upchain_cti_data
         if(!tableData || tableData.length === 0) {
             return;
         }
-        
+        console.log("tableData:",tableData);
         var table = $(tableBodyDomNameMap[tableName]);
         
         // 检查当前索引是否有效
-        if(tableIndexMap[tableName] >= tableData.length) {
-            tableIndexMap[tableName] = 0;
+        if(tableIndexMap[tableName] >= (tableData.length)) {
+            tableIndexMap[tableName] = 1;
         }
         
         // 获取最后一行
@@ -407,7 +422,7 @@
         // 创建新行
         var newRow = $('<tr>');
         // 添加序号
-        newRow.append('<td>' + (tableIndexMap[tableName]) + '</td>'); // 序号
+        newRow.append('<td>' + (tableIndexMap[tableName]+1) + '</td>'); // 序号
         // 添加其他列数据
         for (var j = 0; j < tableData[tableIndexMap[tableName]].length; j++) {
             newRow.append('<td>' + tableData[tableIndexMap[tableName]][j] + '</td>');
@@ -417,11 +432,14 @@
         //newRow.hide().fadeIn(500); // 淡入新行
 
         // 获取第一行并淡出
-        var firstRow = table.find('tr:first');
-        firstRow.remove(); // 移除第一行
+        //如果table行数大于10，则移除第一行
+        if(table.find('tr').length>10){
+            var firstRow = table.find('tr:first');
+            firstRow.remove(); // 移除第一行
+        }
 
         // 更新索引，确保循环
-        tableIndexMap[tableName] = (tableIndexMap[tableName] + 1) % tableData.length;
+        tableIndexMap[tableName] = (tableIndexMap[tableName] + 1) % (tableData.length);
     }
     //------------------------------------------窗口操作----------------------------------------------------------------------------------------------
     var currentLayerIndex = null; //设置只可打开一个窗口
@@ -438,6 +456,27 @@
                 success: function(layero, index){
                 }
         });
+    }
+    //------------------------------------------工具函数-----------------------------------------------------------------
+    //截断文本
+    function truncateText(text, maxLength,endLength) {
+        if (endLength == null) {
+            endLength = 6;
+        }
+        if(text.length <= maxLength){
+            return text;
+        }
+        if(maxLength>(text.length-endLength)){
+            maxLength = text.length-endLength;
+        }
+        return text.length > maxLength ? text.substring(0, maxLength) + '...' + text.substring(text.length - endLength) : text;
+    }
+    function formatSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 </script>
 

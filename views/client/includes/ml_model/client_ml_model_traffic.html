@@ -148,18 +148,34 @@
                             </div>
                         </div>
                         <div class="monitor-item model-training" style="display: none;">
-                            <div class="monitor-item-title">训练详情</div>
+                            <div class="monitor-item-title">
+                                训练详情
+                                <button onclick="refreshTrainMonitor(this)"  class="ui blue button mini icon">
+                                     刷新
+                                </button>
+                            </div>
                             <div class="monitor-item-content">
                                 <div class="chart-container model-train-step-chart">
                                     <!-- 训练过程图表将在这里通过JS动态插入 -->
+                                    <div class="model-train-loading">
+                                        <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="monitor-item model-evaluation" style="display: none;">
-                            <div class="monitor-item-title">模型评估</div>
+                            <div class="monitor-item-title">
+                                模型评估
+                                <button onclick="refreshEvaluationMonitor(this)"  class="ui blue  button mini icon">
+                                     刷新
+                                </button>
+                            </div>
                             <div class="monitor-item-content">
                                 <div class="chart-container model-evaluate-step-chart">
                                     <!-- 评估结果图表将在这里通过JS动态插入 -->
+                                    <div class="model-evaluate-loading">
+                                        <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -200,8 +216,12 @@
                                 <input type="text" name="model_name" placeholder="请输入模型名称">
                             </div>
                             <div class="field">
+                                <label>模型算法</label>
+                                <input type="hidden" name="model_algorithm">
+                            </div>
+                            <div class="field">
                                 <label>模型描述</label>
-                                <textarea name="description" rows="2" placeholder="请输入模型描述"></textarea>
+                                <textarea name="description" placeholder="请输入模型描述"></textarea>
                             </div>
                             <div class="field">
                                 <label>模型标签</label>
@@ -271,6 +291,15 @@
                                     <i class="dropdown icon"></i>
                                     <div class="default text">流量模型</div>
                                     <input class="small" type="hidden" name="model_type">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label>IPFS地址</label>
+                                <div class="ui action input">
+                                    <input type="text" name="ipfs_address" value="">
+                                      <div data-process-id="" onclick="getIpfsAddress(this)" class="check-ipfs-address-btn ui blue left icon button">
+                                      <i class="left arrow icon"></i>
+                                    </div>
                                 </div>
                             </div>
                             <div class="field">

@@ -182,7 +182,9 @@ function saveWalletPassword(){
 //确认创建钱包
 function comfirmCreateWallet(){
     if (walletPassword==walletPasswordConfirm){
+        var loadIndex = layer.load(1);
         createLocalUserWallet(walletPassword).then(function(response){
+            layer.close(loadIndex);
             console.log(response)
             if (response.code==200){
                 walletId = response.data.wallet_id
@@ -193,6 +195,7 @@ function comfirmCreateWallet(){
             }
         }).catch(function(error){
             console.log(error)
+            layer.close(loadIndex);
             layer.msg('网络异常!<br>'+error,{'time':1600})
         })
 
@@ -210,11 +213,15 @@ function createOnchainAccount(){
         layer.msg('账户名称不能为空!',{'time':1600})
         return
     }
-    var loadIndex = layer.load(2);
+    var loadIndex = layer.load(1);
     registerOnchainAccount(walletId, accountName).then(function(response){
         layer.close(loadIndex);
         console.log(response)
         if(response.code == 200){
+            var onchainWalletId = response.data.wallet_id
+            if(onchainWalletId){
+                updateOnchainWalletId(onchainWalletId)
+            }
             layer.msg('链上账户创建成功!',{'time':1600},function(){
                 window.location.href = "/client/wallet"
             })
@@ -226,6 +233,11 @@ function createOnchainAccount(){
         console.log(error)
         layer.msg('网络异常!<br>'+error,{'time':1600})
     })
+}
+//更新链上账户ID
+function updateOnchainWalletId(onchainWalletId){
+    walletId = onchainWalletId
+    localStorage.setItem("userWalletId",onchainWalletId)
 }
 </script>
 </body>
