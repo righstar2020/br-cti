@@ -118,9 +118,11 @@
             <colgroup>
                 <col width="13%"> <!-- CTI编号 -->
                 <col width="10%"> <!-- 情报类型 -->
-                <col width="12%"> <!-- Tags -->
-                <col width="15%"> <!-- HASH -->
+                <col width="15%"> <!-- Tags -->
+                <col width="13%"> <!-- HASH -->
                 <col width="18%"> <!-- 发布时间 -->
+                <col width="10%"> <!-- 积分 -->
+                <col width="8%"> <!-- 状态 -->
                 <col width="10%"> <!-- 操作 -->
             </colgroup>
             <thead>
@@ -130,6 +132,8 @@
                     <th>Tags</th>
                     <th>HASH</th>
                     <th>发布时间</th>
+                    <th>积分</th>
+                    <th>状态</th>
                     <th>操作</th>   
                 </tr>
             </thead>
@@ -174,10 +178,16 @@ function getCTIDataByUserId(){
         return;
     }
     let loadIndex = layer.load(1);
-    queryCTIDataByUserId(userId).then(function(data){
+    queryUserOwnedCTIData(userId).then(function(data){
         console.log("CTI数据:", data);
         if(data != null){
-            processCTIResponseData(data)
+            let totalCtiInfoList = [];
+            if(data.upload_cti_infos && data.upload_cti_infos.length > 0){
+                totalCtiInfoList = data.upload_cti_infos.concat(data.purchase_cti_infos);
+            }else{
+                totalCtiInfoList = data.purchase_cti_infos;
+            }
+            processCTIResponseData(totalCtiInfoList)
         }
         layer.close(loadIndex);
     }).catch(function(error){
@@ -187,16 +197,17 @@ function getCTIDataByUserId(){
     })
 }
 //--------------------------------------------UI更新--------------------------------------------
-
+var currentUserId = null;
 //更新用户积分信息
 function updateUserInfoUI(userInfo){
-    var userValueSpan = $('.user-info-item span');
-    userValueSpan.text(userInfo.value);
+    currentUserId = userInfo.user_id;
+    var userValueSpan = $('.user-info-item #userValue');
+    userValueSpan.text(userInfo.user_value);
 }
 
 //更新CTI数据
 function updateCTIDataUI(ctiData){
-    var ctiCountSpan = $('.cti-info-item span');
+    var ctiCountSpan = $('.cti-info-item #ctiCount');
     ctiCountSpan.text(ctiData.length);
 }
 
@@ -243,7 +254,8 @@ function processCTIResponseData(data){
                 publisher: item.creator_user_id,
                 createdTime: item.create_time,
                 ipfsHash: item.stix_ipfs_hash,
-                value: item.value
+                value: item.value,
+                status: item.creator_user_id!=currentUserId?"已购买":"已发布"
             };
         });
         
@@ -282,6 +294,8 @@ function renderTable(response) {
             <td>${item.tags}</td>
             <td>${truncateString(item.ctiHash, 10)}</td>
             <td>${formatDate(item.createdTime)}</td>
+            <td>${item.value}</td>
+            <td>${item.status}</td>
             <td class="operation-btns">
                 <a class="operation-btn cti-detail" data-id="${item.ctiId}">详情</a>
                 <a class="operation-btn cti-detail-download" data-hash="${item.ipfsHash}">下载</a>

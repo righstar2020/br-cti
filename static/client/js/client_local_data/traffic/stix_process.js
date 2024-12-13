@@ -213,12 +213,13 @@ function startStixProcessDataWithConfig(processId){
     var stixProcessDataConfig = {
         "process_id": processId,
         "file_hash": taskFileHashMap[processId],
-        "stix_type": form.find('input[name="stix_type"]').val(),
+        "stix_type": parseInt(form.find('input[name="stix_type"]').val())||1,
         "stix_traffic_features": form.find('input[name="traffic_feature_field"]').val(),
         "stix_iocs": form.find('select[name="stix_iocs"]').val(),
         "stix_label": form.find('select[name="stix_label"]').val(),
         "stix_compress": parseInt(form.find('input[name="stix_compress"]').val()),
     };
+    console.log("stixProcessDataConfig:",stixProcessDataConfig);
     //开始转换
     setStixProcessProcessingItemUI(processId);
     $.ajax({

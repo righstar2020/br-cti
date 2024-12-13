@@ -27,7 +27,15 @@ var clientStixDataList = [{
     "value": 1000,
     "compre_value": 1200,
 }];
-
+// 情报类型int到str名称的映射
+const STIX_TYPE_NAME = {
+    0: "其他",
+    1: "恶意流量",
+    2: "蜜罐情报",
+    3: "僵尸网络",
+    4: "应用层攻击",
+    5: "开源情报"
+};
 //引入table
 var layuiTable = null;
 layui.use('table', function(){
@@ -185,7 +193,7 @@ function processLocalStixDataToTableData(sourceHash,stixDataList){
         var data = {
             id: i+1,
             status: getStixStatus(stixInfo),
-            type: stixInfo.stix_type_name,
+            type: STIX_TYPE_NAME[stixInfo.stix_type]||STIX_TYPE_NAME[0],
             tags: stixInfo.stix_tags,
             iocs: stixInfo.stix_iocs,
             source_hash: stixInfo.source_file_hash,

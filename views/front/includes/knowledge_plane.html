@@ -61,108 +61,8 @@
                                 <a class="open-cti-detail" data-id="1">详情</a>
                             </td>
                         </tr>
-                        <tr>
-                            <td>12.127.8.1</td>
-                            <td>越南</td>
-                            <td>DDoS</td>
-                            <td>7070</td>
-                            <td>adbdbca54ab</td>
-                            <td>2024-11-15 10:25:06</td>
-                            <td>
-                                <a class="open-cti-detail" data-id="1">详情</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>12.127.8.1</td>
-                            <td>越南</td>
-                            <td>DDoS</td>
-                            <td>7070</td>
-                            <td>adbdbca54ab</td>
-                            <td>2024-11-15 10:25:06</td>
-                            <td>
-                                <a class="open-cti-detail" data-id="1">详情</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>12.127.8.1</td>
-                            <td>越南</td>
-                            <td>DDoS</td>
-                            <td>7070</td>
-                            <td>adbdbca54ab</td>
-                            <td>2024-11-15 10:25:06</td>
-                            <td>
-                                <a class="open-cti-detail" data-id="1">详情</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>12.127.8.1</td>
-                            <td>越南</td>
-                            <td>DDoS</td>
-                            <td>7070</td>
-                            <td>adbdbca54ab</td>
-                            <td>2024-11-15 10:25:06</td>
-                            <td>
-                                <a class="open-cti-detail" data-id="1">详情</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>12.127.8.1</td>
-                            <td>越南</td>
-                            <td>DDoS</td>
-                            <td>7070</td>
-                            <td>adbdbca54ab</td>
-                            <td>2024-11-15 10:25:06</td>
-                            <td>
-                                <a class="open-cti-detail" data-id="1">详情</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>12.127.8.1</td>
-                            <td>越南</td>
-                            <td>DDoS</td>
-                            <td>7070</td>
-                            <td>adbdbca54ab</td>
-                            <td>2024-11-15 10:25:06</td>
-                            <td>
-                                <a class="open-cti-detail" data-id="1">详情</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>12.127.8.1</td>
-                            <td>越南</td>
-                            <td>DDoS</td>
-                            <td>7070</td>
-                            <td>adbdbca54ab</td>
-                            <td>2024-11-15 10:25:06</td>
-                            <td>
-                                <a class="open-cti-detail" data-id="1">详情</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>12.127.8.1</td>
-                            <td>越南</td>
-                            <td>DDoS</td>
-                            <td>7070</td>
-                            <td>adbdbca54ab</td>
-                            <td>2024-11-15 10:25:06</td>
-                            <td>
-                                <a class="open-cti-detail" data-id="1">详情</a>
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
-                <div class="ui right floated pagination menu cti-data-table-nav tiny">
-                    <a class="icon item">
-                        <i class="left chevron icon"></i>
-                    </a>
-                    <a class="item">1</a>
-                    <a class="item">2</a>
-                    <a class="item">3</a>
-                    <a class="item">4</a>
-                    <a class="icon item">
-                        <i class="right chevron icon"></i>
-                    </a>
-                </div>
             </div>
         </div>
    </div>
@@ -200,6 +100,163 @@ function openCtiDetailWindow(url) {
             }
     });
 }
+//-------------------------------------------------------数据轮播------------------------------------------------------
+var $ = layui.jquery;
+var layer = layui.layer;
+var bc_server_host = localStorage.getItem("bcServerHost");
+if(bc_server_host == null){
+    bc_server_host = "http://127.0.0.1:7777";
+}
+//----------------------------------------------------初始化-------------------------------------------------
+$(document).ready(function(){
+//初始化
+initializeCarouselTable('ioc-info-table',new_ioc_trend_data)
+setInterval(function(){
+    carouselTableLoop('ioc-info-table')
+},2000);
+    //查询数据
+    setInterval(function(){            
+            //查询IOC数据
+            queryIOCTrendData().then(function(data){
+                var iocTrendData = data.ioc_data_list
+                if(iocTrendData!=undefined && iocTrendData.length>0){
+                    var iocTrendData = iocTrendData
+                    processAndUpdateIOCTrendData(iocTrendData);
+                }
+            }).catch(function(error){
+                console.error("Failed to get IOC trend data:", error);
+                return;
+            });
+    },6000);
+});
+
+//查询数据
+//查询CTI交易数据(最新10条)
+function queryIOCTrendData(){
+        //查询最新10个cti数据
+        return queryIOCLatestData(10)
+}
+//处理数据
+function processAndUpdateIOCTrendData(iocTrendData){
+    var formattedData = [];
+    console.log("iocTrendData:",iocTrendData);
+    if (iocTrendData && iocTrendData.length > 0) {
+        iocTrendData.forEach(function(item, index) {
+            var row = [
+                item.ip,
+                item.country,
+                item.attack_type,
+                item.port,
+                item.hash,
+                item.create_time,
+                '<a class="open-cti-detail" data-id="' + item.cti_id + '" >详情</a>'
+            ];
+            formattedData.push(row);
+        });
+    }
+    
+
+    if(new_ioc_trend_data.length==0){
+        initializeCarouselTable('ioc-info-table',formattedData)
+    }
+    new_ioc_trend_data = formattedData;
+    carouselTableLoop('ioc-info-table')
+}
+
+
+
+//更新UI
+var new_ioc_trend_data = [
+    ["192.168.1.245", "中国", "恶意软件", "3306", "a7bc9d3f4e", "2024-01-15 08:23:16", '<a class="open-cti-detail" data-id="1001">详情</a>'],
+    ["10.45.78.123", "美国", "应用层攻击", "80", "b8cd4e5f6a", "2024-01-15 09:45:32", '<a class="open-cti-detail" data-id="1002">详情</a>'],
+    ["172.16.89.34", "俄罗斯", "DDoS", "443", "c9de5f6g7b", "2024-01-15 10:12:45", '<a class="open-cti-detail" data-id="1003">详情</a>'],
+    ["8.8.8.123", "德国", "僵尸网络", "22", "d0ef6g7h8c", "2024-01-15 11:34:21", '<a class="open-cti-detail" data-id="1004">详情</a>'],
+    ["192.168.0.178", "日本", "恶意软件", "8080", "e1fg7h8i9d", "2024-01-15 12:56:08", '<a class="open-cti-detail" data-id="1005">详情</a>'],
+    ["10.0.0.89", "韩国", "钓鱼", "21", "f2gh8i9j0e", "2024-01-15 13:28:54", '<a class="open-cti-detail" data-id="1006">详情</a>'],
+    ["169.254.12.67", "加拿大", "DDoS", "1433", "g3hi9j0k1f", "2024-01-15 14:47:33", '<a class="open-cti-detail" data-id="1007">详情</a>'],
+    ["172.20.45.90", "英国", "僵尸网络", "5432", "h4ij0k1l2g", "2024-01-15 15:19:42", '<a class="open-cti-detail" data-id="1008">详情</a>'],
+    ["192.168.2.156", "法国", "钓鱼", "25", "i5jk1l2m3h", "2024-01-15 16:38:15", '<a class="open-cti-detail" data-id="1009">详情</a>'],
+    ["10.10.10.234", "澳大利亚", "应用层攻击", "6379", "j6kl2m3n4i", "2024-01-15 17:52:29", '<a class="open-cti-detail" data-id="1010">详情</a>']
+];
+var tableIndexMap = {
+    'ioc-info-table': 0,
+}
+var fixedRowsMap={
+    'ioc-info-table': 9,
+}
+tableBodyDomNameMap = {
+    'ioc-info-table': '.ioc-info-table tbody',
+}
+
+
+//初始化轮播表
+function initializeCarouselTable(tableName,tableData) {
+    if(!tableData || tableData.length === 0) {
+        return;
+    }
+    
+    var table = $(tableBodyDomNameMap[tableName])
+    // 清空表格内容
+    table.empty();
+
+    // 计算当前显示的数据范围
+    var startIndex = tableIndexMap[tableName];
+    var endIndex = Math.min(startIndex + fixedRowsMap[tableName], tableData.length);
+
+    // 添加初始数据
+    for (var i = startIndex; i < endIndex; i++) {
+        var row = $('<tr>');
+        // 循环添加每一列数据
+        for (var j = 0; j < tableData[i].length+1; j++) {
+            if (j === 0) {
+                // row.append('<td>' + (i+1) + '</td>');
+            } else {
+                // 其他列直接使用数组中的值
+                row.append('<td>' + tableData[i][j-1] + '</td>');
+            }
+        }
+        table.append(row);
+    }
+}
+
+function carouselTableLoop(tableName) {
+    var tableData = new_ioc_trend_data
+    if(!tableData || tableData.length === 0) {
+        return;
+    }
+    console.log("tableData:",tableData);
+    var table = $(tableBodyDomNameMap[tableName]);
+    
+    // 检查当前索引是否有效
+    if(tableIndexMap[tableName] >= (tableData.length)) {
+        tableIndexMap[tableName] = 1;
+    }
+    
+    // 获取最后一行
+    var lastRow = table.find('tr:last');
+
+    // 创建新行
+    var newRow = $('<tr>');
+    // 添加其他列数据
+    for (var j = 0; j < tableData[tableIndexMap[tableName]].length; j++) {
+        newRow.append('<td>' + tableData[tableIndexMap[tableName]][j] + '</td>');
+    }
+    // 添加新行并淡入
+    table.append(newRow);
+    //newRow.hide().fadeIn(500); // 淡入新行
+
+    // 获取第一行并淡出
+    //如果table行数大于10，则移除第一行
+    if(table.find('tr').length>10){
+        var firstRow = table.find('tr:first');
+        firstRow.remove(); // 移除第一行
+    }
+
+    // 更新索引，确保循环
+    tableIndexMap[tableName] = (tableIndexMap[tableName] + 1) % (tableData.length);
+}
+
+
 </script>
 {{end}}
 	

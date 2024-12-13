@@ -1,6 +1,7 @@
 package front_handler
 
 import (
+	"log"
 	"github.com/gin-gonic/gin"
 	"github.com/righstar2020/br-cti/internal/service"
 	"github.com/righstar2020/br-cti/pkg/app"
@@ -18,6 +19,7 @@ func (c *knowledgePlaneHandler) Index(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	svc := service.New(ctx.Request.Context())
 	adminLoginUid := svc.GetAdminLoginUid(ctx)
+	log.Println("knowledgePlaneHandler.Index ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓")
 	if adminLoginUid == 0 {
 		//用户未登录
 		response.BuildTpl(ctx, "knowledge_plane_normal.html").WriteTpl(gin.H{})
@@ -38,6 +40,7 @@ func (c *knowledgePlaneHandler) Normal(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	svc := service.New(ctx.Request.Context())
 	adminLoginUid := svc.GetAdminLoginUid(ctx)
+	log.Println("knowledgePlaneHandler.Normal ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓")
 	if adminLoginUid == 0 {
 		//用户未登录
 		response.BuildTpl(ctx, "knowledge_plane_normal.html").WriteTpl(gin.H{})

@@ -94,12 +94,12 @@ function saveModelInfoConfig(processId,sourceFileHash,modelHash){
         "model_hash": modelHash||modelDetailsInfoMap[processId].model_hash,
         "model_name": form.find('input[name="model_name"]').val(),
         "description": form.find('textarea[name="description"]').val(),
-        "model_tags": form.find('select[name="model-tags"]').val().join(','), // 修复tags获取
+        "model_tags": form.find('select[name="model-tags"]').val(), // 修复tags获取
         "open_source": form.find('.open-source input[name="open_source"]').val(), // 修复open_source获取
         "value": form.find('input[name="value"]').val(),
         "model_algorithm": form.find('input[name="model_algorithm"]').val() // 添加model_algorithm字段
     };
-
+    console.log("modelInfoConfig:",modelInfoConfig);
     //验证必填项
     if(!modelInfoConfig.model_hash||!modelInfoConfig.file_hash){
         layer.msg('模型信息缺失',{'time':1200});

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
+	"log"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -128,6 +128,8 @@ func createFrontRouter(r *gin.RouterGroup) *gin.RouterGroup {
 	modelMarket := r.Group("/model-market")
 	{
 		modelMarket.GET("/", frontHandler.ModelMarketHandler.Index)              //模型市场
+		modelMarket.GET("/index", frontHandler.ModelMarketHandler.Index)        //模型市场
+		modelMarket.GET("/detail", frontHandler.ModelMarketHandler.Detail)      //模型详情
 	}
 	knowledgePlane := r.Group("/knowledge-plane")
 	{
@@ -352,12 +354,18 @@ func loadFrontTemplates(r multitemplate.Renderer,funcMap template.FuncMap , temp
 		if err != nil {
 			panic(err.Error())
 		}
-        for _, include_include := range includes_includes {
-			baseName_include := filepath.Base(include_include)
-			files = append(files, layouts...)
-            files = append(files, include_include)
-			r.AddFromFilesFuncs(baseName_include, funcMap, files...)
-        }
+		if baseName == "knowledge_plane.html" {
+			
+			for _, include_include := range includes_includes {
+				log.Println("knowledge_plane.html include_include ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓")
+				baseName_include := filepath.Base(include_include)
+				log.Println("baseName_include →→→→→→→→→→"+baseName_include)
+				files = append(files, layouts...)
+				files = append(files, include_include)
+				r.AddFromFilesFuncs(baseName_include, funcMap, files...)
+			}
+		}
+        
         
         files = append(files, layouts...)
         r.AddFromFilesFuncs(baseName, funcMap, files...)

@@ -1,6 +1,7 @@
 package front_handler
 
 import (
+	"log"
 	"github.com/gin-gonic/gin"
 	"github.com/righstar2020/br-cti/internal/service"
 	"github.com/righstar2020/br-cti/pkg/app"
@@ -19,7 +20,7 @@ func (c *modelMarketHandler) Index(ctx *gin.Context) {
 	response := app.NewResponse(ctx)
 	svc := service.New(ctx.Request.Context())
 
-
+	log.Println("modelMarketHandler.Index ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓")
 	adminLoginUid := svc.GetAdminLoginUid(ctx)
 	if adminLoginUid == 0 {
 		//用户未登录

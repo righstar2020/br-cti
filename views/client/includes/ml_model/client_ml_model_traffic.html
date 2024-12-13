@@ -286,14 +286,6 @@
                     <div class="model-upchain-data-config-box">
                         <form data-process-id=""  class="model-upchain-data-config-form ui form small">
                             <div class="field">
-                                <label>模型类型</label>
-                                <div class="ui selection dropdown upchain-type">
-                                    <i class="dropdown icon"></i>
-                                    <div class="default text">流量模型</div>
-                                    <input class="small" type="hidden" name="model_type">
-                                </div>
-                            </div>
-                            <div class="field">
                                 <label>IPFS地址</label>
                                 <div class="ui action input">
                                     <input type="text" name="ipfs_address" value="">
@@ -314,7 +306,7 @@
                             <div class="field">
                                 <label>账户密码</label>
                                 <div class="ui action input">
-                                    <input type="text" name="upchain_account_password" value="">
+                                    <input type="password" name="upchain_account_password" value="">
                                     <div data-process-id="" onclick="checkUpchainAccountPassword(this)" class="check-upchain-account-password-btn ui blue left icon button">
                                       <i class="check icon"></i>
                                     </div>
