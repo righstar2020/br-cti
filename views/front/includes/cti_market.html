@@ -11,12 +11,28 @@
       
     <!--导航栏---->
     <div class="cti-market-nav">
-        <!-- 顶部主导航 -->
-        <!-- <div class="main-tabs">
-            <a href="/cti-market?category=general" class="tab-item active">通用情报</a>
-            <a href="/cti-market?category=custom" class="tab-item">定制需求</a>
+        <!-- 侧边激励算法选择 -->
+        <div class="incentive-mechanism-sidebar">
+            <div class="sidebar-item">
+                <a href="/cti-market?category=general" data-action="network">
+                    <i class="bitcoin icon"></i>
+                    <div class="sidebar-item-title">积分激励</div>
+                </a>
+            </div>
+            <div class="sidebar-item">
+                <a href="/cti-market?category=custom" data-action="wallet" data-title="三方博弈">
+                    <i class="delicious card outline icon"></i>
+                    <div class="sidebar-item-title">三方博弈</div>
+                </a>
+            </div>
+            <div class="sidebar-item">
+                <a href="/cti-market?category=general" data-action="local-data" data-title="演化博弈">
+                    <i class="joomla icon"></i>
+                    <div class="sidebar-item-title">演化博弈</div>
+                </a>
+            </div>
         </div>
-         -->
+        
         <!-- 筛选条件 -->
         <div class="filter-row">
             <div class="filter-label">分类:</div>
@@ -30,11 +46,21 @@
                 <a onclick="btnChangeTab(0);return false;" data-type="0" class="filter-tag">其他</a>
             </div>
         </div>
+        <!-- 类型 -->
+        <div class="filter-row">
+            <div class="filter-label">类型:</div>
+            <div class="filter-tags">
+                <a onclick="btnChangeTrafficType(-1);return false;" data-type="-1" class="filter-tag active">全部</a>
+                <a onclick="btnChangeTrafficType(1);return false;" data-type="1" class="filter-tag">5G</a>
+                <a onclick="btnChangeTrafficType(2);return false;" data-type="2" class="filter-tag">SDN</a>
+                <a onclick="btnChangeTrafficType(3);return false;" data-type="3" class="filter-tag">卫星网络</a>
+            </div>
+        </div>
 
         <div class="filter-row">
             <div class="filter-label">排序:</div>
             <div class="filter-tags">
-                <a onclick="btnChangeSort('time');return false;" data-sort="time" class="filter-tag active">发布时间</a>
+                <a onclick="btnChangeSort('create_time');return false;" data-sort="create_time" class="filter-tag active">发布时间</a>
                 <!-- <a onclick="btnChangeSort('needs');return false;" data-sort="needs" class="filter-tag">按需求量</a> -->
             </div>
             <div class="result-count">为您找到 <span id="totalCount">0</span>个相关情报</div>
@@ -49,9 +75,10 @@
                 <col width="15%"> <!-- CTI编号 -->
                 <col width="12%"> <!-- 情报类型 -->
                 <col width="12%"> <!-- 标签 -->
-                <col width="12%"> <!-- 发布者 -->
                 <col width="15%"> <!-- HASH -->
                 <col width="15%"> <!-- 发布时间 -->
+                <col width="12%"> <!-- 激励机制 -->
+                <col width="12%"> <!-- 积分 -->
                 <col width="14%"> <!-- 操作 -->
             </colgroup>
             <thead>
@@ -60,9 +87,10 @@
                     <th>CTI编号</th>
                     <th>情报类型</th>
                     <th>标签</th>
-                    <th>发布者</th>
                     <th>HASH</th>
                     <th>发布时间</th>
+                    <th>激励机制</th>
+                    <th>积分</th>
                     <th>操作</th>   
                 </tr>
             </thead>
@@ -98,11 +126,19 @@ const CTI_TYPE_NAME = {
     4: "应用层攻击",
     5: "开源情报"
 };
+var currentIncentiveMechanism = 1;
+var IncentiveMechanismNameMap = {
+    0: "其他",
+    1: "积分激励",
+    2: "三方博弈",
+    3: "演化博弈"
+};
 
 //处理数据
 function processCTIResponseData(data){
     var ctiInfos = [];
     if (data != null && data.cti_infos && data.cti_infos.length > 0){
+        
         ctiInfos = data.cti_infos.map((item, index) => {
             // 处理情报类型
             let ctiType = CTI_TYPE_NAME[item.cti_type] || CTI_TYPE_NAME[0];
@@ -161,9 +197,10 @@ function renderTable(response) {
             <td>${item.ctiId}</td>
             <td>${item.ctiType}</td>
             <td>${item.tags}</td>
-            <td>${truncateString(item.publisher, 10)}</td>
             <td>${truncateString(item.ctiHash, 10)}</td>
             <td>${formatDate(item.createdTime)}</td>
+            <td>${IncentiveMechanismNameMap[item.incentive_mechanism]}</td>
+            <td>${item.value}</td>
             <td class="operation-btns">
                 <a class="operation-btn cti-detail" data-id="${item.ctiId}">详情</a>
                 <a class="operation-btn cti-detail-buy" data-id="${item.ctiId}">获取</a>
@@ -312,14 +349,18 @@ function btnChangeSort(sort){
         currentCTIData.sort((a, b) => {
             if(sort === 'needs'){
                 return b.value - a.value;
-            }else if(sort === 'time'){
-                return new Date(b.createTime) - new Date(a.createTime);
+            }else if(sort === 'create_time'){
+                return new Date(b.createdTime) - new Date(a.createdTime);
             }
             return 0;
         });
-        
+        var renderData = {
+            data: currentCTIData,
+            currentPage: currentPage,
+            totalCount: currentTotalCount
+        };
         //重新渲染表格
-        renderTable(currentCTIData);
+        renderTable(renderData);
     }
     //切换label active
     $('.filter-tag[data-sort]').removeClass('active');

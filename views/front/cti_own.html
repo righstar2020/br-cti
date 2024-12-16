@@ -231,7 +231,7 @@ function processCTIResponseData(data){
     if (data!=null&&data.length>0){
         ctiInfos = data.map((item,index) => {
             // 处理情报类型
-            let ctiType = CTI_TYPE_NAME[item.cti_traffic_type] || CTI_TYPE_NAME[0];
+            let ctiType = CTI_TYPE_NAME[item.cti_type] || CTI_TYPE_NAME[0];
             
             // 处理标签
             let tags = "";

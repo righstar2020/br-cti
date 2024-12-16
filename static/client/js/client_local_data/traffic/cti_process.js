@@ -177,12 +177,14 @@ function startProcessCtiWithConfig(processId){
     var ctiProcessDataConfig = {
         "process_id": processId,
         "file_hash": taskFileHashMap[processId],
-        "cti_type": form.find('input[name="cti_type"]').val(),
+        "cti_type": parseInt(form.find('input[name="cti_type"]').val()),
         "open_source": form.find('select[name="open_source"]').val(),
         "cti_name": form.find('input[name="cti_name"]').val(),
         "cti_description": form.find('textarea[name="cti_description"]').val(),
+        "incentive_mechanism": parseInt(form.find('select[name="incentive_mechanism"]').val()),
         "default_value": form.find('input[name="default_value"]').val()
     };
+    console.log(ctiProcessDataConfig);
     //开始转换
     setCtiProcessProcessingItemUI(processId);
     $.ajax({

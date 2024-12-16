@@ -97,6 +97,7 @@ function saveModelInfoConfig(processId,sourceFileHash,modelHash){
         "model_tags": form.find('select[name="model-tags"]').val(), // 修复tags获取
         "open_source": form.find('.open-source input[name="open_source"]').val(), // 修复open_source获取
         "value": form.find('input[name="value"]').val(),
+        "incentive_mechanism": parseInt(form.find('select[name="incentive_mechanism"]').val()),
         "model_algorithm": form.find('input[name="model_algorithm"]').val() // 添加model_algorithm字段
     };
     console.log("modelInfoConfig:",modelInfoConfig);
