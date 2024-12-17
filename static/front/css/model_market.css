@@ -100,7 +100,7 @@
 }
 
 /* 标签样式 */
-.ui.labels {
+/* .ui.labels {
     padding: 15px;
     display: flex;
     flex-wrap: wrap;
@@ -127,7 +127,7 @@
     background: #374f7c;
     color: #fff;
     border-color: #374f7c;
-}
+} */
 /*Model数据表格*/
 .model-table-title{
     width: 100%;

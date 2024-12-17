@@ -166,11 +166,12 @@
 }
 
 .ui.label {
-    padding: 6px 16px;
+    padding: 6px 10px;
     background: #f5f7fa;
-    color: #374f7c;
-    border-radius: 16px;
+    color: #233556;
+    border-radius:3px;
     font-size: 13px;
+    font-weight: 500;
     transition: all 0.2s;
     border: 1px solid #edf0f7;
 }

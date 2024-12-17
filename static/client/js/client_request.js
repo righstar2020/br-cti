@@ -182,15 +182,15 @@ function queryUserOwnedCTIData(userId){
 }
 
 //查询CTI数据
-function queryCTIData(type=-1, page=1, pageSize=15){
+function queryCTIData(type=-1, page=1, pageSize=15, incentive=1){
     if(type!=-1){
-        return queryCTIDataByType(type, page, pageSize);
+        return queryCTIDataByType(type, page, pageSize, incentive);
     }else{
-        return queryCTIDataByAll(page, pageSize);
+        return queryCTIDataByAll(page, pageSize, incentive);
     }
 }
 
-function queryCTIDataByAll(page, pageSize){
+function queryCTIDataByAll(page, pageSize, incentive){
     return new Promise(function(resolve, reject){
         $.ajax({
             type: "POST", 
@@ -199,7 +199,8 @@ function queryCTIDataByAll(page, pageSize){
             url: blockchainServerHost + "/cti/queryAllCtiInfoWithPagination",
             data: JSON.stringify({
                 "page": page,
-                "page_size": pageSize
+                "page_size": pageSize,
+                "incentive": incentive
             }),
             success: function(response){
                 console.log("CTI data:", response);

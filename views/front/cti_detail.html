@@ -31,26 +31,22 @@
             justify-content: center;
             flex-wrap: wrap;
             position: relative;
-            margin-top: 80px;
+            margin-top: 60px;
         }
         /*工具栏*/
         .cti-detail-toolbar{
             position: fixed;
             top:0;
-            height: 75px;
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
             width: 100%;
             padding: 10px 0;
             background-color: white;
-            border-bottom: 1px solid gainsboro;
         }
         .cti-detail-toolbar .cti-info{
-            padding: 10px;
-            width: 100%;
+            padding: 10px 0;
             text-align: center;
         }
         .cti-info span{
@@ -60,7 +56,65 @@
             color: blue;
         }
         .cti-detail-toolbar button{
-            margin-left: 10px;
+            margin-left: 5px;
+        }
+        /*tabs-title-box*/
+        .cti-detail-tabs-title-box {
+            position: fixed;
+            width: 100%;
+            top:55px;
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+            background-color: white;
+            border-bottom: gainsboro solid 1px;
+        }
+        .cti-detail-tabs-title-box-items{
+             display: flex;
+             margin: 0 auto;
+             position: relative;
+        }
+        .cti-detail-tabs-title-item {
+            height: 30px;
+            width: 100px;
+            padding: 10px 0;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cti-detail-tabs-title-item.active {
+            color: #285191;
+        }
+
+        .buttom-line {
+            position: absolute;
+            bottom: 0;
+            height: 2px;
+            width: 100px;  /* 根据实际title宽度调整 */
+            background-color: #285191;
+            transition: transform 0.3s;
+        }
+        /* 隐藏非激活的tab内容 */
+        .cti-detail-tabs-item {
+            display: none;
+        }
+
+        .cti-detail-tabs-item.active {
+            display: block;
+        }
+        /*tabs-box*/
+        .cti-detail-tabs-box{
+            width: 100%;
+            height: 100%;
+            min-height: 300px;
+        }
+        .cti-detail-tabs-item{
+            width: 100%;
+            height: 100%;
         }
         /*CTI详细表格*/
         .cti-detail-title{
@@ -120,8 +174,28 @@
         </div>
         <button data-value="0" data-id="0" style="background-color: #285191;" class="layui-btn layui-btn-sm">获取授权</button>
     </div>
-    <div class="cti-detail-table">
+    <div class="cti-detail-tabs-title-box" style="display: none;">
+        <div class="cti-detail-tabs-title-box-items">
+            <div class="cti-detail-tabs-title-item">情报详情</div>
+            <div class="cti-detail-tabs-title-item">情报评论</div>
+            <div class="cti-detail-tabs-title-item">积分激励</div>
+            <span class="buttom-line"></span>
+        </div>
     </div>
+    
+    <div class="cti-detail-tabs-box">
+        <div class="cti-detail-tabs-item cti-detail-box">
+            <div class="cti-detail-table">
+            </div>
+        </div>
+        <div class="cti-detail-tabs-item cti-comment-box">
+            
+        </div>
+        <div class="cti-detail-tabs-item cti-incentive-box">
+            
+        </div>
+    </div>
+    
     
      
 </div>
@@ -133,6 +207,7 @@ var layer = layui.layer;
 //----------------------------------信息初始化------------------------------------------------
 document.addEventListener('DOMContentLoaded', function() {
     initCTIDetailPage();
+    initTabSystem();
 });
 function initCTIDetailPage(){
     queryUserInfo();
@@ -257,10 +332,13 @@ function updateUserInfoUI(userInfo){
 //显示头部信息面板
 function showHeaderInfoPanel(show){
     var headerInfoPanel = $('.cti-detail-toolbar');
+    var tabsTitleBox = $('.cti-detail-tabs-title-box');
     if(show){
         headerInfoPanel.show();
+        tabsTitleBox.show();
     }else{
         headerInfoPanel.hide();
+        tabsTitleBox.hide();
     }
 }
 //-------------------------------其他窗口函数------------------------------------------------
@@ -302,6 +380,38 @@ $('.cti-detail-toolbar button[data-id]').on('click', function(event) {
             });
     });
 });
+
+function initTabSystem() {
+    const tabBox = document.querySelector('.cti-detail-tabs-title-box');
+    const tabItems = document.querySelectorAll('.cti-detail-tabs-title-item');
+    const bottomLine = document.querySelector('.buttom-line');
+    const contentItems = document.querySelectorAll('.cti-detail-tabs-item');
+    
+    // 初始化底线位置
+    if(tabItems.length > 0) {
+        const firstTab = tabItems[0];
+        bottomLine.style.transform = `translateX(${firstTab.offsetLeft}px)`;
+        firstTab.classList.add('active');
+        contentItems[0].classList.add('active');
+        console.log(firstTab.offsetLeft);
+    }
+    
+    tabItems.forEach((item, index) => {
+        item.addEventListener('click', () => {
+            console.log(item.offsetLeft);
+            // 移动底线
+            bottomLine.style.transform = `translateX(${item.offsetLeft}px)`;
+            
+            // 更新激活状态
+            tabItems.forEach(tab => tab.classList.remove('active'));
+            item.classList.add('active');
+            
+            // 切换内容显示
+            contentItems.forEach(content => content.classList.remove('active'));
+            contentItems[index].classList.add('active');
+        });
+    });
+}
 
 </script>
 </body>

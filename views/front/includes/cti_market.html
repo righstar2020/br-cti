@@ -14,19 +14,19 @@
         <!-- 侧边激励算法选择 -->
         <div class="incentive-mechanism-sidebar">
             <div class="sidebar-item">
-                <a href="/cti-market?category=general" data-action="network">
+                <a onclick="btnChangeIncentive(1)" >
                     <i class="bitcoin icon"></i>
                     <div class="sidebar-item-title">积分激励</div>
                 </a>
             </div>
             <div class="sidebar-item">
-                <a href="/cti-market?category=custom" data-action="wallet" data-title="三方博弈">
+                <a onclick="btnChangeIncentive(2)" >
                     <i class="delicious card outline icon"></i>
                     <div class="sidebar-item-title">三方博弈</div>
                 </a>
             </div>
             <div class="sidebar-item">
-                <a href="/cti-market?category=general" data-action="local-data" data-title="演化博弈">
+                <a onclick="btnChangeIncentive(3)">
                     <i class="joomla icon"></i>
                     <div class="sidebar-item-title">演化博弈</div>
                 </a>
@@ -47,13 +47,13 @@
             </div>
         </div>
         <!-- 类型 -->
-        <div class="filter-row">
+        <div class="filter-row traffic-type-filter" style="display: none;">
             <div class="filter-label">类型:</div>
             <div class="filter-tags">
-                <a onclick="btnChangeTrafficType(-1);return false;" data-type="-1" class="filter-tag active">全部</a>
-                <a onclick="btnChangeTrafficType(1);return false;" data-type="1" class="filter-tag">5G</a>
-                <a onclick="btnChangeTrafficType(2);return false;" data-type="2" class="filter-tag">SDN</a>
-                <a onclick="btnChangeTrafficType(3);return false;" data-type="3" class="filter-tag">卫星网络</a>
+                <a onclick="btnChangeTrafficType(-1);return false;" data-traffic-type="-1" class="filter-tag active">全部</a>
+                <a onclick="btnChangeTrafficType(1);return false;" data-traffic-type="1" class="filter-tag">5G</a>
+                <a onclick="btnChangeTrafficType(2);return false;" data-traffic-type="2" class="filter-tag">SDN</a>
+                <a onclick="btnChangeTrafficType(3);return false;" data-traffic-type="3" class="filter-tag">卫星网络</a>
             </div>
         </div>
 
@@ -72,13 +72,13 @@
         <table class="cti-data-table">
             <colgroup>
                 <col width="5%">  <!-- 序号 -->
-                <col width="15%"> <!-- CTI编号 -->
+                <col width="14%"> <!-- CTI编号 -->
                 <col width="12%"> <!-- 情报类型 -->
-                <col width="12%"> <!-- 标签 -->
-                <col width="15%"> <!-- HASH -->
-                <col width="15%"> <!-- 发布时间 -->
+                <col width="10%"> <!-- 标签 -->
+                <col width="13%"> <!-- HASH -->
+                <col width="13%"> <!-- 发布时间 -->
                 <col width="12%"> <!-- 激励机制 -->
-                <col width="12%"> <!-- 积分 -->
+                <col width="8%"> <!-- 积分 -->
                 <col width="14%"> <!-- 操作 -->
             </colgroup>
             <thead>
@@ -113,6 +113,7 @@ var currentPage = 1;
 var currentType = -1;
 var currentSort = 'time';
 var currentPageSize = 15;
+var currentIncentiveMechanism = 1;
 var currentTotalPages = 0;
 var currentTotalCount = 0;
 var currentCTIData = [];
@@ -125,6 +126,14 @@ const CTI_TYPE_NAME = {
     3: "僵尸网络",
     4: "应用层攻击",
     5: "开源情报"
+};
+const CTI_SUB_TYPE_NAME = {
+    1:{
+        0:"恶意流量",
+        1:"5G",
+        2:"SDN",
+        3:"卫星网络"
+    }
 };
 var currentIncentiveMechanism = 1;
 var IncentiveMechanismNameMap = {
@@ -142,7 +151,10 @@ function processCTIResponseData(data){
         ctiInfos = data.cti_infos.map((item, index) => {
             // 处理情报类型
             let ctiType = CTI_TYPE_NAME[item.cti_type] || CTI_TYPE_NAME[0];
-            
+            let ctiTrafficType = "";
+            if(item.cti_type == 1){
+                ctiTrafficType = CTI_SUB_TYPE_NAME[item.cti_type][item.cti_traffic_type] || "";
+            }
             // 处理标签
             let tags = "";
             if(item.tags && item.tags.length > 0) {
@@ -154,6 +166,7 @@ function processCTIResponseData(data){
                 ctiId: item.cti_id,
                 ctiHash: item.cti_hash,
                 ctiType: ctiType,
+                ctiTrafficType: ctiTrafficType,
                 tags: tags,
                 publisher: item.creator_user_id,
                 createdTime: item.create_time,
@@ -192,14 +205,17 @@ function renderTable(response) {
     
     response.data.forEach(item => {
         const row = document.createElement('tr');
+        const incentiveLabelDiv = `<a class="ui  label">
+               ${IncentiveMechanismNameMap[item.incentive_mechanism]||'积分激励'}
+            </a>`
         row.innerHTML = `
             <td>${item.id}</td>
             <td>${item.ctiId}</td>
-            <td>${item.ctiType}</td>
+            <td>${item.ctiTrafficType==""?item.ctiType:item.ctiTrafficType}</td>
             <td>${item.tags}</td>
             <td>${truncateString(item.ctiHash, 10)}</td>
             <td>${formatDate(item.createdTime)}</td>
-            <td>${IncentiveMechanismNameMap[item.incentive_mechanism]}</td>
+            <td>${incentiveLabelDiv}</td>
             <td>${item.value}</td>
             <td class="operation-btns">
                 <a class="operation-btn cti-detail" data-id="${item.ctiId}">详情</a>
@@ -273,12 +289,16 @@ function renderPagination(currentPage, totalPages,totalCount) {
 }
 
 // 修改获取数据函数
-function fetchCTIData(type = -1, page = 1, pageSize = 15) {
+function fetchCTIData(type = -1, page = 1, pageSize = 15, incentive = 1) {
     var loadIndex = layer.load(1);
-    queryCTIData(type, page, pageSize)  // 注意：需要修改 client_request.js 中的 queryCTIData 函数
+    queryCTIData(type, page, pageSize, incentive)  // 注意：需要修改 client_request.js 中的 queryCTIData 函数
         .then(data => {
             processCTIResponseData(data);
             layer.close(loadIndex);
+            currentPage = page;
+            currentType = type;
+            currentPageSize = pageSize;
+            currentIncentiveMechanism = incentive;
         })
         .catch(error => {
             layer.msg('获取数据失败:' + error);
@@ -325,23 +345,34 @@ function bindTableEvents() {
 // 切换页面函数
 function changePage(page) {
     if (page < 1) return;
-    fetchCTIData(currentType,page,currentPageSize);
+    fetchCTIData(currentType,page,currentPageSize,currentIncentiveMechanism);
 }
 
 // 根据类型筛选数据
 function filterByType(type) {
-    fetchCTIData(type, currentPage,currentPageSize);
+    fetchCTIData(type, currentPage,currentPageSize,currentIncentiveMechanism);
 }
 
-//tab切换
+//-----------------------------------------tab切换-----------------------------------------
 function btnChangeTab(type){
     currentType = type;
-    fetchCTIData(type, currentPage,currentPageSize);
+    fetchCTIData(type, currentPage,currentPageSize,currentIncentiveMechanism);
     //切换label active
     $('.filter-tag[data-type]').removeClass('active');
     $('.filter-tag[data-type="' + type + '"]').addClass('active');
+    if(type == 1){
+        $('.traffic-type-filter').show();
+    }else{
+        $('.traffic-type-filter').hide();
+    }
 }
-//filter排序
+//-----------------------------------------sub-type切换-----------------------------------------
+var currentTrafficType = -1;
+function btnChangeTrafficType(type){
+    currentTrafficType = type;
+    fetchTrafficCTIData(currentType, currentPage,currentPageSize,currentIncentiveMechanism,currentTrafficType);
+}
+//-----------------------------------------filter排序-----------------------------------------
 function btnChangeSort(sort){
     //排序
     if(currentCTIData && currentCTIData.length > 0){
@@ -370,6 +401,11 @@ function btnChangeSort(sort){
 document.addEventListener('DOMContentLoaded', function() {
     fetchCTIData();
 });
+//-----------------------------------------激励机制-----------------------------------------
+function btnChangeIncentive(incentive=1){
+    currentIncentiveMechanism = incentive;
+    fetchCTIData(currentType, 1, currentPageSize, incentive);
+}
 //----------------------------------------窗口操作--------------------------------------------------------------------------
 var currentLayerIndex = null; //设置只可打开一个窗口
 function openCtiDetailWindow(url) {
