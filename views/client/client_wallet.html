@@ -123,7 +123,7 @@
                   <li class="wallet-tab-title">交易记录</li>
                 </ul>
                 <div class="layui-tab-content">
-                  <div class="wallet-tab-item layui-tab-item layui-show">
+                  <div class="wallet-tab-item layui-tab-item layui-show points-income-tab">
                     <div class="points-income-item" id="points-income-item-template" style="display: none;">
                         <div class="points-amount">
                             <span>+100</span>积分
@@ -135,7 +135,7 @@
                         </div>
                     </div>
                   </div>
-                  <div class="wallet-tab-item layui-tab-item">
+                  <div class="wallet-tab-item layui-tab-item points-expense-tab">
                     <!-- 积分支出项 -->
                     <div class="points-expense-item" id="points-expense-item-template" style="display: none;">
                         <div class="points-amount">
@@ -148,7 +148,7 @@
                         </div>
                     </div>
                   </div>
-                  <div class="wallet-tab-item layui-tab-item">
+                  <div class="wallet-tab-item layui-tab-item transaction-record-tab">
                     <!-- 交易记录项 -->
                     <div class="transaction-record-item" id="transaction-record-item-template" style="display: none;">
                         <div class="transaction-type">
@@ -438,7 +438,7 @@ function createPointsIncomeItemUI(transaction){
     item.querySelector('.transfer-time').innerText = transaction.timestamp;
     
     // 添加到容器
-    document.querySelector('.wallet-tab-item.layui-show').appendChild(item);
+    document.querySelector('.points-income-tab').appendChild(item);
 }
 
 //积分支出项 
@@ -458,7 +458,7 @@ function createPointsExpenseItemUI(transaction){
     item.querySelector('.transfer-time').innerText = transaction.timestamp;
     
     // 添加到容器
-    document.querySelector('.wallet-tab-item:nth-child(2)').appendChild(item);
+    document.querySelector('.points-expense-tab').appendChild(item);
 }
 
 //交易记录项
@@ -488,7 +488,7 @@ function createTransactionRecordItemUI(transaction){
         transaction.status === "success" ? "已完成" : "失败";
     
     // 添加到容器
-    document.querySelector('.wallet-tab-item:nth-child(3)').appendChild(item);
+    document.querySelector('.transaction-record-tab').appendChild(item);
 }
 //移出所有交易信息
 function removeAllTransactionRecords(){

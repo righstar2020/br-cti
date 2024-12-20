@@ -6,12 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>CTI详情</title>
     <link rel="stylesheet" href="/static/assets/libs/layui/css/layui.css"/>
+    <link rel="stylesheet" href="/static/front/css/cti_detail.css"/>
+    <link rel="stylesheet" href="/static/assets/libs/semantic/semantic.min.css"/>
    <!-- js部分 -->
     <script type="text/javascript" src="/static/assets/js/jquery.min.js"></script>
     <script type="text/javascript" src="/static/assets/libs/layui/layui.js"></script>
     <script type="text/javascript" src="/static/assets/js/common.js?v=318"></script>
     <script type="text/javascript" src="/static/client/js/client_request.js"></script>
+    <script type="text/javascript" src="/static/front/js/cti_detail.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/semantic/semantic.min.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/echarts/echarts.min.js"></script>
+    <script type="text/javascript" src="/static/front/js/cti_detail.js"></script>
     <style>
+
         html{
             overflow: auto; /* 或者使用 overflow-y: scroll; 来允许垂直滚动 */
             scrollbar-width: none; /* Firefox */
@@ -22,137 +29,70 @@
         html::-webkit-scrollbar {
             display: none;
         }
-        /** 应用快捷块样式 */
-        .cti-detail-box{
-            width: 100%;
-            min-height: 450px;
+        /* 设置滚动条的宽度和颜色 */
+        ::-webkit-scrollbar {
+            width: 0px; /* 对于水平滚动条的高度， */
+            height: 0px;
+        }
+        /*评论分页*/
+        .cti-comment-list-pagination{
+            margin-top: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
-            position: relative;
-            margin-top: 60px;
-        }
-        /*工具栏*/
-        .cti-detail-toolbar{
-            position: fixed;
-            top:0;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
             padding: 10px 0;
-            background-color: white;
         }
-        .cti-detail-toolbar .cti-info{
-            padding: 10px 0;
-            text-align: center;
-        }
-        .cti-info span{
-            margin-right: 10px;
-        }
-        .cti-info span a{
-            color: blue;
-        }
-        .cti-detail-toolbar button{
-            margin-left: 5px;
-        }
-        /*tabs-title-box*/
-        .cti-detail-tabs-title-box {
-            position: fixed;
-            width: 100%;
-            top:55px;
-            display: flex;
-            align-items: center;
-            z-index: 1000;
-            background-color: white;
-            border-bottom: gainsboro solid 1px;
-        }
-        .cti-detail-tabs-title-box-items{
-             display: flex;
-             margin: 0 auto;
-             position: relative;
-        }
-        .cti-detail-tabs-title-item {
-            height: 30px;
-            width: 100px;
-            padding: 10px 0;
+        .cti-comment-list-pagination .item{
+            padding: 5px 10px;
+            margin: 0 5px;
             cursor: pointer;
-            position: relative;
-            transition: color 0.3s;
+            color: #666;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+        .cti-comment-list-pagination .item:hover{
+            background-color: #f5f5f5;
+        }
+        .cti-comment-list-pagination .item.active{
+            background-color: #285191;
+            color: #fff;
+        }
+        .cti-comment-list-pagination .item.disabled{
+            cursor: not-allowed;
+            color: #ccc;
+        }
+        .cti-comment-list-pagination .item.icon{
+            padding: 5px 8px;
+        }
+        /*激励事件分页*/
+        .incentive-event-list-pagination{
+            margin-top: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 10px 0;
         }
-
-        .cti-detail-tabs-title-item.active {
-            color: #285191;
+        .incentive-event-list-pagination .item{
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            color: #666;
+            border-radius: 3px;
+            transition: all 0.3s;
         }
-
-        .buttom-line {
-            position: absolute;
-            bottom: 0;
-            height: 2px;
-            width: 100px;  /* 根据实际title宽度调整 */
+        .incentive-event-list-pagination .item:hover{
+            background-color: #f5f5f5;
+        }
+        .incentive-event-list-pagination .item.active{
             background-color: #285191;
-            transition: transform 0.3s;
+            color: #fff;
         }
-        /* 隐藏非激活的tab内容 */
-        .cti-detail-tabs-item {
-            display: none;
+        .incentive-event-list-pagination .item.disabled{
+            cursor: not-allowed;
+            color: #ccc;
         }
-
-        .cti-detail-tabs-item.active {
-            display: block;
-        }
-        /*tabs-box*/
-        .cti-detail-tabs-box{
-            width: 100%;
-            height: 100%;
-            min-height: 300px;
-        }
-        .cti-detail-tabs-item{
-            width: 100%;
-            height: 100%;
-        }
-        /*CTI详细表格*/
-        .cti-detail-title{
-            width: 100%;
-            margin-left: 10px;
-            padding: 10px;
-            line-height: 30px;
-            font-size: 18px;
-            font-weight: 800;
-            border-left: #285191 3px solid ;
-        }
-        .cti-detail-table{
-            width: 100%;
-            margin: 10px 0;
-            min-height: 300px;
-        }
-        .cti-detail-table .cti-detail-item{
-            width: 94%;
-            margin: 10px auto;
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-start;
-            flex-wrap: nowrap;
-        }
-        .cti-detail-item .cti-detail-label{
-            display: inline-block;
-            width: 80px;
-            text-align: right;
-            font-weight: bold;
-            padding: 10px;
-            overflow: hidden;
-        }
-        .cti-detail-item .cti-detail-content{
-            display: inline-block;
-            width: 80%;
-            text-align: left;
-            background-color: #ebebe4;
-            padding: 10px;
+        .incentive-event-list-pagination .item.icon{
+            padding: 5px 8px;
         }
     </style>
 </head>
@@ -176,9 +116,9 @@
     </div>
     <div class="cti-detail-tabs-title-box" style="display: none;">
         <div class="cti-detail-tabs-title-box-items">
-            <div class="cti-detail-tabs-title-item">情报详情</div>
-            <div class="cti-detail-tabs-title-item">情报评论</div>
-            <div class="cti-detail-tabs-title-item">积分激励</div>
+            <div data-tab="0" class="cti-detail-tabs-title-item">情报详情</div>
+            <div data-tab="1" class="cti-detail-tabs-title-item">情报评论</div>
+            <div data-tab="2" class="cti-detail-tabs-title-item">积分激励</div>
             <span class="buttom-line"></span>
         </div>
     </div>
@@ -189,10 +129,134 @@
             </div>
         </div>
         <div class="cti-detail-tabs-item cti-comment-box">
-            
+            <div class="cti-comment-form-box">
+                <div class="cti-comment-form-box-left user-info">
+                    <div class="user-id-avatar">cca..a</div>
+                    <div class="user-level label ui">初级</div>
+                </div>
+                <div class="cti-comment-form-box-right">
+                    <div class="ui form">
+                        <div class="field">
+                            <label>评价分数</label>
+                            <input class="ui input small" type="number" min="0" max="100"  placeholder="0-100">
+                        </div>
+                        <div class="field">
+                          <label>评论</label>
+                          <textarea rows="4" minrows="4"></textarea>
+                        </div>
+                        
+                        <button class="ui blue mini button" onclick="sendUserComment()">提交</button>              
+                    </div>
+                </div>
+            </div>
+            <div class="cti-comment-list-box">
+                <div class="cti-comment-list-title">
+                    评论列表(<span class="cti-comment-list-title-count">0</span>)
+                    <div class="cti-comment-list-title-right">
+                        <div onclick="sortCommentList('create_time')" data-sort="create_time" class="comment-sort-item active">最新排序</div>
+                       <div onclick="sortCommentList('user_level')" data-sort="user_level" class="comment-sort-item">综合排序</div>
+                    </div>
+                </div>
+                <div class="cti-comment-list-item" id="cti-comment-list-empty">暂无评论</div>
+                <div class="cti-comment-list-item" style="display: none;" id="cti-comment-list-item-template">
+                    <div class="cti-comment-list-item-left user-info">
+                        <div class="user-id-avatar">cca..a</div>
+                        <div class="user-level label ui">初级</div>
+                    </div>
+                    <div class="cti-comment-list-item-right comment-info">
+                        <div class="comment-score">
+                            <div class="comment-score-title">
+                                评价分数
+                            </div>
+                            <div class="comment-score-value">
+                                xxx
+                            </div>
+                        </div>
+                        <div class="comment-content">
+                            <div class="comment-content-title">
+                                评论内容
+                            </div>
+                            <div class="comment-content-value">
+                                xxx
+                            </div>
+                        </div>
+                        <div class="comment-time">
+                            <div class="comment-time-title">
+                                评论时间
+                            </div>
+                            <div class="comment-time-value">
+                                xxx
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="cti-comment-list-pagination">
+                <div class="comment-list-pagination" id="comment-list-pagination">
+                    <!-- 分页将动态渲染 -->
+                </div>
+            </div>
         </div>
         <div class="cti-detail-tabs-item cti-incentive-box">
-            
+            <div class="cti-incentive-box-item">
+                <div class="cti-incentive-box-item-title">
+                    激励介绍<span class="cti-incentive-intro-title">积分激励</span>
+                </div>
+                <div class="cti-incentive-box-item-body">
+                    <div data-mechanism="1" class="incentive-intro-box common-incentive-intro-box" style="display: none;">
+                        <img id="cti-incentive-intro-img" src="/static/front/imgs/incentive/common-incentive.png" alt="">
+                    </div>
+                    <div data-mechanism="2" class="incentive-intro-box three-party-game-intro-box" >
+                        <img id="cti-incentive-intro-img" src="/static/front/imgs/incentive/three-party-game-1.png" alt="">
+                        <img id="cti-incentive-intro-img" src="/static/front/imgs/incentive/three-party-game-2.png" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="cti-incentive-box-item">
+                <div class="cti-incentive-box-item-title">积分变化</div>
+                <div class="cti-incentive-box-item-body">
+                    <div id="cti-incentive-trend-chart"></div>
+                </div>
+            </div>
+            <div class="cti-incentive-box-item">
+                <div class="cti-incentive-box-item-title">
+                    积分事件(<span class="cti-incentive-event-list-count">0</span>)
+                    <div class="cti-incentive-event-list-title-right">
+                        <div onclick="sortIncentiveEventList('create_time')" data-sort="create_time" class="incentive-sort-item active">最新排序</div>
+                        <div onclick="sortIncentiveEventList('incentive_value')" data-sort="incentive_value" class="incentive-sort-item">积分排序</div>
+                    </div>
+                </div>
+                <div class="cti-incentive-box-item-body cti-incentive-event-list">
+                    <!-- 空状态提示 -->
+                    <div id="cti-incentive-event-list-empty" class="cti-incentive-event-list-item" style="display: none;">暂无激励事件</div>
+                    
+                    <!-- 列表项模板 -->
+                    <div class="cti-incentive-event-list-item" style="display: none;" id="cti-incentive-event-list-item-template">
+                        <div class="cti-incentive-event-list-item-left">
+                            <div class="ui label blue">积分激励</div>
+                        </div>
+                        <div class="cti-incentive-event-list-item-right">
+                            <div class="cti-incentive-event-info-item">
+                                <div class="cti-incentive-event-title">评论分数</div>
+                                <div class="cti-incentive-event-comment-score">0</div>
+                            </div>
+                            <div class="cti-incentive-event-info-item">
+                                <div class="cti-incentive-event-title">积分变化</div>
+                                <div class="cti-incentive-event-value">0</div>
+                            </div>
+                            <div class="cti-incentive-event-info-item">
+                                <div class="cti-incentive-event-title">更新时间</div>
+                                <div class="cti-incentive-event-time">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cti-incentive-event-list-pagination">
+                    <div class="incentive-event-list-pagination" id="incentive-event-list-pagination">
+                        <!-- 分页将动态渲染 -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -237,12 +301,16 @@ function queryUserInfo(){
         layer.msg('获取用户信息失败!<br>'+error,{'time':1600})
     })
 }
+var currentCTIId = null;
+var currentCTIData = null;
 function queryCTIDetailData(){
     var cti_id = getUrlParam('id');
     if(cti_id!=undefined&&cti_id!=null&&cti_id!=''){
         var loadIndex = layer.load(1);
+        currentCTIId = cti_id;
         queryCTIDataById(cti_id).then(function(data){
             console.log("CTI detail data:", data);
+            currentCTIData = data;
             updateCTIDetailUI(data);
             layer.close(loadIndex);
         }).catch(function(error){
@@ -265,9 +333,28 @@ function updateCTIDetailUI(ctiData){
         {key: 'cti_id', label: 'CTI编号'},
         {key: 'cti_hash', label: '情报哈希'},
         {key: 'cti_name', label: '情报名称'},
-        {key: 'cti_type', label: '情报类型'},
-        {key: 'cti_traffic_type', label: '流量类型'}, 
-        {key: 'open_source', label: '是否开源'},
+        {key: 'cti_type', label: '情报类型',render: function(value){
+            var ctiTypeNameMap = {
+                1:'恶意流量',
+                2:'蜜罐情报', 
+                3:'僵尸网络',
+                4:'应用层攻击',
+                5:'开源情报'
+            }
+            return ctiTypeNameMap[value] || '未知';
+        }},
+        {key: 'cti_traffic_type', label: '流量类型',render: function(value){
+            var ctiTrafficTypeMap = {
+                0:'非流量',
+                1:'5G',
+                2:'卫星网络',
+                3:'SDN'
+            }
+            return ctiTrafficTypeMap[value] || '未知';
+        }},
+        {key: 'open_source', label: '是否开源',render: function(value){
+            return value == 1 ? '是' : '否';
+        }},
         {key: 'creator_user_id', label: '发布者'},
         {key: 'tags', label: '标签'},
         {key: 'iocs', label: 'IOC类型'},
@@ -281,6 +368,17 @@ function updateCTIDetailUI(ctiData){
         {key: 'need', label: '需求量'},
         {key: 'value', label: '价值'},
         {key: 'compre_value', label: '综合价值'},
+        {key: 'incentive_mechanism', label: '激励机制',render: function(value){
+            if(value == 1){
+                return '普通激励';
+            }else if(value == 2){
+                return '三方博弈';
+            }else if(value == 3){
+                return '演化博弈';
+            }else{
+                return '未知';
+            }
+        }},
         {key: 'create_time', label: '创建时间'},
     ];
 
@@ -304,7 +402,7 @@ function updateCTIDetailUI(ctiData){
                     ${field.label}:
                 </div>
                 <div class="cti-detail-content">
-                    ${value || '暂无数据'}
+                    ${field.render ? field.render(value) : value || '暂无数据'}
                 </div>
             </div>
         `;
@@ -397,8 +495,10 @@ function initTabSystem() {
     }
     
     tabItems.forEach((item, index) => {
+
         item.addEventListener('click', () => {
-            console.log(item.offsetLeft);
+            
+
             // 移动底线
             bottomLine.style.transform = `translateX(${item.offsetLeft}px)`;
             
@@ -409,9 +509,373 @@ function initTabSystem() {
             // 切换内容显示
             contentItems.forEach(content => content.classList.remove('active'));
             contentItems[index].classList.add('active');
+            //更新数据
+            let tabId = item.getAttribute('data-tab');
+            console.log(tabId);
+            if(tabId == '1'){
+                queryCTICommentDataById(currentCTIId,1,5);
+            }
+            if(tabId == '2'){
+               queryCTIIncentiveEventDataById(currentCTIId, 1, 5);
+               queryIncentiveTrend(currentCTIId);
+               //显示激励机制介绍
+               showIncentiveIntro(currentCTIData.incentive_mechanism);
+               console.log("currentCTIData:",currentCTIData);
+            }
         });
     });
 }
+var incentiveMechanismTitleMap = {
+    1:'(积分激励)',
+    2:'(三方博弈)',
+    3:'(演化博弈)'
+}
+//显示激励机制介绍
+function showIncentiveIntro(mechanism){
+    $('.incentive-intro-box').hide();
+    var currentIncentiveMechanism = $('.incentive-intro-box[data-mechanism="' + mechanism + '"]')
+    if(mechanism!=null&&mechanism!=undefined&&mechanism!=''){
+        if(currentIncentiveMechanism!=null&&currentIncentiveMechanism!=undefined&&currentIncentiveMechanism!=''){
+            currentIncentiveMechanism.show();
+        }else{
+            $('.incentive-intro-box[data-mechanism="2"]').show();
+        }
+    }else{
+        $('.incentive-intro-box[data-mechanism="2"]').show();
+    }
+    //更新激励机制标题
+    var incentiveMechanismTitle = $('.cti-incentive-intro-title');
+    incentiveMechanismTitle.text(incentiveMechanismTitleMap[mechanism]||'');
+}
+//----------------------------------评论tabs------------------------------------------------
+//发送评论
+function sendUserComment(){
+    var commentScore = parseInt($('.cti-comment-form-box input[type="number"]').val());
+    var commentContent = $('.cti-comment-form-box textarea').val();
+    var walletId = localStorage.getItem("userWalletId");
+    console.log("commentScore:",commentScore);
+    if(commentScore==null||commentScore==''||commentScore<0||commentScore>100){
+        layer.msg('请输入0-100的整数');
+        return;
+    }
+    console.log("commentContent:",commentContent);
+    if(commentContent==null||commentContent==''){
+        layer.msg('请输入评论内容');
+        return;
+    }
+    console.log("walletId:",walletId);
+    if(walletId==null||walletId==''){
+        layer.msg('请先登录钱包');
+        return;
+    }
+    
+    layer.prompt({      
+        title: '请输入钱包密码',
+        formType: 1 // 密码输入框
+    }, function(password, index){
+        layer.close(index);
+        var loadIndex = layer.load(2);
+        registerUserComment(walletId, password, currentCTIId, commentScore, commentContent,'cti').then(function(data){
+            layer.close(loadIndex);
+            layer.msg('评论成功');
+            queryCTICommentDataById(currentCTIId,1,5);
+        }).catch(function(error){
+            layer.close(loadIndex);
+            layer.msg('评论失败: ' + error);
+        });
+    });
+}
+//排序评论
+function sortCommentList(sort) {
+    // 更新排序按钮激活状态
+    $('.comment-sort-item').removeClass('active');
+    $(`.comment-sort-item[data-sort="${sort}"]`).addClass('active');
+    
+    // 查询评论数据
+    queryCTICommentDataById(currentCTIId, 1, 5, sort);
+}
+//查询评论
+function queryCTICommentDataById(ctiId,page,pageSize,sort='create_time'){
+    var loadIndex = layer.load(2);
+    queryCommentDataByRefId(ctiId,page,pageSize,sort).then(function(data){
+        layer.close(loadIndex);
+        console.log("CTI评论数据:", data);
+        processCTICommentData(data);
+    }).catch(function(error){
+        layer.close(loadIndex);
+        console.error("Failed to get CTI comment data:", error);
+    });
+}
+//处理评论
+function processCTICommentData(data){
+    //渲染评论列表
+    renderCTICommentUI(data.comment_infos);
+    //渲染分页
+    renderCTICommentPaginationUI(data.page, data.page_size, data.total);
+    //更新评论数量
+    var commentCountSpan = $('.cti-comment-list-title-count');
+    commentCountSpan.text(data.total);
+}
+//渲染UI
+function renderCTICommentUI(commentData){
+    var commentList = $('.cti-comment-list-box');
+    var emptyCommentList = $('#cti-comment-list-empty')
+    var commentListItems = commentList.find('.cti-comment-list-item');
+    console.log("commentData:",commentData);
+    if(commentData.length <= 0){       
+        emptyCommentList.show();
+        return;
+    }
+    emptyCommentList.hide();
+    //如果评论列表不为空，则清空评论列表
+    if(commentListItems.length > 0){
+        // 将jQuery对象转换为数组后再使用forEach
+        Array.from(commentListItems).forEach(function(item){
+            if(item.id != 'cti-comment-list-item-template'){
+                item.remove();
+            }
+        });
+    }
+    commentData.forEach(function(item){
+        console.log("item:",item);
+        const commentItem = document.getElementById('cti-comment-list-item-template').cloneNode(true);
+        commentItem.id = item.comment_id;
+        commentItem.style.display = 'flex';
+        commentItem.querySelector('.user-id-avatar').innerText = item.user_id;
+        var userLevel = item.user_level>5?'专家':item.user_level>3?'中级':'普通';
+        commentItem.querySelector('.user-level').innerText = userLevel;
+        commentItem.querySelector('.comment-score-value').innerText = item.comment_score;
+        commentItem.querySelector('.comment-content-value').innerText = item.comment_content;
+        commentItem.querySelector('.comment-time-value').innerText = item.create_time;
+        commentList.append(commentItem);
+    });
+}
+
+//----------------------------------激励tabs------------------------------------------------
+
+//修改原有的查询函数,添加sort参数
+function queryCTIIncentiveEventDataById(ctiId, page, pageSize, sort='create_time'){
+    var loadIndex = layer.load(2);
+    queryIncentiveEventDataByRefId(ctiId, page, pageSize, sort).then(function(data){
+        layer.close(loadIndex);
+        console.log("CTI激励事件数据:", data);
+        processCTIIncentiveEventData(data);
+    }).catch(function(error){
+        layer.close(loadIndex);
+        console.error("Failed to get CTI incentive event data:", error);
+    });
+}
+//处理激励事件
+function processCTIIncentiveEventData(data){
+    //渲染激励事件列表
+    renderCTIIncentiveEventUI(data.incentive_infos);
+    //渲染分页
+    renderCTIIncentiveEventPaginationUI(data.page, data.page_size, data.total);
+    //更新激励事件数量
+    var incentiveEventCountSpan = $('.cti-incentive-event-list-count');
+    incentiveEventCountSpan.text(data.total);
+}
+//排序激励事件
+function sortIncentiveEventList(sort) {
+    // 更新排序按钮激活状态
+    $('.incentive-sort-item').removeClass('active');
+    $(`.incentive-sort-item[data-sort="${sort}"]`).addClass('active');
+    
+    // 查询激励事件数据
+    queryCTIIncentiveEventDataById(currentCTIId, 1, 5, sort);
+}
+
+
+
+//渲染激励事件列表
+function renderCTIIncentiveEventUI(incentiveEventData){
+    var incentiveEventList = $('.cti-incentive-event-list');
+    var emptyEventList = $('#cti-incentive-event-list-empty');
+    var eventListItems = incentiveEventList.find('.cti-incentive-event-list-item');
+    
+    // 如果数据为空
+    if(!incentiveEventData || incentiveEventData.length <= 0){
+        if(!emptyEventList.length) {
+            incentiveEventList.append('<div id="cti-incentive-event-list-empty" class="cti-incentive-event-list-item">暂无激励事件</div>');
+        } else {
+            emptyEventList.show();
+        }
+        return;
+    }
+
+    // 隐藏空状态提示
+    if(emptyEventList.length) {
+        emptyEventList.hide();
+    }
+
+    // 清空现有列表(保留模板)
+    if(eventListItems.length > 0){
+        Array.from(eventListItems).forEach(function(item){
+            if(item.id != 'cti-incentive-event-list-item-template' && item.id != 'cti-incentive-event-list-empty'){
+                item.remove();
+            }
+        });
+    }
+    //排序
+    incentiveEventData.sort(function(a, b) {
+        return new Date(b.create_time) - new Date(a.create_time);
+    });
+    // 渲染新的列表项
+    incentiveEventData.forEach(function(item){
+        const eventItem = document.getElementById('cti-incentive-event-list-item-template').cloneNode(true);
+        eventItem.id = item.incentive_id;
+        eventItem.style.display = 'flex';
+        
+        // 设置激励机制标签
+        let mechanismLabel = '积分激励';
+        let labelColor = 'blue';
+        if(item.incentive_mechanism === 2) {
+            mechanismLabel = '三方博弈';
+            labelColor = 'teal';
+        } else if(item.incentive_mechanism === 3) {
+            mechanismLabel = '演化博弈';
+            labelColor = 'green';
+        }
+        
+        // 更新激励机制标签
+        const labelDiv = eventItem.querySelector('.ui.label');
+        labelDiv.className = `ui label ${labelColor}`;
+        labelDiv.textContent = mechanismLabel;
+        //更新评论分数
+        eventItem.querySelector('.cti-incentive-event-comment-score').textContent = item.comment_score;
+        // 更新积分变化值
+        var valueChange = item.incentive_value - item.history_value;
+        //保留两位小数
+        valueChange = valueChange.toFixed(2);
+        const valueChangeText = valueChange >= 0 ? `+${valueChange}` : valueChange;
+        eventItem.querySelector('.cti-incentive-event-value').textContent = valueChangeText;
+        
+        // 更新时间
+        eventItem.querySelector('.cti-incentive-event-time').textContent = item.create_time;
+
+        incentiveEventList.append(eventItem);
+    });
+}
+
+//----------------------------------其他渲染工具------------------------------------------------
+//渲染分页
+function renderCTICommentPaginationUI(currentPage,pageSize,total){
+    const pagination = $('.comment-list-pagination');
+    pagination.empty();
+    
+    // 计算总页数
+    const totalPages = Math.ceil(total / pageSize);
+    
+    // 如果没有数据或总页数为0,直接返回
+    if(total <= 0 || totalPages <= 0) return;
+
+    let paginationHtml = `
+        <a class="item icon ${currentPage == 1 ? 'disabled' : ''}" onclick="${currentPage > 1 ? 'queryCTICommentDataById(currentCTIId,' + (currentPage - 1) + ','+pageSize+')' : 'return false;'}" style="cursor:${currentPage == 1 ? 'not-allowed' : 'pointer'}">
+            <i class="left chevron icon"></i>
+        </a>
+    `;
+    
+    // 计算显示的页码范围
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
+    
+    // 调整startPage确保始终显示5个页码(如果有)
+    if(endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+    }
+    
+    // 添加第一页和省略号
+    if(startPage > 1) {
+        paginationHtml += `
+            <a class="item" onclick="queryCTICommentDataById(currentCTIId,1,${pageSize})">1</a>
+            ${startPage > 2 ? '<span class="item">...</span>' : ''}
+        `;
+    }
+    
+    // 添加中间的页码
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHtml += `
+            <a data-page="${i}" class="item ${currentPage === i ? 'active' : ''}" onclick="queryCTICommentDataById(currentCTIId,${i},${pageSize})">${i}</a>
+        `;
+    }
+    
+    // 添加最后页和省略号
+    if(endPage < totalPages) {
+        paginationHtml += `
+            ${endPage < totalPages - 1 ? '<span class="item">...</span>' : ''}
+            <a class="item" onclick="queryCTICommentDataById(currentCTIId,${totalPages},${pageSize})">${totalPages}</a>
+        `;
+    }
+   
+    paginationHtml += `
+        <a class="item icon ${currentPage == totalPages ? 'disabled' : ''}" onclick="${currentPage < totalPages ? 'queryCTICommentDataById(currentCTIId,' + (currentPage + 1) + ','+pageSize+')' : 'return false;'}" style="cursor:${currentPage == totalPages ? 'not-allowed' : 'pointer'}">
+        <i class="right chevron icon"></i>
+        </a>
+    `;
+    
+    pagination.html(paginationHtml);
+
+    //切换label active
+    pagination.find('.item').removeClass('active');
+    pagination.find('.item[data-page="' + currentPage + '"]').addClass('active');
+}
+
+//激励事件分页
+function renderCTIIncentiveEventPaginationUI(currentPage,pageSize,total){
+    if(total<=0)return
+    var pagination = $('#incentive-event-list-pagination');
+    var totalPages = Math.ceil(total / pageSize);
+    var paginationHtml = `
+        <a class="item icon ${currentPage == 1 ? 'disabled' : ''}" onclick="${currentPage > 1 ? 'queryCTIIncentiveEventDataById(currentCTIId,' + (currentPage - 1) + ','+pageSize+')' : 'return false;'}" style="cursor:${currentPage == 1 ? 'not-allowed' : 'pointer'}">
+            <i class="left chevron icon"></i>
+        </a>
+    `;
+    
+    // 计算显示的页码范围
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
+    
+    // 调整startPage确保始终显示5个页码(如果有)
+    if(endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
+    }
+    
+    // 添加第一页和省略号
+    if(startPage > 1) {
+        paginationHtml += `
+            <a class="item" onclick="queryCTIIncentiveEventDataById(currentCTIId,1,${pageSize})">1</a>
+            ${startPage > 2 ? '<span class="item">...</span>' : ''}
+        `;
+    }
+    
+    // 添加中间的页码
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHtml += `
+            <a data-page="${i}" class="item ${currentPage === i ? 'active' : ''}" onclick="queryCTIIncentiveEventDataById(currentCTIId,${i},${pageSize})">${i}</a>
+        `;
+    }
+    
+    // 添加最后页和省略号
+    if(endPage < totalPages) {
+        paginationHtml += `
+            ${endPage < totalPages - 1 ? '<span class="item">...</span>' : ''}
+            <a class="item" onclick="queryCTIIncentiveEventDataById(currentCTIId,${totalPages},${pageSize})">${totalPages}</a>
+        `;
+    }
+   
+    paginationHtml += `
+        <a class="item icon ${currentPage == totalPages ? 'disabled' : ''}" onclick="${currentPage < totalPages ? 'queryCTIIncentiveEventDataById(currentCTIId,' + (currentPage + 1) + ','+pageSize+')' : 'return false;'}" style="cursor:${currentPage == totalPages ? 'not-allowed' : 'pointer'}">
+        <i class="right chevron icon"></i>
+        </a>
+    `;
+    
+    pagination.html(paginationHtml);
+
+    //切换label active
+    pagination.find('.item').removeClass('active');
+    pagination.find('.item[data-page="' + currentPage + '"]').addClass('active');
+}
+
 
 </script>
 </body>

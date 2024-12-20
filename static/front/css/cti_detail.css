@@ -1,0 +1,461 @@
+/** 应用快捷块样式 */
+.cti-detail-box{
+    width: 100%;
+    min-height: 450px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    margin-top: 60px;
+}
+/*工具栏*/
+.cti-detail-toolbar{
+    position: fixed;
+    top:0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 0;
+    background-color: white;
+}
+.cti-detail-toolbar .cti-info{
+    padding: 10px 0;
+    text-align: center;
+}
+.cti-info span{
+    margin-right: 10px;
+}
+.cti-info span a{
+    color: blue;
+}
+.cti-detail-toolbar button{
+    margin-left: 5px;
+}
+/*tabs-title-box*/
+.cti-detail-tabs-title-box {
+    position: fixed;
+    width: 100%;
+    top:55px;
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+    background-color: white;
+    border-bottom: gainsboro solid 1px;
+}
+.cti-detail-tabs-title-box-items{
+     display: flex;
+     margin: 0 auto;
+     position: relative;
+}
+.cti-detail-tabs-title-item {
+    height: 30px;
+    width: 100px;
+    padding: 10px 0;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cti-detail-tabs-title-item.active {
+    color: #285191;
+}
+
+.buttom-line {
+    position: absolute;
+    bottom: 0;
+    height: 2px;
+    width: 100px;  /* 根据实际title宽度调整 */
+    background-color: #285191;
+    transition: transform 0.3s;
+}
+/* 隐藏非激活的tab内容 */
+.cti-detail-tabs-item {
+    display: none;
+}
+
+.cti-detail-tabs-item.active {
+    display: block;
+}
+/*tabs-box*/
+.cti-detail-tabs-box{
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+}
+.cti-detail-tabs-item{
+    width: 100%;
+    height: 100%;
+}
+/*tab1-CTI详细表格*/
+.cti-detail-title{
+    width: 100%;
+    margin-left: 10px;
+    padding: 10px;
+    line-height: 30px;
+    font-size: 18px;
+    font-weight: 800;
+    border-left: #285191 3px solid ;
+}
+.cti-detail-table{
+    width: 100%;
+    margin: 10px 0;
+    min-height: 300px;
+}
+.cti-detail-table .cti-detail-item{
+    width: 100%;
+    margin: 10px auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+}
+.cti-detail-item .cti-detail-label{
+    display: inline-block;
+    width: 100px;
+    text-align: right;
+    font-weight: bold;
+    padding: 10px;
+    overflow: hidden;
+}
+.cti-detail-item .cti-detail-content{
+    display: inline-block;
+    width: 80%;
+    text-align: left;
+    background-color: #ebebe4;
+    padding: 10px;
+}
+/*tab2-CTI评论*/
+.cti-comment-box{
+    width: 100%;
+    height: 100%;
+    cursor: default;
+}
+.cti-comment-box .cti-comment-item{
+    width: 92%;
+    margin: 10px auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+}
+
+
+
+/*评论表单区域*/
+.cti-comment-form-box {
+    width: 92%;
+    margin: 20px auto;
+    display: flex;
+    align-items: flex-start;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    margin-top: 40px;
+}
+
+.cti-comment-form-box-left {
+    width: 80px;
+    margin-right: 10px;
+    margin-top: 20px;
+}
+
+.cti-comment-form-box-right {
+    flex: 1;
+}
+
+/*用户信息公共样式*/
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.user-info .user-id-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #285191;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.user-info .user-level {
+    font-size: 12px;
+    padding: 3px 8px;
+}
+/* 表单样式优化 */
+.cti-comment-form-box .ui.form textarea {
+    margin-bottom: 5px;
+}
+
+.cti-comment-form-box .ui.form .fields {
+    margin-bottom: 0;
+}
+
+.cti-comment-form-box .ui.blue.button {
+}
+
+/*评论列表区域*/
+.cti-comment-list-box {
+    width: 92%;
+    margin: 0 auto;
+}
+
+.cti-comment-list-title {
+    position: relative;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+}
+
+.cti-comment-list-title-right {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.comment-sort-item {
+    position: relative;
+    display: inline-block;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    color: #666;
+}
+
+.comment-sort-item:hover {
+    color: #285191;
+}
+
+.comment-sort-item.active {
+    color: #285191;
+}
+
+.cti-comment-list-item {
+    display: flex;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+    padding-top: 10px;
+}
+
+.cti-comment-list-item-left {
+    width: 80px;
+    margin-right: 10px;
+    cursor: default;
+}
+
+.cti-comment-list-item-right {
+    flex: 1;
+}
+
+.comment-info > div {
+    margin-bottom: 10px;
+}
+
+.comment-info .comment-score-title,
+.comment-info .comment-content-title,
+.comment-info .comment-time-title {
+    width: 60px;
+    color: #666;
+    font-size: 14px;
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.comment-info .comment-score-value,
+.comment-info .comment-content-value,
+.comment-info .comment-time-value {
+    font-size: 14px;
+    line-height: 1.6;
+    background-color: #f9f9f9;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: default;
+}
+
+.comment-info .comment-content-value {
+    min-height: 60px;
+    line-height: 20px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+}
+
+
+
+
+
+/*tab3-CTI激励机制*/
+.cti-incentive-box {
+    width: 92%;
+    margin: 20px auto;
+    margin-top: 40px;
+}
+
+.cti-incentive-box-item {
+    margin-bottom: 30px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.cti-incentive-box-item-title {
+    font-size: 16px;
+    font-weight: bold;
+    padding:10px 15px;
+    border-bottom: 1px solid #eee;
+    color: #285191;
+    position: relative;
+}
+
+.cti-incentive-box-item-body {
+    padding: 10px;
+}
+
+/* 激励介绍图片样式 */
+.incentive-intro-box img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* 积分趋势图表容器 */
+#cti-incentive-trend-chart {
+    width: 100%;
+    height: 300px;
+}
+
+/* 积分事件列表样式 */
+.cti-incentive-event-list-item {
+    display: flex;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.cti-incentive-event-list-item-left {
+    width: 80px;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.cti-incentive-event-list-item-right {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cti-incentive-event-info-item {
+    display: flex;
+    align-items: flex-start;
+    margin-right: 10px;
+}
+
+.cti-incentive-event-title {
+    color: #666;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.cti-incentive-event-value {
+    font-size: 14px;
+    color: #285191;
+    font-weight: 500;
+}
+
+/* 空状态提示样式 */
+#cti-incentive-event-list-empty {
+    text-align: center;
+    padding: 10px;
+    padding-bottom: 20px;
+    font-size: 14px;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+/* 调整标签样式 */
+.cti-incentive-event-list-item .ui.label {
+    margin: 0;
+    min-width: 80px;
+    text-align: center;
+}
+
+/* 调整积分变化值样式 */
+.cti-incentive-event-value {
+    font-weight: bold;
+    font-size: 15px;
+}
+
+/* 正数显示绿色，负数显示红色 */
+.cti-incentive-event-value:not(:empty):first-letter {
+    color: #21ba45;
+}
+
+.cti-incentive-event-value[text-content^="-"] {
+    color: #db2828;
+}
+
+/* 积分事件列表标题和排序按钮样式 */
+.cti-incentive-event-list-title {
+    position: relative;
+    width: 100%;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+    cursor: default;
+}
+
+.cti-incentive-event-list-title-right {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    position: absolute;
+    right: 10px;
+    transform: translateY(-50%);
+    top: 50%;
+}
+
+.incentive-sort-item {
+    position: relative;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    padding: 2px 5px;
+    border-radius: 2px;
+    transition: all 0.3s;
+}
+
+.incentive-sort-item:hover {
+    color: #285191;
+}
+
+.incentive-sort-item.active {
+    color: #285191;
+    font-weight: bold;
+}

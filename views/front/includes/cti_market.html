@@ -169,6 +169,7 @@ function processCTIResponseData(data){
                 ctiTrafficType: ctiTrafficType,
                 tags: tags,
                 publisher: item.creator_user_id,
+                incentiveMechanism: item.incentive_mechanism,
                 createdTime: item.create_time,
                 value: item.value
             };
@@ -206,7 +207,7 @@ function renderTable(response) {
     response.data.forEach(item => {
         const row = document.createElement('tr');
         const incentiveLabelDiv = `<a class="ui  label">
-               ${IncentiveMechanismNameMap[item.incentive_mechanism]||'积分激励'}
+               ${IncentiveMechanismNameMap[item.incentiveMechanism]||'积分激励'}
             </a>`
         row.innerHTML = `
             <td>${item.id}</td>

@@ -272,6 +272,10 @@ function queryCTIDataByType(type, page, pageSize){
         })
     })
 }
+
+
+
+
 //购买CTI
 function purchaseCTI(walletId,password,ctiId){
     return new Promise(function(resolve, reject){
@@ -290,7 +294,7 @@ function purchaseCTI(walletId,password,ctiId){
                 if(response.code === 200 && response.data){
                     resolve(response.data);
                 }else{
-                    reject("Purchase CTI failed: " + response.message);
+                    reject(response.message);
                 }
             },
             error: function(XMLHttpRequest, textStatus, errorThrown){

@@ -182,9 +182,9 @@ function startProcessCtiWithConfig(processId){
         "cti_name": form.find('input[name="cti_name"]').val(),
         "cti_description": form.find('textarea[name="cti_description"]').val(),
         "incentive_mechanism": parseInt(form.find('select[name="incentive_mechanism"]').val()),
-        "default_value": parseFloat(form.find('input[name="default_value"]').val())
+        "default_value": parseFloat(form.find('input[name="default_value"]').val())||0
     };
-    console.log(ctiProcessDataConfig);
+    console.log("ctiProcessDataConfig:",ctiProcessDataConfig);
     //开始转换
     setCtiProcessProcessingItemUI(processId);
     $.ajax({
