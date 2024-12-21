@@ -290,7 +290,7 @@ function renderPagination(currentPage, totalPages,totalCount) {
 }
 
 // 修改获取数据函数
-function fetchCTIData(type = -1, page = 1, pageSize = 15, incentive = 1) {
+function fetchCTIData(type = -1, page = 1, pageSize = 15, incentive = 0) {
     var loadIndex = layer.load(1);
     queryCTIData(type, page, pageSize, incentive)  // 注意：需要修改 client_request.js 中的 queryCTIData 函数
         .then(data => {

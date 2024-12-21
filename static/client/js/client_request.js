@@ -182,15 +182,18 @@ function queryUserOwnedCTIData(userId){
 }
 
 //查询CTI数据
-function queryCTIData(type=-1, page=1, pageSize=15, incentive=1){
+function queryCTIData(type=-1, page=1, pageSize=15, incentive=0){
+    if(incentive!=0){
+        return queryCTIDataByIncentive(page, pageSize, incentive);
+    }
     if(type!=-1){
-        return queryCTIDataByType(type, page, pageSize, incentive);
+        return queryCTIDataByType(type, page, pageSize);
     }else{
-        return queryCTIDataByAll(page, pageSize, incentive);
+        return queryCTIDataByAll(page, pageSize);
     }
 }
 
-function queryCTIDataByAll(page, pageSize, incentive){
+function queryCTIDataByAll(page, pageSize){
     return new Promise(function(resolve, reject){
         $.ajax({
             type: "POST", 
@@ -199,8 +202,7 @@ function queryCTIDataByAll(page, pageSize, incentive){
             url: blockchainServerHost + "/cti/queryAllCtiInfoWithPagination",
             data: JSON.stringify({
                 "page": page,
-                "page_size": pageSize,
-                "incentive": incentive
+                "page_size": pageSize
             }),
             success: function(response){
                 console.log("CTI data:", response);
@@ -213,6 +215,49 @@ function queryCTIDataByAll(page, pageSize, incentive){
                                 total: data.total,
                                 page: data.page,
                                 page_size: data.page_size
+                            });
+                        } else {
+                            reject("Invalid CTI data format");
+                        }
+                    } catch(e) {
+                        reject("Failed to parse CTI data: " + e.message);
+                    }
+                }else{
+                    reject("CTI data is null");
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+                reject(errorThrown);
+            }
+        })
+    })
+}
+
+//按激励机制分页查询CTI数据
+function queryCTIDataByIncentive(page, pageSize,incentive){
+    return new Promise(function(resolve, reject){
+        $.ajax({
+            type: "POST", 
+            dataType: "json",
+            contentType: "application/json",
+            url: blockchainServerHost + "/cti/queryCtiInfoByIncentiveMechanismWithPagination",
+            data: JSON.stringify({
+                "page": page,
+                "page_size": pageSize,
+                "incentive_mechanism": incentive
+            }),
+            success: function(response){
+                console.log("CTI data:", response);
+                if(response.result != null && response.result != undefined){
+                    try {
+                        const data = JSON.parse(response.result);
+                        if(data.cti_infos && Array.isArray(data.cti_infos)){
+                            resolve({
+                                cti_infos: data.cti_infos,
+                                total: data.total,
+                                page: data.page,
+                                page_size: data.page_size,
+                                incentive_mechanism: incentive
                             });
                         } else {
                             reject("Invalid CTI data format");

@@ -37,34 +37,38 @@
     </div>
 </div>
 <script type="text/javascript" src="/static/front/js/init_kp_echart_traffic.js"></script>
+<script type="text/javascript" src="/static/front/js/update_kp_echart_traffic.js"></script>
 <script>
-    $(document).ready(function() {
-        
-       //特征类型
-       renderFeatureTypePieCharts();
+$(document).ready(function() {
     
-        // 窗口大小改变时重绘图表
-        window.addEventListener('resize', function() {
-            renderFeatureTypePieCharts();
-        });
-        //类型切换
-        $('.head-toolbar-2 a').on('click', function() {
-            // 移除所有 a 元素的 blue 类
-            $('.head-toolbar-2 a').removeClass('blue');
-            var tabName = $(this).data("tab")
-            console.log(tabName)
-            $(this).removeClass('grey').addClass('blue');
-        });
-        //时序图切换
-        $('.head-toolbar-3 a').on('click', function() {
-            // 移除所有 a 元素的 blue 类
-            $('.head-toolbar-3 a').removeClass('blue');
-            var tabName = $(this).data("tab")
-            console.log(tabName)
-            $(this).removeClass('grey').addClass('blue');
-            changeTimelineMode(tabName)
-        });
+    //特征类型
+    renderFeatureTypePieCharts();
+
+    // 窗口大小改变时重绘图表
+    window.addEventListener('resize', function() {
+        renderFeatureTypePieCharts();
     });
+    //类型切换
+    $('.head-toolbar-2 a').on('click', function() {
+        // 移除所有 a 元素的 blue 类
+        $('.head-toolbar-2 a').removeClass('blue');
+        var tabName = $(this).data("tab")
+        console.log(tabName)
+        $(this).removeClass('grey').addClass('blue');
+    });
+    //时序图切换
+    $('.head-toolbar-3 a').on('click', function() {
+        // 移除所有 a 元素的 blue 类
+        $('.head-toolbar-3 a').removeClass('blue');
+        var tabName = $(this).data("tab")
+        console.log(tabName)
+        $(this).removeClass('grey').addClass('blue');
+        changeTimelineMode(tabName)
+    });
+    
+});
+
+
 </script>
 {{end}}
 

@@ -84,7 +84,156 @@
             $(this).removeClass('grey').addClass('blue');
             changeTimelineMode(tabName)
         });
+        //初始化图表
+        getIOCGeoDistribution();
+        getIOCTypeDistribution();
+        getAttackTypeTimeline();
+        //定时函数
+        setInterval(function() {
+            getAttackTypeTimeline();
+        }, 10000);
     });
+//-----------------------------------------1.地理位置分布-----------------------------------------
+//查询地理位置分布
+function getIOCGeoDistribution(){
+    queryIOCGeoDistribution().then(function(data){
+        console.log("queryIOCGeoDistribution:",data)
+        var processData = processIOCGeoDistributionData(data)
+        renderWorldMap(processData);
+        //设置中国地图数据
+        var chinaData = processChinaIOCGeoDistributionData(data)
+        setChinaMapData(chinaData);
+    })
+}
+//处理地理位置分布数据
+function processIOCGeoDistributionData(data){
+     // 转换数据函数
+     function convertData(data) {
+        const countryMap = {
+            'AU': '澳大利亚',
+            'BR': '巴西', 
+            'CA': '加拿大',
+            'CN': '中国',
+            'DE': '德国',
+            'ES': '西班牙',
+            'FR': '法国',
+            'GB': '英国',
+            'IN': '印度',
+            'IT': '意大利',
+            'JP': '日本',
+            'KR': '韩国',
+            'RU': '俄罗斯',
+            'SG': '新加坡',
+            'US': '美国'
+        };
+
+        let processedData = [];
+        for (const [countryCode, states] of Object.entries(data)) {
+            const countryName = countryMap[countryCode] || countryCode;
+            let totalValue = 0;
+            
+            // 计算每个国家的总值
+            for (const value of Object.values(states)) {
+                totalValue += value;
+            }
+            
+            // 只添加国家级别的数据
+            processedData.push({
+                name: countryName,
+                value: totalValue
+            });
+        }
+        return processedData;
+    }
+
+    var convertedData = convertData(data);
+    return convertedData;
+}
+//处理中国地区的数据(到省)
+function processChinaIOCGeoDistributionData(data){
+    const provinceMap = {
+        'Beijing': '北京',
+        'Guangdong': '广东',
+        'Shanghai': '上海',
+        'Anhui': '安徽',
+        'Fujian': '福建',
+        'Gansu': '甘肃',
+        'Guangxi': '广西',
+        'Guizhou': '贵州',
+        'Hainan': '海南',
+        'Hebei': '河北',
+        'Heilongjiang': '黑龙江',
+        'Henan': '河南',
+        'Hubei': '湖北',
+        'Hunan': '湖南',
+        'Jiangsu': '江苏',
+        'Jiangxi': '江西',
+        'Liaoning': '辽宁',
+        'Ningxia': '宁夏',
+        'Qinghai': '青海',
+        'Shaanxi': '陕西',
+        'Shandong': '山东',
+        'Shanxi': '山西',
+        'Sichuan': '四川',
+        'Tianjin': '天津',
+        'Xinjiang': '新疆',
+        'Yunnan': '云南',
+        'Zhejiang': '浙江'
+    };
+
+    let processedData = [];
+    for (const [province, value] of Object.entries(data['CN'])) {
+        const provinceName = provinceMap[province] || province;
+        processedData.push({
+            name: provinceName,
+            value: value
+        });
+    }
+    return processedData;
+}
+//-----------------------------------------2.IOC类型分布-----------------------------------------
+//查询IOC类型分布
+function getIOCTypeDistribution(){
+    queryIOCTypeDistribution().then(function(data){
+        console.log("queryIOCTypeDistribution:",data)
+        var processData = processIOCTypeDistributionData(data)
+        renderIOCTypeDistributionChart(processData)
+    })
+}
+//处理IOC类型分布数据
+function processIOCTypeDistributionData(data){
+    var processedData = [];
+    Object.keys(data).forEach(type => {
+        var typeName = type.split('_')[0]
+        processedData.push({
+            name: typeName,
+            value: data[type]
+        });
+    });
+    return processedData;
+}
+//-----------------------------------------3.攻击类型时序-----------------------------------------
+//查询攻击类型时序
+function getAttackTypeTimeline(){
+    queryAttackTypeStatistics().then(function(data){
+        console.log("queryAttackTypeStatistics:",data)
+        var processData = processAttackTypeTimelineData(data)
+        renderAttackTypeTimelineChart(processData)
+    })
+}
+//处理攻击类型时序数据
+function processAttackTypeTimelineData(data){
+    return data.map(item => ({
+        time: item.time,
+        malicious_traffic: item.stats.malicious_traffic || 0,
+        honeypot_info: item.stats.honeypot_info || 0,
+        botnet: item.stats.botnet || 0,
+        app_layer_attack: item.stats.app_layer_attack || 0,
+        open_source_info: item.stats.open_source_info || 0,
+        total: Object.values(item.stats).reduce((sum, val) => sum + (val || 0), 0)
+    }));
+}
+
 </script>
 {{end}}
 

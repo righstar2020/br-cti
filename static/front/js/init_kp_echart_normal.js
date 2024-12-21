@@ -315,43 +315,319 @@ ctiTimelineChart.setOption(ctiTimelineOption);
 
 //切换显示模式
 function changeTimelineMode(mode) {
-    var dateData = recent2DaysData.hourlyDates.map(dateStr => {
-        let date = new Date(dateStr);
-        return ` ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
-    }); // 只显示2天的数据;
-    var attackData_tmp = recent2DaysData;
-    var totalData_tmp = recent2DaysTotalData;
-    var interval = 6
-    if (mode === 'day') {
-        //最近1月的数据
-        dateData = recent1MonthData.dailyDates.map(dateStr => {
-            let date = new Date(dateStr);
-            return `${String(date.getMonth()).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        });
-        attackData_tmp = recent1MonthData
-        totalData_tmp = recent1MonthTotalData
-        interval = 4
-    }
-    if (mode === 'month') {
-        //最近1年的数据
-        dateData = recent1YearData.monthlyDates.map(dateStr => {
-            let date = new Date(dateStr);
-            return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2, '0')}`;
-        });
-        attackData_tmp = recent1YearData;
-        totalData_tmp = recent1YearTotalData;
-        interval = 1
+    let dateData, attackData_tmp, totalData_tmp, interval;
+    
+    switch(mode) {
+        case 'day':
+            dateData = recent1MonthData.dailyDates.map(dateStr => {
+                let date = new Date(dateStr);
+                return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            });
+            attackData_tmp = recent1MonthData;
+            totalData_tmp = recent1MonthTotalData;
+            interval = 4;
+            break;
+        case 'month':
+            dateData = recent1YearData.monthlyDates.map(dateStr => {
+                let date = new Date(dateStr);
+                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            });
+            attackData_tmp = recent1YearData;
+            totalData_tmp = recent1YearTotalData;
+            interval = 1;
+            break;
+        default: // hour
+            dateData = recent2DaysData.hourlyDates.map(dateStr => {
+                let date = new Date(dateStr);
+                return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+            });
+            attackData_tmp = recent2DaysData;
+            totalData_tmp = recent2DaysTotalData;
+            interval = 6;
     }
     
-    //更新数据
-    ctiTimelineOption.xAxis.data = dateData;
-    ctiTimelineOption.series.forEach(series => {
-        series.data = series.name === '恶意软件' ? attackData_tmp.malware :
-                        series.name === '钓鱼' ? attackData_tmp.phishing :
-                        series.name === 'DDoS' ? attackData_tmp.ddos :
-                        series.name === '僵尸网络' ? attackData_tmp.botnet :
-                        series.name === '应用层攻击' ? attackData_tmp.app_attack : totalData_tmp;
+    // 完整的配置项
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                label: {
+                    backgroundColor: '#6a7985'
+                }
+            }
+        },
+        legend: {
+            data: ['恶意软件', '钓鱼', 'DDoS', '僵尸网络', '应用层攻击', '总量'],
+            orient: 'vertical',
+            right: 10,
+            bottom: 60,
+            icon: 'rect'
+        },
+        grid: {
+            left: '3%',
+            right: '12%',
+            bottom: '5%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            data: dateData,
+            axisLabel: {
+                interval: interval,
+                rotate: 0
+            }
+        },
+        yAxis: {
+            type: 'value',
+            name: '数量'
+        },
+        series: [
+            {
+                name: '恶意软件',
+                type: 'bar',
+                stack: '总量',
+                data: attackData_tmp.malware,
+                areaStyle: {},
+                itemStyle: {
+                    color: colors[0]
+                }
+            },
+            {
+                name: '钓鱼',
+                type: 'bar',
+                stack: '总量',
+                data: attackData_tmp.phishing,
+                areaStyle: {},
+                itemStyle: {
+                    color: colors[1]
+                }
+            },
+            {
+                name: 'DDoS',
+                type: 'bar',
+                stack: '总量',
+                data: attackData_tmp.ddos,
+                areaStyle: {},
+                itemStyle: {
+                    color: colors[2]
+                }
+            },
+            {
+                name: '僵尸网络',
+                type: 'bar',
+                stack: '总量',
+                data: attackData_tmp.botnet,
+                areaStyle: {},
+                itemStyle: {
+                    color: colors[3]
+                }
+            },
+            {
+                name: '应用层攻击',
+                type: 'bar',
+                stack: '总量',
+                data: attackData_tmp.app_attack,
+                areaStyle: {},
+                itemStyle: {
+                    color: colors[4]
+                }
+            },
+            {
+                name: '总量',
+                type: 'line',
+                data: totalData_tmp,
+                symbol: 'none',
+                itemStyle: {
+                    color: colors[5]
+                },
+                lineStyle: {
+                    color: colors[5],
+                    width: 2
+                },
+                z: 100
+            }
+        ]
+    };
+
+    // 使用完整的配置项更新图表
+    ctiTimelineChart.setOption(option, true);
+}
+
+// 修改 renderIOCTypeDistributionChart 函数
+function renderIOCTypeDistributionChart(data) {
+    // 过滤掉 total
+    const filteredData = data.filter(item => item.name !== 'total');
+    
+    // 计算新的总数
+    const total = filteredData.reduce((sum, item) => sum + item.value, 0);
+    
+    // 完整的配置项
+    const option = {
+        tooltip: {
+            trigger: 'item',
+            formatter: function (params) {
+                const percent = ((params.value / total) * 100).toFixed(1);
+                return ` ${params.name}<br/>${formatNumber(params.value)} (${percent}%)`;
+            }
+        },
+        legend: {
+            orient: 'vertical',
+            right: 10,
+            bottom: 20,
+            data: filteredData.map(item => item.name)
+        },
+        series: [
+            {
+                name: 'IOC 类型',
+                type: 'pie',
+                radius: '50%',
+                data: filteredData,
+                emphasis: {
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                },
+                label: {
+                    show: true,
+                    formatter: function (params) {
+                        const percent = ((params.value / total) * 100).toFixed(1);
+                        return `${params.name}: ${formatNumber(params.value)}(${percent}%)`;
+                    }
+                },
+                itemStyle: {
+                    color: function(params) {
+                        const colors = ["#a1d9e8", "#7ac6e5", "#52b3e1", "#2a9fd2", "#008ac3", "#006096"];
+                        const index = params.dataIndex % colors.length;
+                        return colors[index];
+                    }
+                }
+            }
+        ]
+    };
+
+    // 使用完整的配置项更新图表
+    typeChart.setOption(option, true);
+}
+
+// 修改 renderAttackTypeTimelineChart 函数
+function renderAttackTypeTimelineChart(data) {
+    let mode = $('.head-toolbar-3 .blue').data('tab') || 'hour';
+    let formattedDates = data.map(item => {
+        let date = new Date(item.time);
+        switch(mode) {
+            case 'day':
+                return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            case 'month':
+                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            default: // hour
+                return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
     });
-    ctiTimelineOption.xAxis.axisLabel.interval = interval; // 标签间隔
-    ctiTimelineChart.setOption(ctiTimelineOption);
+
+    // 完整的配置项
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                label: {
+                    backgroundColor: '#6a7985'
+                }
+            }
+        },
+        legend: {
+            data: ['恶意流量', '蜜罐信息', '僵尸网络', '应用层攻击', '开源信息', '总量'],
+            orient: 'vertical',
+            right: 10,
+            bottom: 60
+        },
+        grid: {
+            left: '3%',
+            right: '12%',
+            bottom: '5%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            data: formattedDates,
+            axisLabel: {
+                interval: mode === 'hour' ? 6 : (mode === 'day' ? 4 : 1)
+            }
+        },
+        yAxis: {
+            type: 'value',
+            name: '数量'
+        },
+        series: [
+            {
+                name: '恶意流量',
+                type: 'bar',
+                stack: '总量',
+                data: data.map(item => item.malicious_traffic),
+                areaStyle: {},
+                itemStyle: {
+                    color: colors[0]
+                }
+            },
+            {
+                name: '蜜罐信息',
+                type: 'bar',
+                stack: '总量',
+                data: data.map(item => item.honeypot_info),
+                areaStyle: {},
+                itemStyle: {
+                    color: colors[1]
+                }
+            },
+            {
+                name: '僵尸网络',
+                type: 'bar',
+                stack: '总量',
+                data: data.map(item => item.botnet),
+                areaStyle: {},
+                itemStyle: {
+                    color: colors[2]
+                }
+            },
+            {
+                name: '应用层攻击',
+                type: 'bar',
+                stack: '总量',
+                data: data.map(item => item.app_layer_attack),
+                areaStyle: {},
+                itemStyle: {
+                    color: colors[3]
+                }
+            },
+            {
+                name: '开源信息',
+                type: 'bar',
+                stack: '总量',
+                data: data.map(item => item.open_source_info),
+                areaStyle: {},
+                itemStyle: {
+                    color: colors[4]
+                }
+            },
+            {
+                name: '总量',
+                type: 'line',
+                data: data.map(item => item.total),
+                itemStyle: {
+                    color: colors[5]
+                },
+                lineStyle: {
+                    width: 2
+                },
+                symbol: 'none',
+                z: 100
+            }
+        ]
+    };
+
+    // 使用完整的配置项更新图表
+    ctiTimelineChart.setOption(option, true);
 }

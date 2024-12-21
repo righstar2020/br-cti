@@ -219,210 +219,203 @@ let nameMap = {
     "Turks and Caicos Is.": "特克斯和凯科斯群岛",
     "St. Vin. and Gren.": "圣文森特和格林纳丁斯",
 };
-// 模拟数据
-var IOCMapData = [
-    { name: "萨摩亚", value: 297 },
-    { name: "乌克兰", value: 195 },
-    { name: "越南", value: 315 },
-    { name: "新西兰", value: 844 },
-    { name: "墨西哥", value: 403 },
-    { name: "美国", value: 263 },
-    { name: "巴拿马", value: 268 },
-    { name: "澳大利亚", value: 5 },
-    { name: "中国", value: 12315 }
+// IOC世界数据
+var IOCWorldMapData = [
+
 ];
 
-// 添加中国地区的模拟数据
-var ChinaMapData = [
-    { name: "北京", value: 892 },
-    { name: "天津", value: 456 },
-    { name: "上海", value: 1234 },
-    { name: "重庆", value: 567 },
-    { name: "河北", value: 345 },
-    { name: "河南", value: 678 },
-    { name: "云南", value: 234 },
-    { name: "辽宁", value: 789 },
-    { name: "黑龙江", value: 891 },
-    { name: "湖南", value: 432 },
-    { name: "安徽", value: 567 },
-    { name: "山东", value: 1023 },
-    { name: "新疆", value: 156 },
-    { name: "江苏", value: 1567 },
-    { name: "浙江", value: 1789 },
-    { name: "江西", value: 432 },
-    { name: "湖北", value: 678 },
-    { name: "广西", value: 345 },
-    { name: "甘肃", value: 123 },
-    { name: "山西", value: 234 },
-    { name: "内蒙古", value: 145 },
-    { name: "陕西", value: 456 },
-    { name: "吉林", value: 345 },
-    { name: "福建", value: 678 },
-    { name: "贵州", value: 234 },
-    { name: "广东", value: 1987 },
-    { name: "青海", value: 98 },
-    { name: "西藏", value: 76 },
-    { name: "四川", value: 789 },
-    { name: "宁夏", value: 87 },
-    { name: "海南", value: 234 }
+// 添加中国地区的数据
+var IOCChinaMapData = [
+
 ];
 
-let mapOption = {
-    // 鼠标悬浮提示框
-    tooltip: {
-        trigger: "item",
-        borderColor: "#666", //区域边框颜色
-        formatter: function (params) {
-            if (params.name) {
-                return (params.name +
-                ":" +(isNaN(params.value) ? 0 : parseInt(params.value))
-                );
-            }
-        },
-    },
-    visualMap: {
-        min: 0, //最小值
-        max: 10000, //最大值
-        // orient: "horizontal", //图例排列方向
-        orient: "vertical", //图例模式
-        left: 0,
-        bottom: 20,
-        showLabel: true, //显示图例文本
-        precision: 0, //数据展示无小数点
-        itemWidth: 12, //图例宽度
-        itemHeight: 10, //图例高度
-        textGap: 10, //图例间距
-        inverse: false, //数据反向展示
-        hoverLink: true, //鼠标悬浮
-        inRange: {
-            //选中图例后背景半透明
-            // color: ["rgba(3,4,5,0.4)"],
-            color: ["#d2ecf1", "#b4deff", "#73c1ff", "#35a9ff", "#237bff", "#004bbc"],
-            symbol: "rect", //更改图元样式
-        },
-        pieces: [
-        {
-            gt: 50000,
-            label: ">50K",
-            color: "#004bbc",
-        },
-        {
-            gte: 10000,
-            lte: 50000,
-            label: "10K-50K", 
-            color: "#237bff",
-        },
-        {
-            gte: 5000,
-            lte: 9999,
-            label: "5K-9.9K",
-            color: "#35a9ff",
-        },
-        {
-            gte: 1000,
-            lte: 4999,
-            label: "1K-4.9K",
-            color: "#73c1ff",
-        },
-        {
-            gte: 100,
-            lte: 999,
-            label: "100-999",
-            color: "#b4deff",
-        },
-        {
-            lte: 99,
-            label: "0-99",
-            color: "#d2ecf1",
-        },
-        ],
-        textStyle: {
-            color: "#000", 
-            fontSize: 11, //图元字体大小
-            fontWeight: 500,
-        },
-    },
-
-    series: [
-        {
-        name: "IOC World Map",
-        type: "map",
-        mapType: "world",
-        zoom: 1.1, //地图大小
-        roam: true, //禁止拖拽
-        itemStyle: {
-            normal: {
-                areaColor: "#d2ecf1", //地图默认颜色
-                borderWidth: 0.5, //边框宽度
-                textStyle: {
-                    color: "#fff", //默认文字颜色
-                },
-                borderColor: "#000", //地图边框颜色
-            },
-            emphasis: {
-                areaColor: "#4306fe", //动态背景颜色
+// 渲染世界地图的函数
+function renderWorldMap(data) {
+    IOCWorldMapData = data;
+    const option = {
+        tooltip: {
+            trigger: "item",
+            borderColor: "#666",
+            formatter: function (params) {
+                if (params.name) {
+                    return params.name + ": " + (isNaN(params.value) ? 0 : parseInt(params.value));
+                }
             },
         },
-        select: {
-            //地图选中颜色
-            itemStyle: {
-                areaColor: "#4306fe",
+        visualMap: {
+            min: 0,
+            max: 10000,
+            orient: "vertical",
+            left: 0,
+            bottom: 20,
+            showLabel: true,
+            precision: 0,
+            itemWidth: 12,
+            itemHeight: 10,
+            textGap: 10,
+            inverse: false,
+            hoverLink: true,
+            inRange: {
+                color: ["#d2ecf1", "#b4deff", "#73c1ff", "#35a9ff", "#237bff", "#004bbc"],
+                symbol: "rect",
             },
-        },
-        label: {
-            normal: {
-            //静态的时候展示样式
-            show: false, //是否显示地图名称
+            pieces: [
+                { gt: 50000, label: ">50K", color: "#004bbc" },
+                { gte: 10000, lte: 50000, label: "10K-50K", color: "#237bff" },
+                { gte: 5000, lte: 9999, label: "5K-9.9K", color: "#35a9ff" },
+                { gte: 1000, lte: 4999, label: "1K-4.9K", color: "#73c1ff" },
+                { gte: 100, lte: 999, label: "100-999", color: "#b4deff" },
+                { lte: 99, label: "0-99", color: "#d2ecf1" },
+            ],
             textStyle: {
-                color: "#fff", //颜色
-                fontSize: 11, //文字大小
-                fontFamily: "Arial",
-            },
-            },
-            emphasis: {
-                //动态展示的样式
-                color: "#fff",
+                color: "#000",
+                fontSize: 11,
+                fontWeight: 500,
             },
         },
-        data: [
-                { name: "萨摩亚", value: 297 },
-                { name: "乌克兰", value: 195 },
-                { name: "越南", value: 315 },
-                { name: "新西兰", value: 844 },
-                { name: "墨西哥", value: 403 },
-                { name: "美国", value: 263 },
-                { name: "巴拿马", value: 268 },
-                { name: "澳大利亚", value: 5 },
-                { name: "中国", value: 12315 }
-        ],
-        nameMap: nameMap,
+        series: [{
+            name: "IOC World Map",
+            type: "map",
+            mapType: "world",
+            zoom: 1.1,
+            roam: true,
+            itemStyle: {
+                normal: {
+                    areaColor: "#d2ecf1",
+                    borderWidth: 0.5,
+                    textStyle: {
+                        color: "#fff",
+                    },
+                    borderColor: "#000",
+                },
+                emphasis: {
+                    areaColor: "#4306fe",
+                },
+            },
+            select: {
+                itemStyle: {
+                    areaColor: "#4306fe",
+                },
+            },
+            label: {
+                normal: {
+                    show: false,
+                    textStyle: {
+                        color: "#fff",
+                        fontSize: 11,
+                        fontFamily: "Arial",
+                    },
+                },
+                emphasis: {
+                    color: "#fff",
+                },
+            },
+            data: data,
+            nameMap: nameMap,
+        }],
+    };
+
+    ctiWorldMap.setOption(option, true);
+}
+
+function setChinaMapData(data){
+    console.log("setChinaMapData:",data)
+    IOCChinaMapData = data;
+}
+// 修改 changeMapType 函数
+function changeMapType(type) {
+    const option = {
+        tooltip: {
+            trigger: "item",
+            borderColor: "#666",
+            formatter: function (params) {
+                if (params.name) {
+                    return params.name + ": " + (isNaN(params.value) ? 0 : parseInt(params.value));
+                }
+            },
         },
-    ],
-};
-      
-ctiWorldMap.setOption(mapOption);
+        visualMap: {
+            min: 0,
+            max: 10000,
+            orient: "vertical",
+            left: 0,
+            bottom: 20,
+            showLabel: true,
+            precision: 0,
+            itemWidth: 12,
+            itemHeight: 10,
+            textGap: 10,
+            inverse: false,
+            hoverLink: true,
+            inRange: {
+                color: ["#d2ecf1", "#b4deff", "#73c1ff", "#35a9ff", "#237bff", "#004bbc"],
+                symbol: "rect",
+            },
+            pieces: [
+                { gt: 50000, label: ">50K", color: "#004bbc" },
+                { gte: 10000, lte: 50000, label: "10K-50K", color: "#237bff" },
+                { gte: 5000, lte: 9999, label: "5K-9.9K", color: "#35a9ff" },
+                { gte: 1000, lte: 4999, label: "1K-4.9K", color: "#73c1ff" },
+                { gte: 100, lte: 999, label: "100-999", color: "#b4deff" },
+                { lte: 99, label: "0-99", color: "#d2ecf1" },
+            ],
+            textStyle: {
+                color: "#000",
+                fontSize: 11,
+                fontWeight: 500,
+            },
+        },
+        series: [{
+            name: "IOC World Map",
+            type: "map",
+            mapType: type === "china" ? "china" : "world",
+            zoom: type === "china" ? 1.2 : 1.1,
+            roam: true,
+            itemStyle: {
+                normal: {
+                    areaColor: "#d2ecf1",
+                    borderWidth: 0.5,
+                    textStyle: {
+                        color: "#fff",
+                    },
+                    borderColor: "#000",
+                },
+                emphasis: {
+                    areaColor: "#4306fe",
+                },
+            },
+            select: {
+                itemStyle: {
+                    areaColor: "#4306fe",
+                },
+            },
+            label: {
+                normal: {
+                    show: false,
+                    textStyle: {
+                        color: "#fff",
+                        fontSize: 11,
+                        fontFamily: "Arial",
+                    },
+                },
+                emphasis: {
+                    color: "#fff",
+                },
+            },
+            nameMap: type === "china" ? null : nameMap,
+            data: type === "china" ? IOCChinaMapData : IOCWorldMapData,
+        }],
+    };
+    
+    ctiWorldMap.setOption(option, true);
+}
+
+// 初始化地图
+renderWorldMap(IOCWorldMapData);
+
+// 窗口大小改变时重绘
 window.addEventListener("resize", function () {
     ctiWorldMap.resize();
 });
-
-// 修改 changeMapType 函数以支持切换数据
-function changeMapType(type) {
-    if (type === "china") {
-        // 切换为中国地图
-        mapOption.series[0].mapType = 'china';
-        mapOption.series[0].zoom = 1.2;
-        mapOption.series[0].nameMap = null;
-        mapOption.series[0].data = ChinaMapData; // 使用中国地区数据
-    } else {
-        // 切换为世界地图
-        mapOption.series[0].mapType = 'world';
-        mapOption.series[0].zoom = 1.1;
-        mapOption.series[0].nameMap = nameMap;
-        mapOption.series[0].data = IOCMapData; // 使用世界地图数据
-    }
-    
-    // 重新设置配置
-    ctiWorldMap.setOption(mapOption, true);
-}
 
 

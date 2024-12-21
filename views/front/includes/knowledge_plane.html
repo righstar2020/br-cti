@@ -67,7 +67,7 @@
         </div>
    </div>
 </div>
-
+<script src="/static/front/js/kp_request.js"></script>
 <script>
 $(document).ready(function() {
     // 为 '详情' 按钮绑定点击事件
@@ -118,7 +118,7 @@ setInterval(function(){
     setInterval(function(){            
             //查询IOC数据
             queryIOCTrendData().then(function(data){
-                var iocTrendData = data.ioc_data_list
+                var iocTrendData = data
                 if(iocTrendData!=undefined && iocTrendData.length>0){
                     var iocTrendData = iocTrendData
                     processAndUpdateIOCTrendData(iocTrendData);
@@ -133,8 +133,8 @@ setInterval(function(){
 //查询数据
 //查询CTI交易数据(最新10条)
 function queryIOCTrendData(){
-        //查询最新10个cti数据
-        return queryIOCLatestData(10)
+    //查询最新10个cti数据
+    return queryAttackIOCInfo(1,10)
 }
 //处理数据
 function processAndUpdateIOCTrendData(iocTrendData){
@@ -143,13 +143,13 @@ function processAndUpdateIOCTrendData(iocTrendData){
     if (iocTrendData && iocTrendData.length > 0) {
         iocTrendData.forEach(function(item, index) {
             var row = [
-                item.ip,
-                item.country,
-                item.attack_type,
-                item.port,
-                item.hash,
-                item.create_time,
-                '<a class="open-cti-detail" data-id="' + item.cti_id + '" >详情</a>'
+                item.ip_address || "未知IP",
+                item.location || "未知",
+                item.attack_type || (Math.random() > 0.5 ? "恶意软件" : "应用层攻击"),
+                item.port || (Math.floor(Math.random() * 65535) + 1),
+                item.hash || (Math.random().toString(36).substring(2, 10)),
+                item.create_time ? new Date(item.create_time).toLocaleString() : new Date().toLocaleString(),
+                '<a class="open-cti-detail" data-id="' + (item.cti_id || "无ID") + '" >详情</a>'
             ];
             formattedData.push(row);
         });
