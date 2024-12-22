@@ -1,4 +1,4 @@
-//----------------------------特征数量 list pie chart --------------------------------------
+//----------------------------1.特征数量 list pie chart --------------------------------------
 // 定义常见特征字段分组
 var featureGroups = {
     'IP地址': ['source_ip', 'sourceIP', 'destination_ip', 'destinationIP', 'src_ip', 'dst_ip'],
@@ -115,7 +115,7 @@ function renderFeatureTypePieCharts() {
 
 //----------------------------特征数量 list pie chart end--------------------------------------
 
-//----------------------------流量场景比例 pie chart --------------------------------------
+//----------------------------2.流量场景比例 pie chart --------------------------------------
 
 // 数据
 const trafficSceneData = [
@@ -187,98 +187,181 @@ document.addEventListener('DOMContentLoaded', function() {
         sceneChart.setOption(sceneChartOption);
     }
 });
+// 渲染流量场景比例图表
+function renderTrafficSceneChart(data) {
+    var container = document.getElementById('trafficSceneTypePieChart');
+    if (!container) return;
+    
+    var sceneChart = echarts.init(container);
+    
+    // 计算总数
+    const sceneTotal = data.reduce((sum, item) => sum + item.value, 0);
+    
+    const option = {
+        tooltip: {
+            trigger: 'item',
+            formatter: function (params) {
+                const percent = ((params.value / sceneTotal) * 100).toFixed(1);
+                return `${params.seriesName} <br/>${params.name}: ${formatNumber(params.value)} (${percent}%)`;
+            }
+        },
+        legend: {
+            orient: 'vertical',
+            right: 5,
+            bottom: "10%"
+        },
+        series: [{
+            name: '流量场景',
+            type: 'pie',
+            radius: '50%',
+            data: data,
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+            },
+            label: {
+                show: true,
+                formatter: function (params) {
+                    const percent = ((params.value / sceneTotal) * 100).toFixed(1);
+                    return `${params.name}: ${formatNumber(params.value)} (${percent}%)`;
+                }
+            },
+            itemStyle: {
+                color: function(params) {
+                    const colors = ["#a1d9e8", "#7ac6e5", "#52b3e1"];
+                    return colors[params.dataIndex % colors.length];
+                }
+            }
+        }]
+    };
+
+    sceneChart.setOption(option);
+}
+// 渲染流量场景比例图表
+renderTrafficSceneChart(trafficSceneData);
+
 
 //----------------------------流量场景比例 pie end--------------------------------------
 
-//----------------------------流量类型时序数据linechart --------------------------------------
-// 生成一年的数据，单位为每小时
-var generateHourlyDates = (start, count) => {
-    let dates = [];
-    let startDate = new Date(start);
-    for (let i = 0; i < count; i++) {
-        let date = new Date(startDate);
-        date.setHours(startDate.getHours() + i);
-        dates.push(date.toISOString().split('T')[0] + ' ' + date.toTimeString().split(' ')[0]);
+//----------------------------3.流量类型时序数据linechart --------------------------------------
+
+
+
+var currentTimelineMode = 'hour';
+var currentTrafficTimelineData = {};
+//更新时序
+function updateTrafficTimelineData(data){
+    currentTrafficTimelineData = data;
+}
+// 渲染流量类型时序数据图表
+function renderTrafficTimelineChart(data,mode="hour") {
+    if (mode == 'hour') {
+        currentTrafficTimelineData = data; //只有小时数据才更新
+    }     
+    if(mode != currentTimelineMode){
+        return; //没有产生切换不需要重新渲染
     }
-    return dates;
-};
+    var container = document.getElementById('trafficCtiTimelineChart');
+    if (!container) return;
+    
+    var timelineChart = echarts.init(container);
+    const colors = ["#a1d9e8", "#7ac6e5", "#52b3e1", "#2a9fd2"];
+    
+    // 根据模式确定x轴标签格式和间隔
+    let interval = 6;
+    let labelFormatter = function(value) {
+        let date = new Date(value);
+        switch(mode) {
+            case 'day':
+                interval = 4;
+                return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            case 'month':
+                interval = 1;
+                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            default: // hour
+                return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+        }
+    };
 
-const start_date = '2024-01-01';
-const hours_count = 365 * 24; // 一年的小时数
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+                label: {
+                    backgroundColor: '#6a7985'
+                }
+            }
+        },
+        legend: {
+            data: ['5G', 'SDN', '卫星网络', '非流量'],
+            orient: 'vertical',
+            right: 10,
+            bottom: 50,
+            icon: 'rect'
+        },
+        grid: {
+            left: '4%',
+            right: '10%',
+            bottom: '5%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            data: data.dates,
+            axisLabel: {
+                formatter: labelFormatter,
+                interval: interval,
+                rotate: 0
+            }
+        },
+        yAxis: {
+            type: 'value',
+            name: '数量'
+        },
+        series: [
+            {
+                name: '5G',
+                type: 'line',
+                data: data.fiveG,
+                areaStyle: {},
+                itemStyle: { color: colors[0] },
+                smooth: true
+            },
+            {
+                name: 'SDN',
+                type: 'line',
+                data: data.sdn,
+                areaStyle: {},
+                itemStyle: { color: colors[1] },
+                smooth: true
+            },
+            {
+                name: '卫星网络',
+                type: 'line',
+                data: data.satellite,
+                areaStyle: {},
+                itemStyle: { color: colors[2] },
+                smooth: true
+            },
+            {
+                name: '非流量',
+                type: 'line',
+                data: data.non_traffic,
+                areaStyle: {},
+                itemStyle: { color: colors[3] },
+                smooth: true
+            }
+        ]
+    };
 
-var hourlyDates = generateHourlyDates(start_date, hours_count);
+    timelineChart.setOption(option);
+}
 
-// 生成随机数据
-var generateRandomData = (count) => {
-    const data = [];
-    for (let i = 0; i < count; i++) {
-        data.push(Math.floor(Math.random() * 200));
-    }
-    return data;
-};
 
-var trafficHourData = {
-    hourlyDates: hourlyDates,
-    fiveG: generateRandomData(hours_count),
-    sdn: generateRandomData(hours_count),
-    satellite: generateRandomData(hours_count)
-};
-
-// 生成每天的数据
-var generateDailyData = (hourlyData) => {
-    const dailyData = [];
-    for (let i = 0; i < hourlyData.length; i += 24) {
-        dailyData.push(hourlyData.slice(i, i + 24).reduce((sum, value) => sum + value, 0));
-    }
-    return dailyData;
-};
-
-var trafficDailyData = {
-    dailyDates: hourlyDates.filter((_, index) => index % 24 === 0).map(dateStr => dateStr.split(' ')[0]),
-    fiveG: generateDailyData(trafficHourData.fiveG),
-    sdn: generateDailyData(trafficHourData.sdn),
-    satellite: generateDailyData(trafficHourData.satellite)
-};
-
-// 生成每月的数据
-var generateMonthlyData = (dailyData) => {
-    const monthlyData = [];
-    for (let i = 0; i < dailyData.length; i += 30) {
-        monthlyData.push(dailyData.slice(i, i + 30).reduce((sum, value) => sum + value, 0));
-    }
-    return monthlyData;
-};
-
-var trafficMonthData = {
-    monthlyDates: trafficDailyData.dailyDates.filter((_, index) => index % 30 === 0),
-    fiveG: generateMonthlyData(trafficDailyData.fiveG),
-    sdn: generateMonthlyData(trafficDailyData.sdn),
-    satellite: generateMonthlyData(trafficDailyData.satellite)
-};
-
-// 计算最近2天的数据(每时)
-var recent2DaysData = {
-    hourlyDates: hourlyDates.slice(-48),
-    fiveG: trafficHourData.fiveG.slice(-48),
-    sdn: trafficHourData.sdn.slice(-48),
-    satellite: trafficHourData.satellite.slice(-48)
-};
-
-// 计算最近1个月的数据(每天)
-var recent1MonthData = {
-    dailyDates: trafficDailyData.dailyDates.slice(-30),
-    fiveG: trafficDailyData.fiveG.slice(-30),
-    sdn: trafficDailyData.sdn.slice(-30),
-    satellite: trafficDailyData.satellite.slice(-30)
-};
-
-// 计算最近一年的数据(每月)
-var recent1YearData = {
-    monthlyDates: trafficMonthData.monthlyDates.slice(-12),
-    fiveG: trafficMonthData.fiveG.slice(-12),
-    sdn: trafficMonthData.sdn.slice(-12),
-    satellite: trafficMonthData.satellite.slice(-12)
-};
 
 // 等待DOM加载完成后再初始化图表
 document.addEventListener('DOMContentLoaded', function() {
@@ -287,119 +370,47 @@ document.addEventListener('DOMContentLoaded', function() {
     if (trafficTimelineChartElement) {
         var trafficTimelineChart = echarts.init(trafficTimelineChartElement);
 
-        // 颜色数组
-        const colors = ["#a1d9e8", "#7ac6e5", "#52b3e1"];
+        // 渲染流量类型时序数据图表
+        renderTrafficTimelineChart(currentTrafficTimelineData);
 
-        // 配置项
-        var trafficTimelineOption = {
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: {
-                    type: 'cross',
-                    label: {
-                        backgroundColor: '#6a7985'
-                    }
-                }
-            },
-            legend: {
-                data: ['5G', 'SDN', '卫星网络'],
-                orient: 'vertical',
-                right: 10,
-                bottom: 50,
-                icon: 'rect'
-            },
-            grid: {
-                left: '4%',
-                right: '10%',
-                bottom: '5%',
-                containLabel: true
-            },
-            xAxis: {
-                type: 'category',
-                data: recent2DaysData.hourlyDates.map(dateStr => {
-                    let date = new Date(dateStr);
-                    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
-                }),
-                axisLabel: {
-                    interval: 6,
-                    rotate: 0
-                }
-            },
-            yAxis: {
-                type: 'value',
-                name: '数量'
-            },
-            series: [
-                {
-                    name: '5G',
-                    type: 'line',
-                    data: recent2DaysData.fiveG,
-                    areaStyle: {},
-                    itemStyle: {
-                        color: colors[0]
-                    },
-                    smooth: true
-                },
-                {
-                    name: 'SDN',
-                    type: 'line',
-                    data: recent2DaysData.sdn,
-                    areaStyle: {},
-                    itemStyle: {
-                        color: colors[1]
-                    },
-                    smooth: true
-                },
-                {
-                    name: '卫星网络',
-                    type: 'line',
-                    data: recent2DaysData.satellite,
-                    areaStyle: {},
-                    itemStyle: {
-                        color: colors[2]
-                    },
-                    smooth: true
-                }
-            ]
-        };
+        // 处理数据合并的函数
+        function mergeTimelineData(data, mode) {
+            if (!data || !data.dates) return data;
 
-        // 使用刚指定的配置项和数据显示图表
-        trafficTimelineChart.setOption(trafficTimelineOption);
+            let mergedData = {
+                dates: [],
+                fiveG: [],
+                sdn: [], 
+                satellite: [],
+                non_traffic: []
+            };
+
+            // 根据不同模式设置合并间隔
+            const interval = mode === 'day' ? 24 : mode === 'month' ? 30 : 1;
+            
+            for (let i = 0; i < data.dates.length; i += interval) {
+                // 合并日期
+                mergedData.dates.push(data.dates[i]);
+                
+                // 合并各类型数据
+                const slice = (arr) => arr.slice(i, i + interval).reduce((sum, val) => sum + val, 0);
+                mergedData.fiveG.push(slice(data.fiveG));
+                mergedData.sdn.push(slice(data.sdn));
+                mergedData.satellite.push(slice(data.satellite));
+                mergedData.non_traffic.push(slice(data.non_traffic));
+            }
+
+            return mergedData;
+        }
 
         //切换显示模式
         window.changeTimelineMode = function(mode) {
-            var dateData = recent2DaysData.hourlyDates.map(dateStr => {
-                let date = new Date(dateStr);
-                return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
-            });
-            var trafficData_tmp = recent2DaysData;
-            var interval = 6;
-            
-            if (mode === 'day') {
-                dateData = recent1MonthData.dailyDates.map(dateStr => {
-                    let date = new Date(dateStr);
-                    return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-                });
-                trafficData_tmp = recent1MonthData;
-                interval = 4;
-            }
-            if (mode === 'month') {
-                dateData = recent1YearData.monthlyDates.map(dateStr => {
-                    let date = new Date(dateStr);
-                    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-                });
-                trafficData_tmp = recent1YearData;
-                interval = 1;
-            }
-            
-            trafficTimelineOption.xAxis.data = dateData;
-            trafficTimelineOption.series.forEach(series => {
-                series.data = series.name === '5G' ? trafficData_tmp.fiveG :
-                             series.name === 'SDN' ? trafficData_tmp.sdn :
-                             trafficData_tmp.satellite;
-            });
-            trafficTimelineOption.xAxis.axisLabel.interval = interval;
-            trafficTimelineChart.setOption(trafficTimelineOption);
+            // 合并数据
+            let mergedData = mergeTimelineData(currentTrafficTimelineData, mode);
+            console.log("mergedData:",mergedData)
+            currentTimelineMode = mode;
+            // 渲染图表
+            renderTrafficTimelineChart(mergedData, mode);
         };
     }
 });

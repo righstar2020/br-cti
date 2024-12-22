@@ -108,3 +108,50 @@ function queryAttackIOCInfo(page=1, pageSize=10){
         })
     })
 }
+
+//-----------------------------------------流量场景 request-----------------------------------------
+
+// 查询流量场景统计信息
+function queryTrafficTypeRatio() {
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            url: blockchainServerHost + "/kp/queryTrafficTypeRatio",
+            success: function(response) {
+                console.log("流量场景类型比例:", response);
+                if (response.result != null && response.result != undefined) {
+                    resolve(response.result);
+                } else {
+                    reject("流量场景类型比例为空");
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                reject(errorThrown);
+            }
+        });
+    });
+}
+
+function queryTrafficTimeSeries() {
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            url: blockchainServerHost + "/kp/queryTrafficTimeSeries",
+            success: function(response) {
+                console.log("流量场景时间序列:", response);
+                if (response.result != null && response.result != undefined) {
+                    resolve(response.result);
+                } else {
+                    reject("流量场景时间序列为空");
+                }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                reject(errorThrown);
+            }
+        });
+    });
+}

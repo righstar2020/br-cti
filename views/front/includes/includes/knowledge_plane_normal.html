@@ -192,25 +192,37 @@ function processChinaIOCGeoDistributionData(data){
     return processedData;
 }
 //-----------------------------------------2.IOC类型分布-----------------------------------------
+
 //查询IOC类型分布
 function getIOCTypeDistribution(){
     queryIOCTypeDistribution().then(function(data){
         console.log("queryIOCTypeDistribution:",data)
         var processData = processIOCTypeDistributionData(data)
         renderIOCTypeDistributionChart(processData)
+        //渲染IOC总数
+        renderIOCTypeTotal()
     })
 }
+//保存IOC总数
+var currentIOCTypeTotal = 0;
 //处理IOC类型分布数据
 function processIOCTypeDistributionData(data){
     var processedData = [];
+    currentIOCTypeTotal = 0;
     Object.keys(data).forEach(type => {
         var typeName = type.split('_')[0]
         processedData.push({
             name: typeName,
             value: data[type]
         });
+        currentIOCTypeTotal += data[type];
     });
+    
     return processedData;
+}
+//渲染IOC总数
+function renderIOCTypeTotal(){
+    $("#normal-ioc-total").text(`(${currentIOCTypeTotal})`);
 }
 //-----------------------------------------3.攻击类型时序-----------------------------------------
 //查询攻击类型时序
@@ -218,7 +230,9 @@ function getAttackTypeTimeline(){
     queryAttackTypeStatistics().then(function(data){
         console.log("queryAttackTypeStatistics:",data)
         var processData = processAttackTypeTimelineData(data)
-        renderAttackTypeTimelineChart(processData)
+        console.log("processData:",processData)
+        updateAttackTypeTimelineData(processData)
+        renderAttackTypeTimelineChart(processData,'hour')
     })
 }
 //处理攻击类型时序数据
@@ -230,7 +244,7 @@ function processAttackTypeTimelineData(data){
         botnet: item.stats.botnet || 0,
         app_layer_attack: item.stats.app_layer_attack || 0,
         open_source_info: item.stats.open_source_info || 0,
-        total: Object.values(item.stats).reduce((sum, val) => sum + (val || 0), 0)
+        total: item.stats.total || 0 //total
     }));
 }
 

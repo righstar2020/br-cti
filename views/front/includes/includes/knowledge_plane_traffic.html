@@ -37,7 +37,7 @@
     </div>
 </div>
 <script type="text/javascript" src="/static/front/js/init_kp_echart_traffic.js"></script>
-<script type="text/javascript" src="/static/front/js/update_kp_echart_traffic.js"></script>
+<script type="text/javascript" src="/static/front/js/kp_request.js"></script>
 <script>
 $(document).ready(function() {
     
@@ -65,10 +65,84 @@ $(document).ready(function() {
         $(this).removeClass('grey').addClass('blue');
         changeTimelineMode(tabName)
     });
-    
+    // 渲染流量场景比例图表
+    getTrafficSceneRatio();
+    // 渲染流量类型时序数据图表
+    getTrafficTimelineData();
 });
+//查询流量场景比例
+function getTrafficSceneRatio(){
+    queryTrafficTypeRatio().then(function(data){
+        var processData = processTrafficSceneData(data)
+        renderTrafficSceneChart(processData);
+        renderTrafficSceneTotal();
+    });
+}
+//保存流量场景总数
+var currentTrafficSceneTotal = 0;
+//处理流量场景比例数据
+function processTrafficSceneData(data){
+    var trafficTypeMap = {
+        'non_traffic_count': '非流量',
+        'five_g_count': '5G', 
+        'satellite_count': '卫星网络', 
+        'sdn_count': 'SDN'
+    };
+    var processedData = [];
+    currentTrafficSceneTotal = 0;
+    Object.keys(data).forEach(type => {
+        var typeName = trafficTypeMap[type];
+        processedData.push({
+            name: typeName,
+            value: data[type]
+        });
+        if(type != 'non_traffic_count'){
+            currentTrafficSceneTotal += data[type];
+        }
+    });
+    return processedData;
+}
+//渲染流量场景总数
+function renderTrafficSceneTotal(){
+    $("#traffic-ioc-total").text(`(${currentTrafficSceneTotal})`);
+}
 
+//-----------------------------------------3.流量类型时序-----------------------------------------
+//查询流量类型时序数据
+function getTrafficTimelineData(){
+    queryTrafficTimeSeries().then(function(data){
+        var processData = processTrafficCtiData(data)
+        updateTrafficTimelineData(processData);
+        renderTrafficTimelineChart(processData,'hour');
+    });
+}
+// 处理流量类型时序数据
+function processTrafficCtiData(data) {
+    // 初始化时间序列数据
+    var hourlyDates = [];
+    var fiveGData = [];
+    var sdnData = [];
+    var satelliteData = [];
+    var nonTrafficData = [];
+    // 处理每个时间点的数据
+    data.forEach(item => {
+        hourlyDates.push(item.timestamp);
+        var trafficTypeData = item.data;
+        fiveGData.push(trafficTypeData[1] || 0);  // 5G
+        sdnData.push(trafficTypeData[3] || 0);    // SDN
+        satelliteData.push(trafficTypeData[2] || 0); // 卫星网络
+        nonTrafficData.push(trafficTypeData[0] || 0); // 非流量
+    });
 
+    // 返回符合echarts图表所需的数据格式
+    return {
+        dates: hourlyDates,
+        fiveG: fiveGData,
+        sdn: sdnData,
+        satellite: satelliteData,
+        non_traffic: nonTrafficData
+    };
+}
 </script>
 {{end}}
 
