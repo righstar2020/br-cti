@@ -1,19 +1,12 @@
-# 1 介绍
-## 1.1 backend端目录结构
+# 开发说明
 
-
-
-
-
-
-# 2 环境搭建
-## 2.1 Go环境
+## 1. Go环境
 一定要注意Go的版本是```1.14```
 否则可能编译报错
-## 2.2 gcc 依赖安装
+## 2. gcc 依赖安装
 编译中间件需要GCC环境
 安装教程:https://blog.csdn.net/K346K346/article/details/130870292
-## 2.3 MySQL安装
+## 3. MySQL安装
 1.下载MySQL(8.0.39)
 https://downloads.mysql.com/archives/installer/
 2.安装
@@ -23,17 +16,17 @@ https://downloads.mysql.com/archives/installer/
 4.初始化数据库
 使用navicat创建```br-cti```数据库
 执行BR-CTI.sql文件
-## 2.4 启动
+## 4. 启动
 ```shell
 go run ./main.go
 ```
 访问:http://localhost:8088
-## 2.5 管理后台
+## 5. 管理后台
 地址:http://localhost:8088/admin
 用户名:admin
 密码:123456
 
-## 2.6 git免密
+## 6. git免密
 教程:https://blog.csdn.net/super8ayan/article/details/131704316
 ```
 ssh-keygen -t rsa -C "注册账号的邮箱名字"
